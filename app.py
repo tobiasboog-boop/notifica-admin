@@ -81,6 +81,22 @@ SCORE_THRESHOLDS = {
     'oranje_views': 15  # Minimaal 15 views/maand voor oranje
 }
 
+# === BASIS OP ORDE CLUSTERS ===
+# De 3 essentiële rapportclusters die elke klant zou moeten gebruiken
+BASIS_OP_ORDE_CLUSTERS = [
+    'Financieel Overzicht',      # Finance
+    'Bewaking productiviteit',   # Uren
+    'Projectwaardering'          # Projectwaardering
+]
+
+# S&O (Service & Onderhoud) clusters - alleen relevant voor klanten met S&O
+SO_CLUSTERS = [
+    'Bewaking rendement S&O',
+    'Onderhoudsplanning',
+    'Openstaande Werkbonnen',
+    'S&O Uitvoering'
+]
+
 # === RAPPORT CATEGORISATIE REGELS ===
 # Mapping van zoektermen naar de 13 officiële Notifica rapportclusters
 # LET OP: De clusternamen moeten EXACT overeenkomen met ALLE_RAPPORTCLUSTERS
@@ -1159,6 +1175,34 @@ def main():
                                 to_emails.extend([e.strip() for e in emails if '@' in e])
             return to_emails
 
+        # S&O Filter
+        st.subheader("🔧 Filter op klanttype")
+        col_filter1, col_filter2 = st.columns(2)
+        with col_filter1:
+            so_filter = st.radio(
+                "S&O (Service & Onderhoud) klanten",
+                options=["Alle klanten", "Alleen S&O klanten", "Geen S&O klanten"],
+                help="Filter klanten op basis van S&O cluster gebruik"
+            )
+
+        # Bepaal welke klanten S&O gebruiken
+        klanten_met_so = set()
+        for klant_code, clusters in klant_cluster_usage.items():
+            if any(so_cluster in clusters for so_cluster in SO_CLUSTERS):
+                klanten_met_so.add(klant_code)
+
+        # Filter scores_df op basis van S&O selectie
+        if so_filter == "Alleen S&O klanten":
+            filtered_scores = scores_df[scores_df['Klant_Code'].isin(klanten_met_so)]
+            st.info(f"📊 Toon {len(filtered_scores)} S&O klanten (van {len(scores_df)} totaal)")
+        elif so_filter == "Geen S&O klanten":
+            filtered_scores = scores_df[~scores_df['Klant_Code'].isin(klanten_met_so)]
+            st.info(f"📊 Toon {len(filtered_scores)} niet-S&O klanten (van {len(scores_df)} totaal)")
+        else:
+            filtered_scores = scores_df
+
+        st.markdown("---")
+
         # Template selectie
         st.subheader("📋 Kies een template")
 
@@ -1167,7 +1211,8 @@ def main():
             "🟠 ORANJE - Stimulans": "Voor klanten die het oké doen maar beter kunnen",
             "📊 Cluster Introductie": "Promoot een specifieke rapportcluster die de klant nog niet gebruikt",
             "👥 Meer gebruikers": "Nodig klanten uit om meer collega's toegang te geven",
-            "🎓 Training aanbod": "Voor klanten met veel clusters maar weinig views"
+            "🎓 Training aanbod": "Voor klanten met veel clusters maar weinig views",
+            "📋 Basis op orde - Activatie": "Voor klanten die de 3 essentiële clusters niet gebruiken"
         }
 
         selected_template = st.selectbox(
@@ -1183,7 +1228,7 @@ def main():
             st.subheader("🔴 Reactivatie - Rode klanten")
             st.markdown("Klanten die nauwelijks gebruik maken van de dashboards en aandacht nodig hebben.")
 
-            rood_klanten = scores_df[scores_df['Kleur'] == 'ROOD'][['Klant_Code', 'Klantnaam', 'Functionarissen', 'Views']].copy()
+            rood_klanten = filtered_scores[filtered_scores['Kleur'] == 'ROOD'][['Klant_Code', 'Klantnaam', 'Functionarissen', 'Views']].copy()
 
             if len(rood_klanten) > 0:
                 st.dataframe(rood_klanten, use_container_width=True, height=200)
@@ -1223,7 +1268,7 @@ Het Notifica Team"""
             st.subheader("🟠 Stimulans - Oranje klanten")
             st.markdown("Klanten die het oké doen maar met een kleine push groen kunnen worden.")
 
-            oranje_klanten = scores_df[scores_df['Kleur'] == 'ORANJE'][['Klant_Code', 'Klantnaam', 'Functionarissen', 'Views', 'Aantal_Groepen']].copy()
+            oranje_klanten = filtered_scores[filtered_scores['Kleur'] == 'ORANJE'][['Klant_Code', 'Klantnaam', 'Functionarissen', 'Views', 'Aantal_Groepen']].copy()
 
             if len(oranje_klanten) > 0:
                 st.dataframe(oranje_klanten, use_container_width=True, height=200)
@@ -1331,7 +1376,7 @@ Het Notifica Team"""
             st.markdown("Klanten met weinig actieve gebruikers uitnodigen om meer collega's toegang te geven.")
 
             # Klanten met < 3 functionarissen
-            weinig_users = scores_df[scores_df['Functionarissen'] < 3][['Klant_Code', 'Klantnaam', 'Functionarissen', 'Views', 'Kleur']].copy()
+            weinig_users = filtered_scores[filtered_scores['Functionarissen'] < 3][['Klant_Code', 'Klantnaam', 'Functionarissen', 'Views', 'Kleur']].copy()
 
             if len(weinig_users) > 0:
                 st.markdown(f"**{len(weinig_users)} klanten** hebben minder dan 3 actieve gebruikers:")
@@ -1378,9 +1423,9 @@ Het Notifica Team"""
             st.markdown("Klanten die veel clusters hebben maar relatief weinig views - ze hebben de tools maar gebruiken ze niet optimaal.")
 
             # Klanten met >= 5 clusters maar < 30 views
-            training_kandidaten = scores_df[
-                (scores_df['Aantal_Groepen'] >= 5) &
-                (scores_df['Views'] < 30)
+            training_kandidaten = filtered_scores[
+                (filtered_scores['Aantal_Groepen'] >= 5) &
+                (filtered_scores['Views'] < 30)
             ][['Klant_Code', 'Klantnaam', 'Aantal_Groepen', 'Views', 'Functionarissen']].copy()
 
             if len(training_kandidaten) > 0:
@@ -1419,6 +1464,122 @@ Het Notifica Team"""
             else:
                 st.info("Geen klanten gevonden die voldoen aan de criteria (>=5 clusters, <30 views).")
                 st.markdown("**Tip:** Pas de criteria aan in de code als je andere drempels wilt gebruiken.")
+
+        # === TEMPLATE 6: BASIS OP ORDE - ACTIVATIE ===
+        elif selected_template == "📋 Basis op orde - Activatie":
+            st.subheader("📋 Basis op orde - Activatie")
+            st.markdown("""
+            **De 3 essentiële clusters die elke klant zou moeten gebruiken:**
+            - **Financieel Overzicht** - Inzicht in de financiële positie
+            - **Bewaking productiviteit** - Grip op uren en productiviteit
+            - **Projectwaardering** - Waardering van projecten en rendement
+
+            Hieronder zie je klanten die een of meer van deze basis clusters nog niet gebruiken.
+            """)
+
+            # Analyseer per klant welke basis clusters ontbreken
+            basis_analyse = []
+            for klant_code in filtered_scores['Klant_Code'].unique():
+                klant_info = filtered_scores[filtered_scores['Klant_Code'] == klant_code].iloc[0]
+                gebruikte_clusters = klant_cluster_usage.get(klant_code, set())
+
+                ontbrekende_basis = [c for c in BASIS_OP_ORDE_CLUSTERS if c not in gebruikte_clusters]
+
+                if ontbrekende_basis:
+                    # Bereken ook recente views voor basis clusters (laatste 2 maanden)
+                    basis_views = 0
+                    basis_users = 0
+                    klant_data = pbi_df[pbi_df['Klant_Code'] == klant_code]
+                    for cluster in BASIS_OP_ORDE_CLUSTERS:
+                        if cluster in gebruikte_clusters:
+                            cluster_rapporten = [r for r in klant_data['Report name'].unique()
+                                                if categorize_report(r) == cluster]
+                            for rapport in cluster_rapporten:
+                                rapport_data = klant_data[klant_data['Report name'] == rapport]
+                                basis_views += rapport_data['Aantal activity reportviews'].sum()
+                                basis_users += rapport_data['DisplayName'].nunique()
+
+                    basis_analyse.append({
+                        'Klant_Code': klant_code,
+                        'Klantnaam': klant_info['Klantnaam'],
+                        'Status': klant_info['Kleur'],
+                        'Ontbrekende basis': ', '.join(ontbrekende_basis),
+                        'Aantal ontbrekend': len(ontbrekende_basis),
+                        'Basis views': int(basis_views),
+                        'Basis users': int(basis_users)
+                    })
+
+            if basis_analyse:
+                basis_df = pd.DataFrame(basis_analyse)
+                basis_df = basis_df.sort_values('Aantal ontbrekend', ascending=False)
+
+                # Samenvatting
+                col1, col2, col3 = st.columns(3)
+                with col1:
+                    st.metric("Klanten zonder volledige basis", len(basis_df))
+                with col2:
+                    gemiddeld_ontbrekend = basis_df['Aantal ontbrekend'].mean()
+                    st.metric("Gemiddeld ontbrekend", f"{gemiddeld_ontbrekend:.1f} clusters")
+                with col3:
+                    volledig_ontbrekend = len(basis_df[basis_df['Aantal ontbrekend'] == 3])
+                    st.metric("Geen enkele basis cluster", volledig_ontbrekend)
+
+                st.markdown("---")
+
+                # Filter op aantal ontbrekende clusters
+                ontbrekend_filter = st.multiselect(
+                    "Filter op aantal ontbrekende basis clusters",
+                    options=[1, 2, 3],
+                    default=[2, 3],
+                    key="basis_filter"
+                )
+
+                gefilterde_basis = basis_df[basis_df['Aantal ontbrekend'].isin(ontbrekend_filter)]
+
+                st.dataframe(gefilterde_basis, use_container_width=True, height=300)
+
+                # Selecteer klanten voor email
+                selected_klanten = st.multiselect(
+                    "Selecteer klanten voor email",
+                    options=gefilterde_basis['Klantnaam'].tolist(),
+                    default=[],
+                    key="basis_select"
+                )
+
+                if selected_klanten:
+                    to_emails = get_emails_for_klanten(selected_klanten)
+
+                    # Haal ontbrekende clusters op voor geselecteerde klanten
+                    selected_data = gefilterde_basis[gefilterde_basis['Klantnaam'].isin(selected_klanten)]
+
+                    subject = "De basis op orde: 3 dashboards die je niet mag missen"
+                    body = """Hoi,
+
+We merkten dat jullie nog niet alle basis dashboards van Notifica gebruiken. Dat vinden we jammer, want deze drie rapporten vormen de kern van goed sturen op cijfers:
+
+1. **Financieel Overzicht** - Direct inzicht in je financiële positie
+2. **Bewaking productiviteit** - Grip op uren en productiviteit per medewerker
+3. **Projectwaardering** - Nauwkeurige waardering van je projecten
+
+Deze drie vormen samen de 'basis op orde' - als je hier grip op hebt, heb je de belangrijkste stuurinformatie in huis.
+
+We helpen je graag op weg:
+- Gratis webinar: [LINK NAAR WEBINAR]
+- Zelf verkennen met onze analysetool: [LINK NAAR TOOL]
+- Of vraag een APK aan: [LINK NAAR APK AANVRAAG]
+
+Vragen of interesse in een persoonlijke toelichting? Laat het weten!
+
+Groet,
+
+Het Notifica Team"""
+
+                    render_email(to_emails, subject, body, "basis_op_orde")
+
+                    st.markdown("---")
+                    st.info("💡 **Tip:** Vervang de [LINK] placeholders door de juiste URLs voordat je de email verstuurt.")
+            else:
+                st.success("Alle klanten hebben de basis op orde! Alle 3 essentiële clusters worden gebruikt.")
 
         # Cluster adoptie overzicht onderaan
         st.markdown("---")
