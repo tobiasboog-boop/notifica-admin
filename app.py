@@ -1760,9 +1760,7 @@ Samen geven deze dashboards je een compleet beeld van je bedrijfsvoering.
 
 """
 
-                        body += """Ik maak graag vrijblijvend kennis en geef jullie een kosteloze APK op jullie dashboards. Plan gerust direct een afspraak via onderstaande link - kies een moment dat jullie uitkomt en er wordt automatisch een Teams-uitnodiging aangemaakt:
-
-https://outlook.office365.com/book/domien.parren@notifica.nl
+                        body += """Ik maak graag vrijblijvend kennis en geef jullie een kosteloze APK op jullie dashboards. Plan gerust direct een afspraak via de knop onderaan deze email - kies een moment dat jullie uitkomt en er wordt automatisch een Teams-uitnodiging aangemaakt.
 
 Ik hoor graag van jullie!
 
@@ -1775,7 +1773,7 @@ Notifica"""
                             render_email(klant_emails, subject, body, f"basis_{klant_row['Klant_Code']}")
 
                     st.markdown("---")
-                    st.info("💡 **Tip:** Na het openen in Outlook, selecteer de booking URL en druk Ctrl+K om er een klikbare link van te maken.")
+                    st.info("💡 **Let op:** Deze email verwijst naar de 'Maak een afspraak' knop in de handtekening. Zorg dat Domien's Bookings actief is.")
             else:
                 st.success("Alle klanten hebben de basis op orde! Alle 3 essentiële clusters worden gebruikt.")
 
