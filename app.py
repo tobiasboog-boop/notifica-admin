@@ -14,7 +14,6 @@ from datetime import datetime, timedelta
 from io import BytesIO
 import os
 import json
-import random
 from dotenv import load_dotenv
 
 # Laad .env bestand
@@ -1659,29 +1658,11 @@ Samen geven deze dashboards je een compleet beeld van je bedrijfsvoering.
 
 """
 
-                        # Genereer 3 random data in februari 2025 (werkdagen)
-                        februari_werkdagen = []
-                        datum = datetime(2025, 2, 3)  # Start op maandag 3 feb
-                        while datum.month == 2:
-                            if datum.weekday() < 5:  # Maandag t/m vrijdag
-                                februari_werkdagen.append(datum)
-                            datum += timedelta(days=1)
+                        body += """Ik maak graag vrijblijvend kennis en geef jullie een kosteloze APK op jullie dashboards.
 
-                        # Kies 3 random werkdagen
-                        gekozen_data = sorted(random.sample(februari_werkdagen, 3))
-                        dag_namen = ['maandag', 'dinsdag', 'woensdag', 'donderdag', 'vrijdag']
+**[Plan hier direct een afspraak](https://outlook.office365.com/book/domien.parren@notifica.nl)**
 
-                        data_opties = []
-                        for d in gekozen_data:
-                            dag_naam = dag_namen[d.weekday()]
-                            data_opties.append(f"{dag_naam} {d.day} februari")
-
-                        body += f"""Ik maak graag vrijblijvend kennis en geef jullie een kosteloze APK op jullie dashboards. Reageer op deze email met een datum die jullie past:
-
-- [ ] {data_opties[0]}
-- [ ] {data_opties[1]}
-- [ ] {data_opties[2]}
-- [ ] Geen van bovenstaande, maar neem contact op voor een ander moment
+Kies een moment dat jullie uitkomt - er wordt automatisch een Teams-link aangemaakt.
 
 Ik hoor graag van jullie!
 
