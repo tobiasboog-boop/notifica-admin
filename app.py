@@ -281,7 +281,10 @@ def process_contacts(contacts_df, orgs_df):
     orgs_normalized = normalize_org_columns(orgs_df)
     orgs = orgs_normalized[['Klantnummer', 'Naam']].copy()
     orgs.columns = ['Klant_Code', 'Org_Naam']
-    orgs['Klant_Code'] = orgs['Klant_Code'].astype(str)
+    # Converteer Klant_Code correct (float 1211.0 -> string "1211")
+    orgs['Klant_Code'] = orgs['Klant_Code'].apply(
+        lambda x: str(int(x)) if pd.notna(x) and isinstance(x, (int, float)) else str(x) if pd.notna(x) else None
+    )
 
     contacts = contacts.merge(orgs, left_on='Organisatie', right_on='Org_Naam', how='left')
     return contacts
@@ -612,7 +615,11 @@ def main():
     orgs_normalized = normalize_org_columns(orgs_df)
     klantnamen = orgs_normalized[['Klantnummer', 'Naam']].copy()
     klantnamen.columns = ['Klant_Code', 'Klantnaam']
-    klantnamen['Klant_Code'] = klantnamen['Klant_Code'].astype(str)
+    # Converteer Klant_Code naar string, verwijder .0 suffix van floats en filter nan
+    klantnamen = klantnamen[klantnamen['Klant_Code'].notna()]
+    klantnamen['Klant_Code'] = klantnamen['Klant_Code'].apply(
+        lambda x: str(int(x)) if pd.notna(x) and isinstance(x, (int, float)) else str(x)
+    )
 
     # Calculate scores
     scores_df = calculate_customer_scores(pbi_df, klantnamen, groen_threshold, oranje_threshold)
