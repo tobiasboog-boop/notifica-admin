@@ -1601,34 +1601,77 @@ Het Notifica Team"""
                 )
 
                 if selected_klanten:
-                    to_emails = get_emails_for_klanten(selected_klanten)
+                    # Genereer gepersonaliseerde emails per klant
+                    st.markdown("### 📧 Gepersonaliseerde emails")
 
-                    # Haal ontbrekende clusters op voor geselecteerde klanten
-                    selected_data = gefilterde_basis[gefilterde_basis['Klantnaam'].isin(selected_klanten)]
+                    for klantnaam in selected_klanten:
+                        klant_row = gefilterde_basis[gefilterde_basis['Klantnaam'] == klantnaam].iloc[0]
+                        ontbrekend_str = klant_row['Ontbrekende basis']
+                        ontbrekend_list = [x.strip() for x in ontbrekend_str.split(',')]
 
-                    subject = "De basis op orde: 3 dashboards die je niet mag missen"
-                    body = """Hoi,
+                        # Haal emails op voor deze specifieke klant
+                        klant_emails = get_emails_for_klanten([klantnaam])
 
-We merkten dat jullie nog niet alle basis dashboards van Notifica gebruiken. Dat vinden we jammer, want deze drie rapporten vormen de kern van goed sturen op cijfers:
+                        # Bouw conditionele email body
+                        subject = "Even voorstellen + een tip voor jullie dashboards"
 
-1. **Financieel Overzicht** - Direct inzicht in je financiële positie
-2. **Bewaking productiviteit** - Grip op uren en productiviteit per medewerker
-3. **Projectwaardering** - Nauwkeurige waardering van je projecten
+                        # Intro sectie
+                        body = """Hoi,
 
-Deze drie vormen samen de 'basis op orde' - als je hier grip op hebt, heb je de belangrijkste stuurinformatie in huis.
+Ik ben Domiin Parren, nieuwe medewerker bij Notifica. Ik ben momenteel bezig om al onze klanten beter te leren kennen - wie jullie zijn, hoe jullie Notifica gebruiken, en waar we nog kunnen helpen.
 
-We helpen je graag op weg:
-- Gratis webinar: [LINK NAAR WEBINAR]
-- Zelf verkennen met onze analysetool: [LINK NAAR TOOL]
-- Of vraag een APK aan: [LINK NAAR APK AANVRAAG]
+"""
+                        # Conditionele sectie op basis van wat ontbreekt
+                        if len(ontbrekend_list) == 3:
+                            body += """Toen ik in jullie account keek, viel me op dat jullie de drie basis dashboards nog niet gebruiken. Dat vind ik jammer, want juist deze drie vormen samen wat wij 'de basis op orde' noemen - de kern van goed sturen op cijfers:
 
-Vragen of interesse in een persoonlijke toelichting? Laat het weten!
+"""
+                        elif len(ontbrekend_list) == 2:
+                            body += f"""Toen ik in jullie account keek, zag ik dat jullie al met sommige dashboards werken - goed bezig! Maar ik merkte ook dat twee belangrijke rapporten nog niet worden gebruikt. Bij Notifica noemen we drie dashboards samen 'de basis op orde' - de kern van goed sturen op cijfers. Jullie missen nog:
+
+"""
+                        else:  # 1 ontbrekend
+                            body += f"""Toen ik in jullie account keek, zag ik dat jullie al goed op weg zijn met de dashboards - mooi! Er is nog één rapport dat jullie nog niet gebruiken, en dat zou ik graag onder jullie aandacht brengen:
+
+"""
+
+                        # Voeg alleen de ontbrekende rapporten toe met uitleg
+                        rapport_uitleg = {
+                            'Financieel Overzicht': '**Financieel Overzicht** - Direct inzicht in je financiële positie. Zie in één oogopslag hoe je ervoor staat.',
+                            'Bewaking productiviteit': '**Bewaking productiviteit** - Grip op uren en productiviteit per medewerker. Essentieel voor het bewaken van je marges.',
+                            'Projectwaardering': '**Projectwaardering** - Nauwkeurige waardering van je projecten. Weet precies wat je onderhanden werk waard is.'
+                        }
+
+                        for i, rapport in enumerate(ontbrekend_list, 1):
+                            if rapport in rapport_uitleg:
+                                body += f"{i}. {rapport_uitleg[rapport]}\n"
+
+                        # Afsluiting
+                        if len(ontbrekend_list) == 1:
+                            body += """
+Dit dashboard complementeert wat jullie al gebruiken en geeft je een completer beeld.
+
+"""
+                        else:
+                            body += """
+Samen geven deze dashboards je een compleet beeld van je bedrijfsvoering.
+
+"""
+
+                        body += """Ik help jullie graag op weg:
+- **Gratis webinar** waarin we de basis doorlopen: [LINK NAAR WEBINAR]
+- **Zelf verkennen** met onze analysetool: [LINK NAAR TOOL]
+- **Persoonlijke APK** waarbij we samen door jullie cijfers lopen: [LINK NAAR APK AANVRAAG]
+
+Heb je vragen of wil je even sparren? Stuur me gerust een berichtje terug - ik leer graag wat jullie bezighoudt!
 
 Groet,
 
-Het Notifica Team"""
+Domiin Parren
+Notifica"""
 
-                    render_email(to_emails, subject, body, "basis_op_orde")
+                        with st.expander(f"📧 Email voor {klantnaam} ({len(ontbrekend_list)} ontbrekend)", expanded=True):
+                            render_email(klant_emails, subject, body, f"basis_{klant_row['Klant_Code']}")
 
                     st.markdown("---")
                     st.info("💡 **Tip:** Vervang de [LINK] placeholders door de juiste URLs voordat je de email verstuurt.")
