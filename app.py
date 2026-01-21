@@ -14,6 +14,8 @@ from datetime import datetime, timedelta
 from io import BytesIO
 import os
 import json
+import base64
+import requests
 from dotenv import load_dotenv
 
 # Laad .env bestand
@@ -25,6 +27,60 @@ try:
     ANTHROPIC_AVAILABLE = True
 except ImportError:
     ANTHROPIC_AVAILABLE = False
+
+# GitHub configuratie voor bestandsopslag
+GITHUB_REPO = "tobiasboog-boop/notifica-customer-health"
+GITHUB_BRANCH = "main"
+
+
+def get_github_token():
+    """Haal GitHub token op uit secrets of environment"""
+    try:
+        return st.secrets.get("GITHUB_TOKEN", os.getenv("GITHUB_TOKEN"))
+    except:
+        return os.getenv("GITHUB_TOKEN")
+
+
+def save_file_to_github(file_content, filename, commit_message):
+    """Upload een bestand naar de GitHub repository"""
+    token = get_github_token()
+    if not token:
+        return False, "GitHub token niet geconfigureerd. Voeg GITHUB_TOKEN toe aan Streamlit secrets."
+
+    # GitHub API endpoint
+    api_url = f"https://api.github.com/repos/{GITHUB_REPO}/contents/data/{filename}"
+
+    headers = {
+        "Authorization": f"token {token}",
+        "Accept": "application/vnd.github.v3+json"
+    }
+
+    # Check of bestand al bestaat (voor SHA)
+    existing_sha = None
+    response = requests.get(api_url, headers=headers)
+    if response.status_code == 200:
+        existing_sha = response.json().get("sha")
+
+    # Encode content als base64
+    content_b64 = base64.b64encode(file_content).decode('utf-8')
+
+    # Maak request body
+    data = {
+        "message": commit_message,
+        "content": content_b64,
+        "branch": GITHUB_BRANCH
+    }
+
+    if existing_sha:
+        data["sha"] = existing_sha
+
+    # Upload naar GitHub
+    response = requests.put(api_url, headers=headers, json=data)
+
+    if response.status_code in [200, 201]:
+        return True, "Bestand opgeslagen!"
+    else:
+        return False, f"Fout bij opslaan: {response.json().get('message', 'Onbekende fout')}"
 
 # Page config
 st.set_page_config(
@@ -525,6 +581,46 @@ def main():
             type=['xlsx'],
             help="Upload een nieuwere versie van de Pipedrive contactpersonen export"
         )
+
+        # Opslaan knop voor geüploade bestanden
+        uploaded_files = []
+        if pbi_file:
+            uploaded_files.append(("powerbi_activity.xlsx", pbi_file, "Power BI"))
+        if pipedrive_orgs_file:
+            uploaded_files.append(("organizations.xlsx", pipedrive_orgs_file, "Organizations"))
+        if pipedrive_people_file:
+            uploaded_files.append(("people.xlsx", pipedrive_people_file, "People"))
+
+        if uploaded_files:
+            st.markdown("---")
+            st.subheader("💾 Bestanden opslaan")
+            st.caption("Sla geüploade bestanden op zodat collega's ze morgen kunnen gebruiken")
+
+            # Toon welke bestanden worden opgeslagen
+            for filename, _, label in uploaded_files:
+                st.markdown(f"• {label}: `{filename}`")
+
+            if st.button("📥 Opslaan voor team", type="primary", use_container_width=True):
+                with st.spinner("Bestanden opslaan..."):
+                    all_success = True
+                    for filename, file_obj, label in uploaded_files:
+                        file_obj.seek(0)  # Reset file pointer
+                        content = file_obj.read()
+                        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M")
+                        success, message = save_file_to_github(
+                            content,
+                            filename,
+                            f"Update {label} - {timestamp}"
+                        )
+                        if success:
+                            st.success(f"✅ {label} opgeslagen")
+                        else:
+                            st.error(f"❌ {label}: {message}")
+                            all_success = False
+
+                    if all_success:
+                        st.balloons()
+                        st.info("🔄 De app herlaadt automatisch binnen enkele minuten met de nieuwe data. Je kunt ook handmatig refreshen.")
 
         st.markdown("---")
         st.header("⚙️ Instellingen")
