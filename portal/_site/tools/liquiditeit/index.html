@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Liquiditeit Dashboard - Notifica</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body { height: 100%; overflow: hidden; }
+        .header {
+            background: white;
+            border-bottom: 1px solid #e5e7eb;
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 50px;
+            position: relative;
+            z-index: 1000;
+        }
+        .header h1 {
+            font-family: 'Inter', -apple-system, sans-serif;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #111827;
+        }
+        .header a {
+            font-family: 'Inter', -apple-system, sans-serif;
+            font-size: 0.85rem;
+            color: #6b7280;
+            text-decoration: none;
+        }
+        .header a:hover { color: #16136F; }
+        iframe {
+            width: 100%;
+            height: calc(100vh - 50px);
+            border: none;
+        }
+        .placeholder {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: calc(100vh - 50px);
+            background: #f9fafb;
+            font-family: 'Inter', -apple-system, sans-serif;
+        }
+        .placeholder .icon { font-size: 4rem; margin-bottom: 20px; }
+        .placeholder h2 { font-size: 1.5rem; color: #111827; margin-bottom: 12px; }
+        .placeholder p { font-size: 0.95rem; color: #6b7280; max-width: 500px; text-align: center; line-height: 1.6; margin-bottom: 24px; }
+        .placeholder .btn {
+            display: inline-block;
+            background: #16136F;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 500;
+            margin-bottom: 16px;
+        }
+        .placeholder .btn:hover { background: #0f0d4d; }
+        .placeholder code {
+            background: #e5e7eb;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-family: 'SF Mono', 'Consolas', monospace;
+            font-size: 0.85rem;
+            color: #374151;
+        }
+        .placeholder .note { font-size: 0.8rem; color: #9ca3af; margin-top: 16px; }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <a href="/notifica-admin/admin/">← Terug naar Admin</a>
+        <h1>Liquiditeit Dashboard</h1>
+    </header>
+
+    <div class="placeholder" id="placeholder">
+        <span class="icon">💰</span>
+        <h2>Liquiditeit Dashboard</h2>
+        <p>Cashflow prognose en liquiditeitsanalyse. Dit dashboard draait lokaal vanwege DWH toegang.</p>
+        <div id="status-message">
+            <p style="color: #f59e0b; font-weight: 600; margin-bottom: 16px;">⚠️ Controleert of dashboard beschikbaar is...</p>
+        </div>
+        <a href="http://localhost:8501" target="_blank" class="btn" id="open-btn" style="display:none;">Open Dashboard</a>
+        <code>python -m streamlit run streamlit/liquiditeit/app.py --server.port 8501</code>
+        <span class="note">⚠️ Let op: Dit dashboard werkt alleen op Tobias' computer vanwege directe DWH toegang</span>
+    </div>
+
+    <iframe id="dashboard" src="" allow="clipboard-write" style="display:none;"></iframe>
+
+    <script>
+        const iframe = document.getElementById('dashboard');
+        const placeholder = document.getElementById('placeholder');
+        const statusMessage = document.getElementById('status-message');
+        const openBtn = document.getElementById('open-btn');
+        const LOCALHOST_URL = 'http://localhost:8501';
+        const LAUNCHER_URL = 'http://localhost:8500';
+
+        // Check if we're running locally (not on GitHub Pages or other remote hosts)
+        const isLocalEnvironment = ['localhost', '127.0.0.1', ''].includes(window.location.hostname);
+
+        function showRemoteNotice() {
+            statusMessage.innerHTML = `
+                <p style="color: #6b7280; font-weight: 600; margin-bottom: 8px;">🖥️ Alleen lokaal beschikbaar</p>
+                <p style="color: #6b7280; font-size: 0.85rem;">Dit dashboard vereist directe DWH toegang en draait daarom alleen lokaal op Tobias' computer.</p>
+                <p style="color: #6b7280; font-size: 0.85rem; margin-top: 8px;">Start het dashboard lokaal met onderstaand commando.</p>
+            `;
+        }
+
+        // Try to start the app via launcher
+        async function tryStartApp() {
+            try {
+                const response = await fetch(LAUNCHER_URL + '/start/liquiditeit', {
+                    method: 'GET',
+                    mode: 'no-cors'
+                });
+                // Wait a bit for app to start
+                setTimeout(checkLocalhost, 2000);
+            } catch (e) {
+                // Launcher not running, fall back to manual check
+                checkLocalhost();
+            }
+        }
+
+        // Check if localhost:8501 is reachable using iframe trick
+        function checkLocalhost() {
+            // Create a test iframe to check if localhost is accessible
+            const testIframe = document.createElement('iframe');
+            testIframe.style.display = 'none';
+            testIframe.src = LOCALHOST_URL + '/';
+
+            let hasLoaded = false;
+            let timeoutId = null;
+
+            // Success handler
+            testIframe.onload = function() {
+                hasLoaded = true;
+                clearTimeout(timeoutId);
+                document.body.removeChild(testIframe);
+
+                // Localhost is running!
+                statusMessage.innerHTML = '<p style="color: #10b981; font-weight: 600;">✅ Dashboard is beschikbaar!</p>';
+                openBtn.style.display = 'inline-block';
+
+                // Load main iframe
+                setTimeout(() => {
+                    iframe.src = LOCALHOST_URL + '/?embed=true';
+                    placeholder.style.display = 'none';
+                    iframe.style.display = 'block';
+                }, 1000);
+            };
+
+            // Error handler
+            testIframe.onerror = function() {
+                hasLoaded = true;
+                clearTimeout(timeoutId);
+                document.body.removeChild(testIframe);
+                showNotAvailable();
+            };
+
+            // Timeout handler - if nothing happens in 3 seconds, assume it's not available
+            timeoutId = setTimeout(function() {
+                if (!hasLoaded) {
+                    document.body.removeChild(testIframe);
+                    showNotAvailable();
+                }
+            }, 3000);
+
+            document.body.appendChild(testIframe);
+        }
+
+        function showNotAvailable() {
+            statusMessage.innerHTML = `
+                <p style="color: #ef4444; font-weight: 600; margin-bottom: 8px;">❌ Dashboard is niet beschikbaar</p>
+                <p style="color: #6b7280; font-size: 0.85rem;">Dit dashboard draait lokaal op poort 8501.</p>
+                <p style="color: #6b7280; font-size: 0.85rem; margin-top: 8px;">Start het dashboard met onderstaand commando.</p>
+            `;
+        }
+
+        // Only try localhost checks when running locally
+        if (isLocalEnvironment) {
+            tryStartApp();
+            // Recheck every 10 seconds
+            setInterval(checkLocalhost, 10000);
+        } else {
+            // On GitHub Pages or other remote host - don't attempt localhost connections
+            showRemoteNotice();
+        }
+    </script>
+</body>
+</html>

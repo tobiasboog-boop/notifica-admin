@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WVC Contract Checker - Pilot Presentatie</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --secondary: #64748b;
+            --success: #22c55e;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --light: #f8fafc;
+            --dark: #1e293b;
+            --border: #e2e8f0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            line-height: 1.6;
+            color: var(--dark);
+            background: var(--light);
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* Header */
+        header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 3rem 2rem;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        header .subtitle {
+            font-size: 1.25rem;
+            opacity: 0.9;
+        }
+
+        header .badge {
+            display: inline-block;
+            background: rgba(255,255,255,0.2);
+            padding: 0.25rem 1rem;
+            border-radius: 2rem;
+            margin-top: 1rem;
+            font-size: 0.875rem;
+        }
+
+        /* Sections */
+        section {
+            background: white;
+            border-radius: 0.5rem;
+            padding: 2rem;
+            margin: 2rem 0;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        section h2 {
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--border);
+        }
+
+        section h3 {
+            color: var(--dark);
+            margin: 1.5rem 0 1rem;
+        }
+
+        /* Problem/Solution */
+        .problem-solution {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+
+        .problem, .solution {
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+        }
+
+        .problem {
+            background: #fef2f2;
+            border-left: 4px solid var(--danger);
+        }
+
+        .solution {
+            background: #f0fdf4;
+            border-left: 4px solid var(--success);
+        }
+
+        .problem h3, .solution h3 {
+            margin-top: 0;
+        }
+
+        /* Classification boxes */
+        .classifications {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+
+        .class-box {
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            text-align: center;
+        }
+
+        .class-box.ja {
+            background: #dcfce7;
+            border: 2px solid var(--success);
+        }
+
+        .class-box.nee {
+            background: #fee2e2;
+            border: 2px solid var(--danger);
+        }
+
+        .class-box.onzeker {
+            background: #fef3c7;
+            border: 2px solid var(--warning);
+        }
+
+        .class-box .label {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .class-box .desc {
+            font-size: 0.875rem;
+            color: var(--secondary);
+        }
+
+        /* Workflow steps */
+        .workflow {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .step {
+            display: flex;
+            gap: 1rem;
+            padding: 1.5rem;
+            background: var(--light);
+            border-radius: 0.5rem;
+            border: 1px solid var(--border);
+        }
+
+        .step-number {
+            width: 40px;
+            height: 40px;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        .step-content {
+            flex: 1;
+        }
+
+        .step-content h4 {
+            margin-bottom: 0.5rem;
+        }
+
+        .step-content p {
+            color: var(--secondary);
+            font-size: 0.9rem;
+        }
+
+        .step-who {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 1rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+            margin-top: 0.5rem;
+        }
+
+        .step-who.wvc {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .step-who.notifica {
+            background: #fae8ff;
+            color: #86198f;
+        }
+
+        .step-who.systeem {
+            background: #e0e7ff;
+            color: #3730a3;
+        }
+
+        .step.manual {
+            border-left: 4px solid var(--warning);
+        }
+
+        .step.automated {
+            border-left: 4px solid var(--success);
+        }
+
+        /* Features preview */
+        .features {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+        }
+
+        .feature {
+            padding: 1.5rem;
+            background: var(--light);
+            border-radius: 0.5rem;
+            border: 1px solid var(--border);
+        }
+
+        .feature-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .feature h4 {
+            margin-bottom: 0.5rem;
+        }
+
+        .feature p {
+            color: var(--secondary);
+            font-size: 0.9rem;
+        }
+
+        /* Deliverables */
+        .deliverables {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+
+        .deliverable {
+            padding: 1rem 1.5rem;
+            background: var(--light);
+            border-radius: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .deliverable-icon {
+            font-size: 1.5rem;
+        }
+
+        /* KPIs */
+        .kpis {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .kpi {
+            text-align: center;
+            padding: 1.5rem;
+            background: var(--light);
+            border-radius: 0.5rem;
+        }
+
+        .kpi .value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        .kpi .label {
+            font-size: 0.875rem;
+            color: var(--secondary);
+        }
+
+        /* Notes */
+        .note {
+            padding: 1rem 1.5rem;
+            background: #fffbeb;
+            border-left: 4px solid var(--warning);
+            border-radius: 0 0.5rem 0.5rem 0;
+            margin: 1rem 0;
+        }
+
+        .note strong {
+            color: var(--warning);
+        }
+
+        /* Lists */
+        ul {
+            margin-left: 1.5rem;
+            margin-top: 0.5rem;
+        }
+
+        li {
+            margin-bottom: 0.5rem;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 2rem;
+            color: var(--secondary);
+            font-size: 0.875rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .problem-solution,
+            .classifications,
+            .features,
+            .deliverables,
+            .kpis {
+                grid-template-columns: 1fr;
+            }
+
+            header h1 {
+                font-size: 1.75rem;
+            }
+        }
+
+        /* Print styles */
+        @media print {
+            body {
+                background: white;
+            }
+            section {
+                box-shadow: none;
+                border: 1px solid var(--border);
+                break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <a href="/notifica_site/admin/" style="color: rgba(255,255,255,0.8); text-decoration: none; font-size: 0.9rem; display: inline-block; margin-bottom: 1rem;">← Terug naar Admin</a>
+        <h1>WVC Contract Checker</h1>
+        <p class="subtitle">Automatische classificatie van kostenregels tegen servicecontracten</p>
+        <span class="badge">Pilot Project - Fase 1</span>
+    </header>
+
+    <div class="container">
+        <!-- Probleem & Oplossing -->
+        <section>
+            <h2>Waarom deze pilot?</h2>
+            <div class="problem-solution">
+                <div class="problem">
+                    <h3>Het probleem</h3>
+                    <p>Voor elke werkbon moet bepaald worden welke kosten binnen of buiten het servicecontract vallen.</p>
+                    <ul>
+                        <li>Handmatige beoordeling is tijdrovend</li>
+                        <li>Sommige contracten werken per regel, andere op totaalniveau</li>
+                        <li>Risico op gemiste facturatie bij gemengde bonnen</li>
+                    </ul>
+                </div>
+                <div class="solution">
+                    <h3>De oplossing</h3>
+                    <p>AI-gestuurde classificatie die werkbonnen op <strong>kostenregel-niveau</strong> analyseert en toetst aan de contractvoorwaarden.</p>
+                    <ul>
+                        <li>Ondersteunt zowel per-regel als totaal-contracten</li>
+                        <li>Direct inzicht in factureerbaar deel</li>
+                        <li>Transparante onderbouwing</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Classificatie -->
+        <section>
+            <h2>Hoe werkt de classificatie?</h2>
+            <p>De AI analyseert werkbonnen op <strong>kostenregel-niveau</strong>. Afhankelijk van het contracttype wordt gekeken naar individuele regels óf naar het totaalbedrag:</p>
+
+            <div class="classifications">
+                <div class="class-box ja">
+                    <div class="label">JA</div>
+                    <div class="desc">Valt binnen het contract</div>
+                </div>
+                <div class="class-box nee">
+                    <div class="label">NEE</div>
+                    <div class="desc">Moet gefactureerd worden</div>
+                </div>
+                <div class="class-box onzeker">
+                    <div class="label">ONZEKER</div>
+                    <div class="desc">Handmatige beoordeling nodig</div>
+                </div>
+            </div>
+
+            <h3>Twee contracttypes</h3>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin: 1rem 0;">
+                <div style="background: #f0f9ff; padding: 1.25rem; border-radius: 0.5rem; border-left: 4px solid #0284c7;">
+                    <h4 style="margin: 0 0 0.5rem 0; color: #0369a1;">Per-regel contract</h4>
+                    <p style="font-size: 0.9rem; margin: 0; color: var(--secondary);">
+                        Specificeert <em>welke werkzaamheden</em> gedekt zijn. Elke kostenregel wordt apart beoordeeld.
+                    </p>
+                    <p style="font-size: 0.85rem; margin: 0.5rem 0 0 0; color: #0369a1;">
+                        <em>Bijv: "Periodiek onderhoud en standaard materialen inbegrepen"</em>
+                    </p>
+                </div>
+                <div style="background: #fdf4ff; padding: 1.25rem; border-radius: 0.5rem; border-left: 4px solid #a855f7;">
+                    <h4 style="margin: 0 0 0.5rem 0; color: #7e22ce;">Totaal-contract</h4>
+                    <p style="font-size: 0.9rem; margin: 0; color: var(--secondary);">
+                        Specificeert een <em>maximumbedrag</em> per bezoek of per periode. De som van alle regels wordt getoetst.
+                    </p>
+                    <p style="font-size: 0.85rem; margin: 0.5rem 0 0 0; color: #7e22ce;">
+                        <em>Bijv: "Max €500 per servicebezoek" of "Max €2000 per jaar"</em>
+                    </p>
+                </div>
+            </div>
+
+            <h3>Voorbeeld 1: Per-regel contract</h3>
+            <div style="background: var(--light); border-radius: 0.5rem; padding: 1.5rem; margin: 1rem 0;">
+                <table style="width: 100%; border-collapse: collapse; font-size: 0.9rem;">
+                    <thead>
+                        <tr style="border-bottom: 2px solid var(--border);">
+                            <th style="text-align: left; padding: 0.5rem;">Type</th>
+                            <th style="text-align: left; padding: 0.5rem;">Omschrijving</th>
+                            <th style="text-align: right; padding: 0.5rem;">Bedrag</th>
+                            <th style="text-align: center; padding: 0.5rem;">Classificatie</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr style="border-bottom: 1px solid var(--border);">
+                            <td style="padding: 0.5rem;">Arbeid</td>
+                            <td style="padding: 0.5rem;">Periodiek onderhoud CV-ketel</td>
+                            <td style="text-align: right; padding: 0.5rem;">&euro;85</td>
+                            <td style="text-align: center; padding: 0.5rem;"><span style="background: #dcfce7; color: #166534; padding: 0.25rem 0.75rem; border-radius: 1rem; font-weight: 500;">JA</span></td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid var(--border);">
+                            <td style="padding: 0.5rem;">Materiaal</td>
+                            <td style="padding: 0.5rem;">Luchtfilter (standaard)</td>
+                            <td style="text-align: right; padding: 0.5rem;">&euro;25</td>
+                            <td style="text-align: center; padding: 0.5rem;"><span style="background: #dcfce7; color: #166534; padding: 0.25rem 0.75rem; border-radius: 1rem; font-weight: 500;">JA</span></td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid var(--border);">
+                            <td style="padding: 0.5rem;">Arbeid</td>
+                            <td style="padding: 0.5rem;">Storing verhelpen - thermostaat</td>
+                            <td style="text-align: right; padding: 0.5rem;">&euro;120</td>
+                            <td style="text-align: center; padding: 0.5rem;"><span style="background: #fee2e2; color: #991b1b; padding: 0.25rem 0.75rem; border-radius: 1rem; font-weight: 500;">NEE</span></td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid var(--border);">
+                            <td style="padding: 0.5rem;">Materiaal</td>
+                            <td style="padding: 0.5rem;">Thermostaat Honeywell T6</td>
+                            <td style="text-align: right; padding: 0.5rem;">&euro;145</td>
+                            <td style="text-align: center; padding: 0.5rem;"><span style="background: #fee2e2; color: #991b1b; padding: 0.25rem 0.75rem; border-radius: 1rem; font-weight: 500;">NEE</span></td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 0.5rem;">Arbeid</td>
+                            <td style="padding: 0.5rem;">Extra uur - wachttijd onderdeel</td>
+                            <td style="text-align: right; padding: 0.5rem;">&euro;60</td>
+                            <td style="text-align: center; padding: 0.5rem;"><span style="background: #fef3c7; color: #92400e; padding: 0.25rem 0.75rem; border-radius: 1rem; font-weight: 500;">ONZEKER</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div style="display: flex; justify-content: space-between; margin-top: 1.5rem; padding-top: 1rem; border-top: 2px solid var(--border);">
+                    <div style="text-align: center; flex: 1;">
+                        <div style="font-size: 1.5rem; font-weight: bold; color: var(--success);">&euro;110</div>
+                        <div style="font-size: 0.8rem; color: var(--secondary);">Binnen contract</div>
+                    </div>
+                    <div style="text-align: center; flex: 1;">
+                        <div style="font-size: 1.5rem; font-weight: bold; color: var(--danger);">&euro;265</div>
+                        <div style="font-size: 0.8rem; color: var(--secondary);">Te factureren</div>
+                    </div>
+                    <div style="text-align: center; flex: 1;">
+                        <div style="font-size: 1.5rem; font-weight: bold; color: var(--warning);">&euro;60</div>
+                        <div style="font-size: 0.8rem; color: var(--secondary);">Handmatig beoordelen</div>
+                    </div>
+                </div>
+            </div>
+
+            <h3>Voorbeeld 2: Totaal-contract</h3>
+            <div style="background: var(--light); border-radius: 0.5rem; padding: 1.5rem; margin: 1rem 0;">
+                <div style="background: #fdf4ff; padding: 0.75rem 1rem; border-radius: 0.25rem; margin-bottom: 1rem; font-size: 0.9rem;">
+                    <strong>Contractvoorwaarde:</strong> Maximaal &euro;300 per servicebezoek gedekt
+                </div>
+                <table style="width: 100%; border-collapse: collapse; font-size: 0.9rem;">
+                    <thead>
+                        <tr style="border-bottom: 2px solid var(--border);">
+                            <th style="text-align: left; padding: 0.5rem;">Type</th>
+                            <th style="text-align: left; padding: 0.5rem;">Omschrijving</th>
+                            <th style="text-align: right; padding: 0.5rem;">Bedrag</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr style="border-bottom: 1px solid var(--border);">
+                            <td style="padding: 0.5rem;">Arbeid</td>
+                            <td style="padding: 0.5rem;">Storing verhelpen</td>
+                            <td style="text-align: right; padding: 0.5rem;">&euro;150</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid var(--border);">
+                            <td style="padding: 0.5rem;">Materiaal</td>
+                            <td style="padding: 0.5rem;">Pomp circulatie</td>
+                            <td style="text-align: right; padding: 0.5rem;">&euro;180</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid var(--border);">
+                            <td style="padding: 0.5rem;">Arbeid</td>
+                            <td style="padding: 0.5rem;">Montage + afstellen</td>
+                            <td style="text-align: right; padding: 0.5rem;">&euro;85</td>
+                        </tr>
+                        <tr style="font-weight: bold; background: #f8fafc;">
+                            <td style="padding: 0.5rem;" colspan="2">Totaal werkbon</td>
+                            <td style="text-align: right; padding: 0.5rem;">&euro;415</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div style="display: flex; justify-content: space-between; margin-top: 1.5rem; padding-top: 1rem; border-top: 2px solid var(--border);">
+                    <div style="text-align: center; flex: 1;">
+                        <div style="font-size: 1.5rem; font-weight: bold; color: var(--success);">&euro;300</div>
+                        <div style="font-size: 0.8rem; color: var(--secondary);">Binnen contract (max)</div>
+                    </div>
+                    <div style="text-align: center; flex: 1;">
+                        <div style="font-size: 1.5rem; font-weight: bold; color: var(--danger);">&euro;115</div>
+                        <div style="font-size: 0.8rem; color: var(--secondary);">Te factureren (overschot)</div>
+                    </div>
+                </div>
+            </div>
+
+            <p>Bij elke classificatie geeft de AI:</p>
+            <ul>
+                <li><strong>Betrouwbaarheidsscore</strong> - Hoe zeker is de AI van het oordeel (0-100%)</li>
+                <li><strong>Artikelreferentie</strong> - Welk contractartikel is relevant</li>
+                <li><strong>Toelichting</strong> - Uitleg van de redenering</li>
+            </ul>
+
+            <div class="note">
+                <strong>Voordeel:</strong> Beide contracttypes worden ondersteund. U krijgt altijd inzicht in welk deel van een werkbon gefactureerd moet worden - of dat nu per regel is of als overschrijding van een maximum.
+            </div>
+        </section>
+
+        <!-- Pilot Workflow -->
+        <section>
+            <h2>Hoe verloopt de pilot?</h2>
+            <p>De pilot bestaat uit de volgende stappen, waarbij sommige stappen handmatig zijn en andere geautomatiseerd:</p>
+
+            <div class="workflow">
+                <div class="step manual">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h4>Contracten aanleveren</h4>
+                        <p>WVC levert de servicecontracten aan als Word- of Excel-bestanden. Deze worden op een gedeelde locatie (OneDrive/SharePoint) geplaatst.</p>
+                        <span class="step-who wvc">WVC</span>
+                    </div>
+                </div>
+
+                <div class="step manual">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h4>Contracten verwerken & koppelen</h4>
+                        <p>Notifica zet de contracten om naar een tekstformaat dat de AI kan lezen. De koppeling naar klanten wordt automatisch voorgesteld op basis van fuzzy matching met relaties uit Syntess.</p>
+                        <span class="step-who notifica">Notifica</span>
+                        <div class="note" style="margin-top: 1rem;">
+                            <strong>Let op:</strong> De extractie is handmatig. De kwaliteit hiervan bepaalt mede de kwaliteit van de classificatie.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="step manual">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h4>Contract tekst & koppelingen controleren</h4>
+                        <p>Via de webinterface controleert WVC de ge&euml;xtraheerde contractteksten en vult ontbrekende of onzekere klant-koppelingen aan. Het contractregister toont alle contracten met hun matchstatus.</p>
+                        <span class="step-who wvc">WVC</span>
+                    </div>
+                </div>
+
+                <div class="step automated">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <h4>Werkbonnen ophalen &amp; filteren</h4>
+                        <p>Notifica haalt werkbonnen rechtstreeks uit het Syntess datawarehouse. Welke filters nodig zijn (periode, klantgroep, type werk) wordt tijdens de pilot in overleg bepaald en kan tussentijds worden bijgesteld.</p>
+                        <span class="step-who notifica">Notifica</span>
+                    </div>
+                </div>
+
+                <div class="step automated">
+                    <div class="step-number">5</div>
+                    <div class="step-content">
+                        <h4>Automatische classificatie</h4>
+                        <p>Het systeem haalt voor elke werkbon het bijbehorende contract op en laat de AI <strong>per kostenregel</strong> de classificatie bepalen. Alle resultaten worden opgeslagen in een database met onderbouwing, betrouwbaarheidsscore en referentie naar het gebruikte contract.</p>
+                        <span class="step-who systeem">Automatisch</span>
+                    </div>
+                </div>
+
+                <div class="step manual">
+                    <div class="step-number">6</div>
+                    <div class="step-content">
+                        <h4>Resultaten beoordelen</h4>
+                        <p>Via de webinterface bekijkt WVC de classificaties per kostenregel, inclusief de AI-onderbouwing. U ziet direct welk deel gefactureerd moet worden. Bij twijfelgevallen kan de werkelijke classificatie worden ingevuld voor validatie.</p>
+                        <span class="step-who wvc">WVC</span>
+                    </div>
+                </div>
+
+                <div class="step automated">
+                    <div class="step-number">7</div>
+                    <div class="step-content">
+                        <h4>Kwaliteitsrapportage</h4>
+                        <p>Op basis van de handmatige validaties genereert het systeem een kwaliteitsrapport met metrics zoals nauwkeurigheid, foutpercentages en aandachtspunten.</p>
+                        <span class="step-who systeem">Automatisch</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Wat krijgt WVC -->
+        <section>
+            <h2>Wat krijgt WVC in de pilot?</h2>
+
+            <div class="features">
+                <div class="feature">
+                    <div class="feature-icon">📋</div>
+                    <h4>Contractbeheer</h4>
+                    <p>Overzicht van alle geregistreerde contracten en de koppeling naar klanten. Inzicht in welke contracten zijn verwerkt en welke nog moeten worden omgezet.</p>
+                </div>
+
+                <div class="feature">
+                    <div class="feature-icon">🔍</div>
+                    <h4>Contract Preview</h4>
+                    <p>Bekijk exact wat de AI "ziet" van elk contract. Controleer of de extractie correct is verlopen en of alle relevante artikelen zijn meegenomen.</p>
+                </div>
+
+                <div class="feature">
+                    <div class="feature-icon">📊</div>
+                    <h4>Werkbon Selectie</h4>
+                    <p>Filter werkbonnen op periode, klant of andere criteria. Selecteer welke werkbonnen geclassificeerd moeten worden.</p>
+                </div>
+
+                <div class="feature">
+                    <div class="feature-icon">✅</div>
+                    <h4>Classificatie Resultaten</h4>
+                    <p>Bekijk per werkbon de classificatie <strong>per kostenregel</strong>, met totaalbedragen per categorie. Voeg de werkelijke classificatie toe voor validatie.</p>
+                </div>
+
+                <div class="feature">
+                    <div class="feature-icon">💾</div>
+                    <h4>Database Opslag</h4>
+                    <p>Alle classificatieresultaten worden centraal opgeslagen met volledige traceerbaarheid: welke prompt- en modelversie is gebruikt, timestamps en validatiestatus.</p>
+                </div>
+
+                <div class="feature">
+                    <div class="feature-icon">📤</div>
+                    <h4>Export & Rapportage</h4>
+                    <p>Exporteer resultaten naar CSV, genereer overzichtsrapporten en bekijk aggregaties per klant, periode of contracttype.</p>
+                </div>
+            </div>
+
+            <h3>Deliverables aan het eind van de pilot</h3>
+            <div class="deliverables">
+                <div class="deliverable">
+                    <span class="deliverable-icon">📈</span>
+                    <span>Kwaliteitsrapport met nauwkeurigheidsmetrics</span>
+                </div>
+                <div class="deliverable">
+                    <span class="deliverable-icon">📑</span>
+                    <span>Volledige classificatie-log (CSV export)</span>
+                </div>
+                <div class="deliverable">
+                    <span class="deliverable-icon">🔎</span>
+                    <span>Analyse van foutieve classificaties</span>
+                </div>
+                <div class="deliverable">
+                    <span class="deliverable-icon">📝</span>
+                    <span>Go/No-Go advies voor operationalisatie</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Succescriteria -->
+        <section>
+            <h2>Wanneer is de pilot geslaagd?</h2>
+            <p>We hanteren de volgende doelstellingen <strong>per kostenregel</strong> om te bepalen of de AI-classificatie betrouwbaar genoeg is voor verdere uitrol:</p>
+
+            <div class="kpis">
+                <div class="kpi">
+                    <div class="value">&lt; 5%</div>
+                    <div class="label">False Negatives<br><small>(gemiste facturatie per regel)</small></div>
+                </div>
+                <div class="kpi">
+                    <div class="value">&lt; 3%</div>
+                    <div class="label">False Positives<br><small>(onterecht "binnen contract")</small></div>
+                </div>
+                <div class="kpi">
+                    <div class="value">15-25%</div>
+                    <div class="label">Onzeker<br><small>(acceptabele handmatige review)</small></div>
+                </div>
+            </div>
+
+            <div class="note">
+                <strong>Belangrijk:</strong> Deze percentages zijn richtlijnen per kostenregel. De uiteindelijke beoordeling hangt ook af van de financi&euml;le impact van de fouten.
+            </div>
+        </section>
+
+        <!-- Wat is nodig van WVC -->
+        <section>
+            <h2>Wat is nodig van WVC?</h2>
+
+            <h3>Aan te leveren</h3>
+            <ul>
+                <li><strong>Servicecontracten</strong> - Word/Excel bestanden van de actieve contracten</li>
+            </ul>
+
+            <div class="note" style="margin: 1rem 0;">
+                <strong>Klant-contract koppeling:</strong> Notifica doet een eerste matching op basis van contractnamen en relaties uit Syntess (fuzzy matching). WVC hoeft alleen de <em>ontbrekende of onzekere koppelingen</em> aan te vullen via de webinterface.
+            </div>
+
+            <div class="note" style="margin: 1rem 0;">
+                <strong>Werkbonnen:</strong> Deze worden automatisch uit het Syntess datawarehouse opgehaald. WVC hoeft hiervoor geen bestanden aan te leveren.
+            </div>
+
+            <h3>Toegang tot de applicatie</h3>
+            <p>De webinterface is niet publiek toegankelijk vanwege beveiliging van het datawarehouse. Er zijn twee opties:</p>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin: 1rem 0;">
+                <div style="background: #f0f9ff; padding: 1.25rem; border-radius: 0.5rem; border: 1px solid #bae6fd;">
+                    <h4 style="margin: 0 0 0.5rem 0; color: #0369a1;">Optie A: Via Notifica</h4>
+                    <p style="font-size: 0.9rem; margin: 0 0 0.75rem 0; color: var(--secondary);">
+                        Notifica beheert de applicatie en deelt resultaten via:
+                    </p>
+                    <ul style="margin: 0; padding-left: 1.25rem; font-size: 0.9rem;">
+                        <li>Screenshare sessies voor review</li>
+                        <li>CSV/Excel exports van resultaten</li>
+                        <li>PDF rapportages</li>
+                    </ul>
+                    <p style="font-size: 0.8rem; margin: 0.75rem 0 0 0; color: #0369a1;">
+                        <em>+ Geen extra infrastructuur nodig</em>
+                    </p>
+                </div>
+                <div style="background: #fdf4ff; padding: 1.25rem; border-radius: 0.5rem; border: 1px solid #f0abfc;">
+                    <h4 style="margin: 0 0 0.5rem 0; color: #7e22ce;">Optie B: Eigen toegang (RDP)</h4>
+                    <p style="font-size: 0.9rem; margin: 0 0 0.75rem 0; color: var(--secondary);">
+                        WVC krijgt zelfstandige toegang via Remote Desktop:
+                    </p>
+                    <ul style="margin: 0; padding-left: 1.25rem; font-size: 0.9rem;">
+                        <li>Aparte VM met de applicatie</li>
+                        <li>RDP-toegang voor WVC-medewerkers</li>
+                        <li>Werken op eigen moment</li>
+                    </ul>
+                    <p style="font-size: 0.8rem; margin: 0.75rem 0 0 0; color: #7e22ce;">
+                        <em>+ Zelfstandig werken mogelijk</em>
+                    </p>
+                </div>
+            </div>
+
+            <h3>Tijdsinvestering</h3>
+            <ul>
+                <li>Kick-off meeting en aanleveren contracten</li>
+                <li>Tussentijdse review van contract-extracties</li>
+                <li>Bepalen van werkbon-filters (iteratief, tijdens pilot)</li>
+                <li>Valideren van classificatieresultaten (steekproef)</li>
+                <li>Evaluatiegesprek aan eind van pilot</li>
+            </ul>
+        </section>
+
+        <!-- Vervolgstappen -->
+        <section>
+            <h2>Na de pilot (Fase 2)</h2>
+            <p>Bij een positief resultaat kan de oplossing ge&ouml;perationaliseerd worden:</p>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin: 1.5rem 0;">
+                <div style="background: var(--light); padding: 1.25rem; border-radius: 0.5rem;">
+                    <h4 style="margin: 0 0 0.75rem 0; color: var(--primary);">Werkbonnen</h4>
+                    <ul style="margin: 0; padding-left: 1.25rem;">
+                        <li>Automatische verwerking van nieuwe werkbonnen</li>
+                        <li>Dagelijkse of real-time classificatie</li>
+                        <li>Review-workflow voor onzekere gevallen</li>
+                    </ul>
+                </div>
+                <div style="background: var(--light); padding: 1.25rem; border-radius: 0.5rem;">
+                    <h4 style="margin: 0 0 0.75rem 0; color: var(--primary);">Contractbeheer</h4>
+                    <ul style="margin: 0; padding-left: 1.25rem;">
+                        <li>Geautomatiseerde contract-extractie</li>
+                        <li>Automatische registratie en koppeling</li>
+                        <li>Monitoring van contractwijzigingen</li>
+                    </ul>
+                </div>
+            </div>
+
+            <ul>
+                <li>Integratie met bestaande systemen (facturatie, ERP)</li>
+                <li>Dashboard voor monitoring en rapportage</li>
+                <li>Alerts bij afwijkende patronen</li>
+            </ul>
+
+            <div class="note" style="margin: 1.5rem 0;">
+                <strong>Beveiligde webtoegang:</strong> Na de pilot wordt een beveiligde webinterface ingericht waarmee WVC zelfstandig kan werken. Toegang wordt geregeld via moderne zero-trust oplossingen (zoals Cloudflare Access) met authenticatie via bedrijfsaccount.
+            </div>
+
+            <p style="margin-top: 1rem; color: var(--secondary);">
+                <em>De scope en aanpak van Fase 2 wordt bepaald op basis van de pilot-resultaten.</em>
+            </p>
+        </section>
+    </div>
+
+    <footer>
+        <p>WVC Contract Checker - Pilot Presentatie</p>
+        <p>Notifica &bull; Januari 2026</p>
+    </footer>
+</body>
+</html>
