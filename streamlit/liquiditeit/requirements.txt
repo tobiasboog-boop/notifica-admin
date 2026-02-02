@@ -1,0 +1,22 @@
+# Liquiditeit Dashboard - Python Dependencies
+# =============================================
+
+# Streamlit framework
+streamlit>=1.28.0
+
+# Data processing
+pandas>=2.0.0
+numpy>=1.24.0
+
+# Visualization
+plotly>=5.18.0
+
+# Database connection (PostgreSQL/Syntess DWH)
+psycopg2-binary>=2.9.0
+sqlalchemy>=2.0.0
+
+# Environment management
+python-dotenv>=1.0.0
+
+# Date utilities
+python-dateutil>=2.8.0

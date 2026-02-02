@@ -1,0 +1,18 @@
+# Secrets - NEVER commit these!
+.streamlit/secrets.toml
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+.eggs/
+
+# Data files (local only)
+data/*.json
+
+# IDE
+.vscode/
+.idea/
