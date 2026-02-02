@@ -1,0 +1,224 @@
+---
+layout: false
+title: WVC Contract Checker - Notifica
+permalink: /tools/contract-checker/
+robots: noindex, nofollow
+---
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WVC Contract Checker - Notifica</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: #f9fafb;
+            min-height: 100vh;
+        }
+        .header {
+            background: white;
+            border-bottom: 1px solid #e5e7eb;
+            padding: 16px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .header a {
+            color: #6b7280;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+        .header a:hover { color: #16136F; }
+        .header h1 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #111827;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 48px 24px;
+        }
+        .title-section {
+            text-align: center;
+            margin-bottom: 48px;
+        }
+        .title-section h2 {
+            font-size: 2rem;
+            color: #111827;
+            margin-bottom: 8px;
+        }
+        .title-section p {
+            color: #6b7280;
+            font-size: 1.1rem;
+        }
+        .version-cards {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-bottom: 48px;
+        }
+        .version-card {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 32px;
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+        .version-card:hover {
+            border-color: #16136F;
+            box-shadow: 0 4px 12px rgba(22, 19, 111, 0.1);
+            transform: translateY(-2px);
+        }
+        .version-card .icon {
+            font-size: 2.5rem;
+            margin-bottom: 16px;
+        }
+        .version-card h3 {
+            font-size: 1.25rem;
+            color: #111827;
+            margin-bottom: 8px;
+        }
+        .version-card p {
+            color: #6b7280;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            margin-bottom: 16px;
+        }
+        .version-card .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        .badge.localhost {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+        .badge.demo {
+            background: #dcfce7;
+            color: #166534;
+        }
+        .info-section {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+        .info-section h4 {
+            font-size: 1rem;
+            color: #111827;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid #f3f4f6;
+        }
+        .info-row:last-child { border-bottom: none; }
+        .info-row .label {
+            color: #6b7280;
+            font-size: 0.9rem;
+        }
+        .info-row .value {
+            font-family: 'SF Mono', 'Consolas', monospace;
+            font-size: 0.85rem;
+            background: #f3f4f6;
+            padding: 4px 10px;
+            border-radius: 4px;
+            color: #374151;
+        }
+        .start-cmd {
+            background: #1f2937;
+            color: #10b981;
+            padding: 16px;
+            border-radius: 8px;
+            font-family: 'SF Mono', 'Consolas', monospace;
+            font-size: 0.85rem;
+            overflow-x: auto;
+            margin-top: 12px;
+        }
+        .links-section {
+            text-align: center;
+            padding: 24px;
+        }
+        .links-section a {
+            color: #16136F;
+            text-decoration: none;
+            margin: 0 16px;
+            font-size: 0.9rem;
+        }
+        .links-section a:hover { text-decoration: underline; }
+        @media (max-width: 640px) {
+            .version-cards { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <a href="{{ '/' | url }}">← Terug naar Admin</a>
+        <h1>WVC Contract Checker</h1>
+    </header>
+
+    <div class="container">
+        <div class="title-section">
+            <h2>Contract Checker</h2>
+            <p>Classificatie van werkbonnen vs servicecontracten met Claude AI</p>
+        </div>
+
+        <div class="version-cards">
+            <a href="http://localhost:8507" target="_blank" class="version-card">
+                <div class="icon">🗄️</div>
+                <h3>DWH Versie</h3>
+                <p>Live verbinding met het Syntess datawarehouse. Classificeer openstaande werkbonnen in real-time.</p>
+                <span class="badge localhost">Localhost</span>
+            </a>
+
+            <a href="https://tools-en-analyses-tcgob94on5hmiejpwyb8cs.streamlit.app/" target="_blank" class="version-card">
+                <div class="icon">📊</div>
+                <h3>Demo Versie</h3>
+                <p>Werkt met historische Parquet data. Geschikt voor demo's en externe presentaties.</p>
+                <span class="badge demo">Streamlit Cloud</span>
+            </a>
+        </div>
+
+        <div class="info-section">
+            <h4>🔐 Toegangsgegevens</h4>
+            <div class="info-row">
+                <span class="label">Wachtwoord (beide versies)</span>
+                <span class="value">Xk9#mP2$vL7nQ4wR</span>
+            </div>
+        </div>
+
+        <div class="info-section">
+            <h4>🚀 Applicaties starten</h4>
+            <div class="info-row">
+                <span class="label">DWH Versie (port 8507)</span>
+            </div>
+            <div class="start-cmd">cd c:\projects\contract-check\simple_app && streamlit run app.py --server.port 8507</div>
+
+            <div class="info-row" style="margin-top: 16px;">
+                <span class="label">Demo Versie (Streamlit Cloud)</span>
+            </div>
+            <div class="start-cmd">https://tools-en-analyses-tcgob94on5hmiejpwyb8cs.streamlit.app/</div>
+        </div>
+
+        <div class="links-section">
+            <a href="{{ '/pilots/wvc-contract-checker/' | url }}">📋 Pilot Presentatie</a>
+            <a href="https://notifica.nl/tools/contract-checker/" target="_blank">📖 Handleiding (notifica.nl)</a>
+        </div>
+    </div>
+</body>
+</html>
