@@ -32,7 +32,7 @@ jobs:
 
       - name: Build portal
         working-directory: portal
-        run: npm run build
+        run: npx eleventy
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
