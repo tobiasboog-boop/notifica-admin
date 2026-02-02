@@ -10,156 +10,152 @@ robots: noindex, nofollow
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Van den Buijs - Voorraad Dashboard</title>
+    <!-- Preconnect to wake up the app -->
     <link rel="preconnect" href="https://notificasite-5m5gc8hfgsjpxtmh6ltguf.streamlit.app">
+    <link rel="dns-prefetch" href="https://notificasite-5m5gc8hfgsjpxtmh6ltguf.streamlit.app">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: #f8f9fa;
+            background: linear-gradient(135deg, #16136F 0%, #2d2a9e 100%);
             min-height: 100vh;
             display: flex;
-            flex-direction: column;
-        }
-        .header {
-            background: #16136F;
-            color: white;
-            padding: 12px 24px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-        .header h1 {
-            font-size: 1.1rem;
-            font-weight: 600;
-        }
-        .header a {
-            color: rgba(255,255,255,0.8);
-            text-decoration: none;
-            font-size: 0.85rem;
-        }
-        .header a:hover { color: white; }
-
-        .loading-container {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 40px;
+        }
+        .container {
+            background: white;
+            border-radius: 16px;
+            padding: 48px;
+            max-width: 500px;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        .logo {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+        h1 {
+            color: #16136F;
+            font-size: 1.5rem;
+            margin-bottom: 8px;
+        }
+        .subtitle {
+            color: #6b7280;
+            font-size: 0.9rem;
+            margin-bottom: 32px;
         }
         .spinner {
-            width: 48px;
-            height: 48px;
+            width: 40px;
+            height: 40px;
             border: 4px solid #e5e7eb;
             border-top-color: #16136F;
             border-radius: 50%;
             animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
         }
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
-        .loading-text {
-            margin-top: 20px;
-            color: #4b5563;
-            font-size: 1rem;
-        }
-        .loading-subtext {
-            margin-top: 8px;
-            color: #9ca3af;
-            font-size: 0.85rem;
-        }
         .status {
-            margin-top: 16px;
-            padding: 8px 16px;
-            background: #fef3c7;
-            color: #92400e;
-            border-radius: 6px;
+            color: #4b5563;
+            font-size: 0.95rem;
+            margin-bottom: 8px;
+        }
+        .substatus {
+            color: #9ca3af;
             font-size: 0.8rem;
-            display: none;
+            margin-bottom: 24px;
         }
-        .status.show { display: block; }
-        .status.ready {
-            background: #d1fae5;
-            color: #065f46;
-        }
-
-        .app-frame {
-            flex: 1;
-            width: 100%;
-            border: none;
-            display: none;
-        }
-        .app-frame.loaded { display: block; }
-
-        .direct-link {
-            margin-top: 24px;
-            padding: 12px 24px;
+        .btn {
+            display: inline-block;
+            padding: 14px 32px;
             background: #16136F;
             color: white;
             text-decoration: none;
             border-radius: 8px;
-            font-size: 0.9rem;
-            display: none;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: all 0.2s;
+            border: none;
+            cursor: pointer;
         }
-        .direct-link:hover { background: #1e1b8a; }
-        .direct-link.show { display: inline-block; }
+        .btn:hover {
+            background: #1e1b8a;
+            transform: translateY(-1px);
+        }
+        .btn.ready {
+            background: #059669;
+        }
+        .back-link {
+            display: block;
+            margin-top: 24px;
+            color: #6b7280;
+            text-decoration: none;
+            font-size: 0.85rem;
+        }
+        .back-link:hover {
+            color: #16136F;
+        }
+        .password-hint {
+            margin-top: 24px;
+            padding: 12px 16px;
+            background: #f3f4f6;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            color: #4b5563;
+        }
+        .password-hint code {
+            background: #e5e7eb;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-family: monospace;
+            color: #16136F;
+        }
+        .hidden { display: none; }
     </style>
 </head>
 <body>
-    <header class="header">
-        <h1>Van den Buijs - Voorraad Dashboard</h1>
-        <a href="{{ '/' | url }}">← Terug naar Admin Portal</a>
-    </header>
+    <div class="container">
+        <div class="logo">📊</div>
+        <h1>Van den Buijs</h1>
+        <p class="subtitle">Voorraad Dashboard</p>
 
-    <div class="loading-container" id="loading">
-        <div class="spinner"></div>
-        <div class="loading-text">Dashboard wordt geladen...</div>
-        <div class="loading-subtext">De app wordt opgestart, dit kan even duren.</div>
-        <div class="status" id="status"></div>
+        <div id="loading">
+            <div class="spinner"></div>
+            <p class="status" id="status">Dashboard wordt opgestart...</p>
+            <p class="substatus" id="substatus">Even geduld, de app wordt wakker gemaakt</p>
+        </div>
+
         <a href="https://notificasite-5m5gc8hfgsjpxtmh6ltguf.streamlit.app/"
-           target="_blank"
-           class="direct-link"
-           id="directLink">
-            Open in nieuw tabblad →
+           id="openBtn"
+           class="btn"
+           target="_blank">
+            Open Dashboard
         </a>
+
+        <div class="password-hint">
+            Wachtwoord: <code>Dashboard6A8130</code>
+        </div>
+
+        <a href="{{ '/' | url }}" class="back-link">← Terug naar Admin Portal</a>
     </div>
-
-    <iframe
-        id="appFrame"
-        class="app-frame"
-        src="about:blank"
-        allow="clipboard-write"
-    ></iframe>
-
-    <!-- Preload: wake up the app immediately -->
-    <link rel="preload" href="https://notificasite-5m5gc8hfgsjpxtmh6ltguf.streamlit.app/" as="document">
 
     <script>
         const STREAMLIT_URL = 'https://notificasite-5m5gc8hfgsjpxtmh6ltguf.streamlit.app/';
-        const frame = document.getElementById('appFrame');
-        const loading = document.getElementById('loading');
         const status = document.getElementById('status');
-        const directLink = document.getElementById('directLink');
+        const substatus = document.getElementById('substatus');
+        const loading = document.getElementById('loading');
+        const openBtn = document.getElementById('openBtn');
 
         let attempts = 0;
-        let appReady = false;
+        const maxAttempts = 5;
 
-        function updateStatus(message, isReady = false) {
-            status.textContent = message;
-            status.classList.add('show');
-            if (isReady) {
-                status.classList.add('ready');
-            }
-        }
-
-        // Try to wake up the app with a fetch first
         async function wakeUpApp() {
-            updateStatus('App wordt wakker gemaakt...');
-
             try {
-                // Use no-cors mode since Streamlit doesn't allow CORS
+                // Ping the app to wake it up (no-cors because Streamlit doesn't allow CORS)
                 const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 10000);
+                const timeoutId = setTimeout(() => controller.abort(), 8000);
 
                 await fetch(STREAMLIT_URL, {
                     mode: 'no-cors',
@@ -167,50 +163,33 @@ robots: noindex, nofollow
                 });
                 clearTimeout(timeoutId);
 
-                // If we get here, the server responded
-                updateStatus('App reageert, pagina wordt geladen...');
-                loadFrame();
+                // Success - app responded
+                status.textContent = 'Dashboard is klaar!';
+                substatus.textContent = 'Klik op de knop om te openen';
+                loading.querySelector('.spinner').style.display = 'none';
+                openBtn.classList.add('ready');
+                openBtn.textContent = 'Open Dashboard →';
+
             } catch (e) {
                 attempts++;
-                if (attempts < 3) {
-                    updateStatus(`Poging ${attempts + 1}... App start op.`);
+                if (attempts < maxAttempts) {
+                    status.textContent = `App wordt opgestart... (poging ${attempts}/${maxAttempts})`;
+                    substatus.textContent = 'Streamlit Cloud apps hebben even nodig om wakker te worden';
                     setTimeout(wakeUpApp, 3000);
                 } else {
-                    // After 3 attempts, just load the frame anyway
-                    updateStatus('App laden duurt langer dan verwacht...');
-                    loadFrame();
-                    // Show direct link as backup
-                    setTimeout(() => {
-                        directLink.classList.add('show');
-                    }, 5000);
+                    status.textContent = 'App is mogelijk nog aan het opstarten';
+                    substatus.textContent = 'Klik op de knop - de app opent in een nieuw tabblad';
+                    loading.querySelector('.spinner').style.display = 'none';
                 }
             }
         }
 
-        function loadFrame() {
-            frame.src = STREAMLIT_URL;
-        }
-
-        // When iframe loads successfully
-        frame.onload = function() {
-            // Small delay to ensure Streamlit has rendered
-            setTimeout(() => {
-                loading.style.display = 'none';
-                frame.classList.add('loaded');
-                appReady = true;
-            }, 1000);
-        };
-
-        // Fallback: show direct link after 30 seconds if still loading
-        setTimeout(() => {
-            if (!appReady) {
-                directLink.classList.add('show');
-                updateStatus('Laden duurt lang. Gebruik de link hieronder als alternatief.');
-            }
-        }, 30000);
-
-        // Start the wake-up process
+        // Start wake-up process
         wakeUpApp();
+
+        // Also open a hidden image to trigger connection
+        const img = new Image();
+        img.src = STREAMLIT_URL + 'favicon.ico?' + Date.now();
     </script>
 </body>
 </html>
