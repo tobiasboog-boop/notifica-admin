@@ -1,0 +1,78 @@
+{
+  "customer_code": "1256",
+  "export_date": "2026-01-29T11:21:08.702947",
+  "files": {
+    "magazijnen": {
+      "rows": 32,
+      "columns": [
+        "magazijn_key",
+        "magazijn",
+        "projectmagazijn",
+        "geblokkeerd",
+        "status",
+        "administratie"
+      ],
+      "status": "ok"
+    },
+    "locaties": {
+      "rows": 0,
+      "status": "empty"
+    },
+    "posities": {
+      "rows": 8716,
+      "columns": [
+        "positie_key",
+        "tarief_key",
+        "artikel",
+        "locatie_key",
+        "locatie",
+        "magazijn",
+        "projectmagazijn",
+        "minimum",
+        "maximum",
+        "ontvangen",
+        "uitgegeven",
+        "stand",
+        "waarde",
+        "status",
+        "tekort"
+      ],
+      "status": "ok"
+    },
+    "mutaties": {
+      "rows": 24780,
+      "columns": [
+        "ontvangst_positie_key",
+        "uitgifte_positie_key",
+        "tarief_key",
+        "aantal",
+        "kostprijs",
+        "verrekenprijs",
+        "boekdatum",
+        "dagboek",
+        "bestelnummer",
+        "ontvangst_aantal",
+        "uitgifte_aantal",
+        "mutatiesoort"
+      ],
+      "status": "ok"
+    },
+    "tarieven": {
+      "rows": 8535,
+      "columns": [
+        "tarief_key",
+        "tarief_code",
+        "tarief",
+        "categorie",
+        "verrekenprijs",
+        "bruto_verkoopprijs",
+        "consumentenprijs",
+        "prijs_aantal",
+        "status",
+        "handelsartikel"
+      ],
+      "status": "ok"
+    }
+  },
+  "balans_waarde": 587766.5199999997
+}
