@@ -1,0 +1,133 @@
+---
+layout: false
+title: Van den Buijs - Voorraad Dashboard - Notifica
+permalink: /tools/vandenbuijs-voorraad/
+robots: noindex, nofollow
+---
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Van den Buijs - Voorraad Dashboard - Notifica</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body { height: 100%; overflow: hidden; }
+        .header {
+            background: white;
+            border-bottom: 1px solid #e5e7eb;
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 50px;
+            position: relative;
+            z-index: 1000;
+        }
+        .header h1 {
+            font-family: 'Inter', -apple-system, sans-serif;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #111827;
+        }
+        .header a {
+            font-family: 'Inter', -apple-system, sans-serif;
+            font-size: 0.85rem;
+            color: #6b7280;
+            text-decoration: none;
+        }
+        .header a:hover { color: #16136F; }
+        .header .password {
+            font-family: monospace;
+            background: #f3f4f6;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            color: #16136F;
+        }
+        iframe {
+            width: 100%;
+            height: calc(100vh - 50px);
+            border: none;
+        }
+        .placeholder {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: calc(100vh - 50px);
+            background: #f9fafb;
+            font-family: 'Inter', -apple-system, sans-serif;
+        }
+        .placeholder .icon { font-size: 4rem; margin-bottom: 20px; }
+        .placeholder h2 { font-size: 1.5rem; color: #111827; margin-bottom: 12px; }
+        .placeholder p { font-size: 0.95rem; color: #6b7280; max-width: 500px; text-align: center; line-height: 1.6; margin-bottom: 24px; }
+        .placeholder .btn {
+            display: inline-block;
+            background: #16136F;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 500;
+            margin-bottom: 16px;
+        }
+        .placeholder .btn:hover { background: #0f0d4d; }
+        .placeholder .note { font-size: 0.8rem; color: #9ca3af; margin-top: 16px; }
+        .placeholder .pw {
+            font-family: monospace;
+            background: #e5e7eb;
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            color: #16136F;
+            margin-top: 8px;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <a href="{{ '/' | url }}">← Terug naar Admin Portal</a>
+        <h1>Van den Buijs - Voorraad Dashboard</h1>
+        <span class="password">Wachtwoord: Dashboard6A8130</span>
+    </header>
+
+    <div class="placeholder" id="placeholder">
+        <span class="icon">📊</span>
+        <h2>Voorraad Dashboard</h2>
+        <p>Voorraad dashboard met min-max bewaking voor Van den Buijs. Inclusief voorraadposities, mutaties en besteladvies.</p>
+        <a href="https://notificasite-5m5gc8hfgsjpxtmh6ltguf.streamlit.app/" target="_blank" class="btn">Open Dashboard</a>
+        <span class="pw">Wachtwoord: Dashboard6A8130</span>
+        <span class="note">Dashboard opent in een nieuw tabblad op Streamlit Cloud</span>
+    </div>
+
+    <iframe id="dashboard" src="https://notificasite-5m5gc8hfgsjpxtmh6ltguf.streamlit.app/?embed=true" allow="clipboard-write" style="display:none;"></iframe>
+
+    <script>
+        const iframe = document.getElementById('dashboard');
+        const placeholder = document.getElementById('placeholder');
+
+        iframe.onload = function() {
+            try {
+                placeholder.style.display = 'none';
+                iframe.style.display = 'block';
+            } catch(e) {
+                placeholder.style.display = 'flex';
+                iframe.style.display = 'none';
+            }
+        };
+
+        iframe.onerror = function() {
+            placeholder.style.display = 'flex';
+            iframe.style.display = 'none';
+        };
+
+        // Timeout fallback - if iframe doesn't respond in 5 seconds, show placeholder
+        setTimeout(function() {
+            if (iframe.style.display !== 'block') {
+                placeholder.style.display = 'flex';
+            }
+        }, 5000);
+    </script>
+</body>
+</html>
