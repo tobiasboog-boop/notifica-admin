@@ -1,0 +1,32 @@
+[
+  {
+    "title": "Syntess Atrium",
+    "slug": "syntess-atrium",
+    "description": "Koppeling met Syntess Atrium voor installatiebedrijven."
+  },
+  {
+    "title": "ENK Software",
+    "slug": "enk-software",
+    "description": "Koppeling met ENK Software voor installatiebedrijven."
+  },
+  {
+    "title": "BouwInfosys",
+    "slug": "bouwinfosys",
+    "description": "Koppeling met BouwInfosys voor installatiebedrijven."
+  },
+  {
+    "title": "4PS",
+    "slug": "4ps",
+    "description": "Koppeling met 4PS voor installatiebedrijven."
+  },
+  {
+    "title": "ACTO",
+    "slug": "acto",
+    "description": "Koppeling met ACTO voor installatiebedrijven."
+  },
+  {
+    "title": "Admicom",
+    "slug": "admicom",
+    "description": "Koppeling met Admicom voor installatiebedrijven."
+  }
+]

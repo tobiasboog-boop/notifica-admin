@@ -1,0 +1,1628 @@
+---
+layout: false
+title: Voorraad Analyse Syntess - Power BI Documentatie
+permalink: /analyses/voorraad-syntess/
+robots: noindex, nofollow
+---
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voorraad Analyse Syntess - Power BI Documentatie</title>
+    <style>
+        :root {
+            --primary: #16136F;
+            --primary-light: #3636A2;
+            --secondary: #f39c12;
+            --success: #27ae60;
+            --warning: #e74c3c;
+            --bg-light: #f8f9fa;
+            --bg-dark: #1a1a2e;
+            --text-dark: #2c3e50;
+            --text-light: #7f8c8d;
+            --border: #e1e8ed;
+            --code-bg: #2d2d2d;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text-dark);
+            background: var(--bg-light);
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: white;
+            padding: 1.5rem 2rem;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .header-meta {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .back-link {
+            color: white;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            opacity: 0.9;
+            transition: opacity 0.2s;
+        }
+
+        .back-link:hover {
+            opacity: 1;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            top: 80px;
+            left: 0;
+            width: 280px;
+            height: calc(100vh - 80px);
+            background: white;
+            border-right: 1px solid var(--border);
+            overflow-y: auto;
+            padding: 1.5rem;
+        }
+
+        .sidebar h3 {
+            color: var(--primary);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.75rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--primary);
+        }
+
+        .sidebar ul {
+            list-style: none;
+            margin-bottom: 1.5rem;
+        }
+
+        .sidebar li {
+            margin-bottom: 0.25rem;
+        }
+
+        .sidebar a {
+            color: var(--text-dark);
+            text-decoration: none;
+            font-size: 0.9rem;
+            display: block;
+            padding: 0.5rem 0.75rem;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+
+        .sidebar a:hover {
+            background: var(--bg-light);
+            color: var(--primary);
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 280px;
+            margin-top: 80px;
+            padding: 2rem 3rem;
+            max-width: 1200px;
+        }
+
+        /* Section Styles */
+        .section {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .section h2 {
+            color: var(--primary);
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--primary);
+        }
+
+        .section h3 {
+            color: var(--primary-light);
+            font-size: 1.2rem;
+            margin: 1.5rem 0 1rem;
+        }
+
+        .section h4 {
+            color: var(--text-dark);
+            font-size: 1rem;
+            margin: 1rem 0 0.5rem;
+        }
+
+        /* Tables */
+        .table-container {
+            overflow-x: auto;
+            margin: 1rem 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+
+        th, td {
+            padding: 0.75rem 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        th {
+            background: var(--bg-light);
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        tr:hover {
+            background: #f8f9ff;
+        }
+
+        /* Code Blocks */
+        .code-block {
+            background: var(--code-bg);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            overflow-x: auto;
+            position: relative;
+        }
+
+        .code-block pre {
+            margin: 0;
+            color: #f8f8f2;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.85rem;
+            line-height: 1.5;
+        }
+
+        .code-block .copy-btn {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            background: rgba(255,255,255,0.1);
+            border: none;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: background 0.2s;
+        }
+
+        .code-block .copy-btn:hover {
+            background: rgba(255,255,255,0.2);
+        }
+
+        /* Syntax Highlighting */
+        .keyword { color: #f92672; }
+        .function { color: #66d9ef; }
+        .string { color: #a6e22e; }
+        .comment { color: #75715e; }
+        .number { color: #ae81ff; }
+
+        /* Cards */
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .card {
+            background: var(--bg-light);
+            border-radius: 8px;
+            padding: 1.25rem;
+            border-left: 4px solid var(--primary);
+        }
+
+        .card h4 {
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .card p {
+            font-size: 0.9rem;
+            color: var(--text-light);
+        }
+
+        /* Badges */
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .badge-primary { background: #e8eaff; color: var(--primary); }
+        .badge-success { background: #e8f5e9; color: var(--success); }
+        .badge-warning { background: #fff3e0; color: #f57c00; }
+        .badge-danger { background: #ffebee; color: var(--warning); }
+
+        /* Alerts */
+        .alert {
+            padding: 1rem 1.25rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+        }
+
+        .alert-warning {
+            background: #fff8e1;
+            border: 1px solid #ffcc02;
+        }
+
+        .alert-info {
+            background: #e3f2fd;
+            border: 1px solid #2196f3;
+        }
+
+        .alert-success {
+            background: #e8f5e9;
+            border: 1px solid #4caf50;
+        }
+
+        /* Diagram */
+        .diagram {
+            background: white;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            padding: 2rem;
+            margin: 1rem 0;
+            text-align: center;
+            font-family: monospace;
+            line-height: 1.8;
+        }
+
+        /* Visual Mockup */
+        .visual-mockup {
+            background: #f5f5f5;
+            border: 2px dashed #ccc;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+        }
+
+        .visual-mockup h5 {
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+
+        .mockup-grid {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .mockup-card {
+            background: white;
+            border-radius: 6px;
+            padding: 1rem;
+            text-align: center;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .mockup-card.kpi {
+            border-top: 3px solid var(--primary);
+        }
+
+        .mockup-card.chart {
+            min-height: 150px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-light);
+        }
+
+        /* Print Styles */
+        @media print {
+            .sidebar { display: none; }
+            .header { position: static; }
+            .main-content { margin-left: 0; }
+            .copy-btn { display: none; }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar { display: none; }
+            .main-content { margin-left: 0; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div>
+                <a href="{{ '/admin/' | url }}" class="back-link">← Terug naar Admin</a>
+                <h1>Voorraad Analyse Syntess</h1>
+            </div>
+            <div class="header-meta">
+                Power BI Documentatie | Januari 2026
+            </div>
+        </div>
+    </header>
+
+    <!-- Sidebar -->
+    <nav class="sidebar">
+        <h3>Navigatie</h3>
+        <ul>
+            <li><a href="#overzicht">Overzicht</a></li>
+            <li><a href="#datamodel">Datamodel</a></li>
+        </ul>
+
+        <h3>Tabellen</h3>
+        <ul>
+            <li><a href="#magazijnen">Voorraad magazijnen</a></li>
+            <li><a href="#locaties">Voorraad locaties</a></li>
+            <li><a href="#posities">Voorraad posities</a></li>
+            <li><a href="#mutaties">Voorraad mutaties</a></li>
+        </ul>
+
+        <h3>Relaties</h3>
+        <ul>
+            <li><a href="#relaties">Relatiediagram</a></li>
+            <li><a href="#kritische-relatie">Kritische relatie</a></li>
+        </ul>
+
+        <h3>DAX Measures</h3>
+        <ul>
+            <li><a href="#dax-basis">Basis Mutaties</a></li>
+            <li><a href="#dax-stand">Voorraadstand</a></li>
+            <li><a href="#dax-minmax">Min-Max Bewaking</a></li>
+            <li><a href="#dax-analyse">Analyse</a></li>
+            <li><a href="#dax-tijd">Tijdvergelijking</a></li>
+            <li><a href="#dax-magazijn">Magazijn Specifiek</a></li>
+            <li><a href="#dax-kpi">KPI Hulpmeasures</a></li>
+        </ul>
+
+        <h3>Rapportages</h3>
+        <ul>
+            <li><a href="#pagina-overzicht">Overzicht Dashboard</a></li>
+            <li><a href="#pagina-detail">Detail per Magazijn</a></li>
+            <li><a href="#pagina-minmax">Min-Max Bewaking</a></li>
+            <li><a href="#pagina-beweging">Voorraadbeweging</a></li>
+            <li><a href="#pagina-artikel">Per Artikel</a></li>
+            <li><a href="#pagina-trend">Trend Analyse</a></li>
+        </ul>
+
+        <h3>ETL</h3>
+        <ul>
+            <li><a href="#etl-grip">GRIP Queries</a></li>
+        </ul>
+
+        <h3>SSM Advies</h3>
+        <ul>
+            <li><a href="#ssm-advies">Aanbevelingen</a></li>
+        </ul>
+
+        <h3>Implementatie</h3>
+        <ul>
+            <li><a href="#roadmap">Roadmap</a></li>
+        </ul>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Overzicht -->
+        <section id="overzicht" class="section">
+            <h2>Overzicht</h2>
+            <p>Dit document beschrijft de complete analyse van de voorraadtabellen in het Syntess Semantic Model (SSM) voor Power BI rapportages. Het doel is om inzicht te geven in voorraadstanden, mutaties, min-max bewaking en magazijnbeheer.</p>
+
+            <div class="alert alert-info">
+                <span>ℹ️</span>
+                <div>
+                    <strong>Belangrijk:</strong> Het Syntess model werkt met mutaties in plaats van snapshots. De actuele voorraadstand moet worden berekend door het verschil tussen IN en UIT mutaties.
+                </div>
+            </div>
+
+            <div class="card-grid">
+                <div class="card">
+                    <h4>4 Tabellen</h4>
+                    <p>Magazijnen, Locaties, Posities, Mutaties</p>
+                </div>
+                <div class="card">
+                    <h4>35+ DAX Measures</h4>
+                    <p>Georganiseerd in 7 folders</p>
+                </div>
+                <div class="card">
+                    <h4>6 Rapportpagina's</h4>
+                    <p>Van overzicht tot detail</p>
+                </div>
+                <div class="card">
+                    <h4>1 Kritische Relatie</h4>
+                    <p>INACTIEF - vereist USERELATIONSHIP()</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Datamodel -->
+        <section id="datamodel" class="section">
+            <h2>Datamodel Structuur</h2>
+            <p>De voorraadtabellen volgen een hiërarchische structuur binnen Syntess:</p>
+
+            <div class="diagram">
+<pre>
+┌─────────────────────────────────────────────────────────────────────────┐
+│                        VOORRAAD DATA MODEL                              │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                         │
+│   ┌─────────────────┐                                                   │
+│   │   ADMINISTRATIES │ ◄─────────────────────────────────────┐         │
+│   │   (Multi-tenant) │                                        │         │
+│   └────────┬─────────┘                                        │         │
+│            │                                                  │         │
+│            │ 1:N                                              │         │
+│            ▼                                                  │         │
+│   ┌─────────────────┐         ┌─────────────────┐            │         │
+│   │ MAGAZIJNEN      │────────►│   TARIEVEN      │            │         │
+│   │ - Standaard     │         │  (Artikelen)    │            │         │
+│   │ - Project (OHW) │         └────────┬────────┘            │         │
+│   └────────┬────────┘                  │                     │         │
+│            │                           │                     │         │
+│            │ 1:N                       │ 1:N                 │         │
+│            ▼                           ▼                     │         │
+│   ┌─────────────────┐         ┌─────────────────┐            │         │
+│   │   LOCATIES      │────────►│   POSITIES      │◄───────────┘         │
+│   │ (Hiërarchisch)  │         │ (Min/Max)       │                      │
+│   └─────────────────┘         └────────┬────────┘                      │
+│                                        │                               │
+│                                        │ 1:N (dubbel!)                 │
+│                                        ▼                               │
+│                               ┌─────────────────┐     ┌─────────────┐  │
+│                               │   MUTATIES      │────►│  KALENDER   │  │
+│                               │ - Ontvangst     │     └─────────────┘  │
+│                               │ - Uitgifte      │                      │
+│                               └─────────────────┘                      │
+│                                                                         │
+└─────────────────────────────────────────────────────────────────────────┘
+</pre>
+            </div>
+        </section>
+
+        <!-- Magazijnen -->
+        <section id="magazijnen" class="section">
+            <h2>Voorraad magazijnen</h2>
+            <p>Bevat alle magazijnen/warehouses binnen de Syntess omgeving.</p>
+
+            <h3>Kolommen</h3>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Kolom</th>
+                            <th>Type</th>
+                            <th>Beschrijving</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>VoorraadmagazijnKey</code></td>
+                            <td>int64</td>
+                            <td>Primary Key</td>
+                        </tr>
+                        <tr>
+                            <td><code>Magazijn</code></td>
+                            <td>string</td>
+                            <td>Naam van het magazijn</td>
+                        </tr>
+                        <tr>
+                            <td><code>MagazijnCode</code></td>
+                            <td>string</td>
+                            <td>Unieke code</td>
+                        </tr>
+                        <tr>
+                            <td><code>Projectmagazijn</code></td>
+                            <td>string</td>
+                            <td><span class="badge badge-warning">Ja/Nee</span> - Voor OHW (Onderhanden Werk)</td>
+                        </tr>
+                        <tr>
+                            <td><code>MagazijnGeblokkeerd</code></td>
+                            <td>string</td>
+                            <td>Ja/Nee - Blokkadestatus</td>
+                        </tr>
+                        <tr>
+                            <td><code>Status</code></td>
+                            <td>string</td>
+                            <td>Actueel / Historisch</td>
+                        </tr>
+                        <tr>
+                            <td><code>AdministratieKey</code></td>
+                            <td>int64</td>
+                            <td>FK naar Administraties</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="alert alert-warning">
+                <span>⚠️</span>
+                <div>
+                    <strong>Let op:</strong> Projectmagazijnen bevatten voorraad gerelateerd aan Onderhanden Werk (OHW). Filter deze apart voor zuivere voorraadrapportages.
+                </div>
+            </div>
+        </section>
+
+        <!-- Locaties -->
+        <section id="locaties" class="section">
+            <h2>Voorraad locaties</h2>
+            <p>Hiërarchische locatiestructuur binnen magazijnen (stellingen, vakken, etc.).</p>
+
+            <h3>Kolommen</h3>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Kolom</th>
+                            <th>Type</th>
+                            <th>Beschrijving</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>VoorraadlocatieKey</code></td>
+                            <td>int64</td>
+                            <td>Primary Key</td>
+                        </tr>
+                        <tr>
+                            <td><code>Locatie</code></td>
+                            <td>string</td>
+                            <td>Naam van de locatie</td>
+                        </tr>
+                        <tr>
+                            <td><code>LocatieCode</code></td>
+                            <td>string</td>
+                            <td>Unieke code</td>
+                        </tr>
+                        <tr>
+                            <td><code>ParentVoorraadlocatieKey</code></td>
+                            <td>int64</td>
+                            <td><span class="badge badge-primary">Self-reference</span> voor hiërarchie</td>
+                        </tr>
+                        <tr>
+                            <td><code>VoorraadmagazijnKey</code></td>
+                            <td>int64</td>
+                            <td>FK naar Magazijnen</td>
+                        </tr>
+                        <tr>
+                            <td><code>Status</code></td>
+                            <td>string</td>
+                            <td>Ja/Nee (Actueel)</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Posities -->
+        <section id="posities" class="section">
+            <h2>Voorraad posities</h2>
+            <p>De combinatie van artikel + locatie met min/max instellingen.</p>
+
+            <h3>Kolommen</h3>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Kolom</th>
+                            <th>Type</th>
+                            <th>Beschrijving</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>VoorraadpositieKey</code></td>
+                            <td>int64</td>
+                            <td>Primary Key</td>
+                        </tr>
+                        <tr>
+                            <td><code>TariefKey</code></td>
+                            <td>int64</td>
+                            <td><span class="badge badge-success">FK naar Tarieven</span> (artikelinfo)</td>
+                        </tr>
+                        <tr>
+                            <td><code>VoorraadlocatieKey</code></td>
+                            <td>int64</td>
+                            <td>FK naar Locaties</td>
+                        </tr>
+                        <tr>
+                            <td><code>MinimumVoorraad</code></td>
+                            <td>int64</td>
+                            <td><span class="badge badge-danger">Bestelgrens</span></td>
+                        </tr>
+                        <tr>
+                            <td><code>MaximumVoorraad</code></td>
+                            <td>int64</td>
+                            <td><span class="badge badge-warning">Capaciteitsgrens</span></td>
+                        </tr>
+                        <tr>
+                            <td><code>Status</code></td>
+                            <td>string</td>
+                            <td>Actueel / Historisch</td>
+                        </tr>
+                        <tr>
+                            <td><code>AdministratieKey</code></td>
+                            <td>int64</td>
+                            <td>FK naar Administraties</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="alert alert-info">
+                <span>ℹ️</span>
+                <div>
+                    <strong>TariefKey vs HandelsartikelKey:</strong> Gebruik TariefKey voor artikelinfo (via Tarieven tabel), NIET HandelsartikelKey.
+                </div>
+            </div>
+        </section>
+
+        <!-- Mutaties -->
+        <section id="mutaties" class="section">
+            <h2>Voorraad mutaties</h2>
+            <p>Alle voorraadmutaties (ontvangsten en uitgiftes).</p>
+
+            <h3>Kolommen</h3>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Kolom</th>
+                            <th>Type</th>
+                            <th>Beschrijving</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>VoorraadmutatieKey</code></td>
+                            <td>int64</td>
+                            <td>Primary Key</td>
+                        </tr>
+                        <tr>
+                            <td><code>OntvangstVoorraadpositieKey</code></td>
+                            <td>int64</td>
+                            <td><span class="badge badge-success">ACTIEVE relatie</span> - IN mutaties</td>
+                        </tr>
+                        <tr>
+                            <td><code>UitgifteVoorraadpositieKey</code></td>
+                            <td>int64</td>
+                            <td><span class="badge badge-danger">INACTIEVE relatie</span> - UIT mutaties</td>
+                        </tr>
+                        <tr>
+                            <td><code>Aantal</code></td>
+                            <td>int64</td>
+                            <td>Aantal stuks gemuteerd</td>
+                        </tr>
+                        <tr>
+                            <td><code>Kostprijs</code></td>
+                            <td>double</td>
+                            <td>Waarde op kostprijs</td>
+                        </tr>
+                        <tr>
+                            <td><code>Verrekenprijs</code></td>
+                            <td>double</td>
+                            <td>Waarde op verrekenprijs</td>
+                        </tr>
+                        <tr>
+                            <td><code>MutatieDatumKey</code></td>
+                            <td>int64</td>
+                            <td>FK naar Kalender</td>
+                        </tr>
+                        <tr>
+                            <td><code>LeverancierRelatieKey</code></td>
+                            <td>int64</td>
+                            <td>FK naar Relaties (leverancier)</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Relaties -->
+        <section id="relaties" class="section">
+            <h2>Relaties</h2>
+
+            <div class="diagram">
+<pre>
+┌─────────────────────────────────────────────────────────────────┐
+│                    RELATIE DIAGRAM                               │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                  │
+│  Administraties ─────┬──────────────────────────────────────┐   │
+│       │              │                                       │   │
+│       │ 1:N          │ 1:N                                   │   │
+│       ▼              ▼                                       │   │
+│  Magazijnen      Posities ◄──────────── Tarieven            │   │
+│       │              │                                       │   │
+│       │ 1:N          │                                       │   │
+│       ▼              │                                       │   │
+│   Locaties ──────────┘                                       │   │
+│                      │                                       │   │
+│                      │                                       │   │
+│                      │  ┌─────────── ACTIEF ──────────┐     │   │
+│                      │  │                              │     │   │
+│                      └──┼───── Mutaties ──────────────┼──┐  │   │
+│                         │  OntvangstVoorraadpositieKey │  │  │   │
+│                         └──────────────────────────────┘  │  │   │
+│                                                           │  │   │
+│                         ┌─────────── INACTIEF ────────┐   │  │   │
+│                         │  UitgifteVoorraadpositieKey  │───┘  │   │
+│                         └──────────────────────────────┘      │   │
+│                                                               │   │
+└───────────────────────────────────────────────────────────────┘
+</pre>
+            </div>
+
+            <h3 id="kritische-relatie">Kritische Relatie: Uitgifte</h3>
+
+            <div class="alert alert-warning">
+                <span>⚠️</span>
+                <div>
+                    <strong>KRITISCH:</strong> De relatie tussen <code>UitgifteVoorraadpositieKey</code> en <code>VoorraadpositieKey</code> is <strong>INACTIEF</strong> in het model. Alle DAX measures voor uitgiftes MOETEN <code>USERELATIONSHIP()</code> gebruiken!
+                </div>
+            </div>
+
+            <p>De reden hiervoor is dat er twee relaties zijn tussen Mutaties en Posities:</p>
+            <ul>
+                <li><strong>OntvangstVoorraadpositieKey</strong> → VoorraadpositieKey (ACTIEF) - voor IN</li>
+                <li><strong>UitgifteVoorraadpositieKey</strong> → VoorraadpositieKey (INACTIEF) - voor UIT</li>
+            </ul>
+            <p>Power BI staat slechts één actieve relatie toe tussen twee tabellen, daarom is de uitgifte-relatie inactief.</p>
+        </section>
+
+        <!-- DAX Basis -->
+        <section id="dax-basis" class="section">
+            <h2>DAX Measures: Basis Mutaties</h2>
+            <p>Folder: <code>Voorraad\1. Basis Mutaties</code></p>
+
+            <h4>Voorraad Ontvangst Aantal</h4>
+            <div class="code-block">
+                <button class="copy-btn" onclick="copyCode(this)">Kopieer</button>
+<pre><span class="comment">// Ontvangsten (IN-mutaties via actieve relatie)</span>
+<span class="function">Voorraad Ontvangst Aantal</span> =
+<span class="keyword">SUM</span>(<span class="string">'Voorraad mutaties'</span>[Aantal])</pre>
+            </div>
+
+            <h4>Voorraad Ontvangst Waarde Kostprijs</h4>
+            <div class="code-block">
+                <button class="copy-btn" onclick="copyCode(this)">Kopieer</button>
+<pre><span class="comment">// Ontvangsten waarde op kostprijs</span>
+<span class="function">Voorraad Ontvangst Waarde Kostprijs</span> =
+<span class="keyword">SUM</span>(<span class="string">'Voorraad mutaties'</span>[Kostprijs])</pre>
+            </div>
+
+            <h4>Voorraad Uitgifte Aantal</h4>
+            <div class="code-block">
+                <button class="copy-btn" onclick="copyCode(this)">Kopieer</button>
+<pre><span class="comment">// Uitgiftes (UIT-mutaties via INACTIEVE relatie - USERELATIONSHIP nodig!)</span>
+<span class="function">Voorraad Uitgifte Aantal</span> =
+<span class="keyword">CALCULATE</span>(
+    <span class="keyword">SUM</span>(<span class="string">'Voorraad mutaties'</span>[Aantal]),
+    <span class="keyword">USERELATIONSHIP</span>(
+        <span class="string">'Voorraad mutaties'</span>[UitgifteVoorraadpositieKey],
+        <span class="string">'Voorraad posities'</span>[VoorraadpositieKey]
+    )
+)</pre>
+            </div>
+
+            <h4>Voorraad Uitgifte Waarde Kostprijs</h4>
+            <div class="code-block">
+                <button class="copy-btn" onclick="copyCode(this)">Kopieer</button>
+<pre><span class="comment">// Uitgiftes waarde op kostprijs</span>
+<span class="function">Voorraad Uitgifte Waarde Kostprijs</span> =
+<span class="keyword">CALCULATE</span>(
+    <span class="keyword">SUM</span>(<span class="string">'Voorraad mutaties'</span>[Kostprijs]),
+    <span class="keyword">USERELATIONSHIP</span>(
+        <span class="string">'Voorraad mutaties'</span>[UitgifteVoorraadpositieKey],
+        <span class="string">'Voorraad posities'</span>[VoorraadpositieKey]
+    )
+)</pre>
+            </div>
+
+            <h4>Voorraad Uitgifte Waarde Verrekenprijs</h4>
+            <div class="code-block">
+                <button class="copy-btn" onclick="copyCode(this)">Kopieer</button>
+<pre><span class="comment">// Uitgiftes waarde op verrekenprijs</span>
+<span class="function">Voorraad Uitgifte Waarde Verrekenprijs</span> =
+<span class="keyword">CALCULATE</span>(
+    <span class="keyword">SUM</span>(<span class="string">'Voorraad mutaties'</span>[Verrekenprijs]),
+    <span class="keyword">USERELATIONSHIP</span>(
+        <span class="string">'Voorraad mutaties'</span>[UitgifteVoorraadpositieKey],
+        <span class="string">'Voorraad posities'</span>[VoorraadpositieKey]
+    )
+)</pre>
+            </div>
+        </section>
+
+        <!-- DAX Stand -->
+        <section id="dax-stand" class="section">
+            <h2>DAX Measures: Voorraadstand</h2>
+            <p>Folder: <code>Voorraad\2. Voorraadstand</code></p>
+
+            <h4>Voorraad Stand Aantal</h4>
+            <div class="code-block">
+                <button class="copy-btn" onclick="copyCode(this)">Kopieer</button>
+<pre><span class="comment">// Actuele voorraadstand in aantallen</span>
+<span class="function">Voorraad Stand Aantal</span> =
+<span class="keyword">VAR</span> Ontvangsten = [Voorraad Ontvangst Aantal]
+<span class="keyword">VAR</span> Uitgiftes = [Voorraad Uitgifte Aantal]
+<span class="keyword">RETURN</span>
+    Ontvangsten - Uitgiftes</pre>
+            </div>
+
+            <h4>Voorraad Stand Waarde Kostprijs</h4>
+            <div class="code-block">
+                <button class="copy-btn" onclick="copyCode(this)">Kopieer</button>
+<pre><span class="comment">// Voorraadwaarde op kostprijs</span>
+<span class="function">Voorraad Stand Waarde Kostprijs</span> =
+<span class="keyword">VAR</span> Ontvangsten = [Voorraad Ontvangst Waarde Kostprijs]
+<span class="keyword">VAR</span> Uitgiftes = [Voorraad Uitgifte Waarde Kostprijs]
+<span class="keyword">RETURN</span>
+    Ontvangsten - Uitgiftes</pre>
+            </div>
+
+            <h4>Voorraad Gemiddelde Kostprijs</h4>
+            <div class="code-block">
+                <button class="copy-btn" onclick="copyCode(this)">Kopieer</button>
+<pre><span class="comment">// Gemiddelde kostprijs per eenheid op voorraad</span>
+<span class="function">Voorraad Gemiddelde Kostprijs</span> =
+<span class="keyword">DIVIDE</span>(
+    [Voorraad Stand Waarde Kostprijs],
+    [Voorraad Stand Aantal],
+    <span class="number">0</span>
+)</pre>
+            </div>
+        </section>
+
+        <!-- DAX Min-Max -->
+        <section id="dax-minmax" class="section">
+            <h2>DAX Measures: Min-Max Bewaking</h2>
+            <p>Folder: <code>Voorraad\3. Min-Max Bewaking</code></p>
+
+            <h4>Voorraad Onder Minimum Aantal Posities</h4>
+            <div class="code-block">
+                <button class="copy-btn" onclick="copyCode(this)">Kopieer</button>
+<pre><span class="comment">// Aantal posities met voorraad onder minimum</span>
+<span class="function">Voorraad Onder Minimum Aantal Posities</span> =
+<span class="keyword">SUMX</span>(
+    <span class="string">'Voorraad posities'</span>,
+    <span class="keyword">VAR</span> HuidigeStand = [Voorraad Stand Aantal]
+    <span class="keyword">VAR</span> MinVoorraad = <span class="string">'Voorraad posities'</span>[MinimumVoorraad]
+    <span class="keyword">RETURN</span>
+        <span class="keyword">IF</span>(
+            HuidigeStand < MinVoorraad
+            && MinVoorraad > <span class="number">0</span>
+            && <span class="string">'Voorraad posities'</span>[Status] = <span class="string">"Actueel"</span>,
+            <span class="number">1</span>,
+            <span class="number">0</span>
+        )
+)</pre>
+            </div>
+
+            <h4>Voorraad Status</h4>
+            <div class="code-block">
+                <button class="copy-btn" onclick="copyCode(this)">Kopieer</button>
+<pre><span class="comment">// Voorraadstatus als tekst (voor conditional formatting)</span>
+<span class="function">Voorraad Status</span> =
+<span class="keyword">VAR</span> HuidigeStand = [Voorraad Stand Aantal]
+<span class="keyword">VAR</span> MinVoorraad = <span class="keyword">SELECTEDVALUE</span>(<span class="string">'Voorraad posities'</span>[MinimumVoorraad], <span class="number">0</span>)
+<span class="keyword">VAR</span> MaxVoorraad = <span class="keyword">SELECTEDVALUE</span>(<span class="string">'Voorraad posities'</span>[MaximumVoorraad], <span class="number">0</span>)
+<span class="keyword">RETURN</span>
+    <span class="keyword">SWITCH</span>(
+        <span class="keyword">TRUE</span>(),
+        HuidigeStand <= <span class="number">0</span>, <span class="string">"Geen voorraad"</span>,
+        MinVoorraad > <span class="number">0</span> && HuidigeStand < MinVoorraad, <span class="string">"Onder minimum"</span>,
+        MaxVoorraad > <span class="number">0</span> && HuidigeStand > MaxVoorraad, <span class="string">"Boven maximum"</span>,
+        <span class="string">"OK"</span>
+    )</pre>
+            </div>
+
+            <h4>Voorraad Tekort Aantal</h4>
+            <div class="code-block">
+                <button class="copy-btn" onclick="copyCode(this)">Kopieer</button>
+<pre><span class="comment">// Tekort t.o.v. minimum (voor specifieke positie)</span>
+<span class="function">Voorraad Tekort Aantal</span> =
+<span class="keyword">VAR</span> MinVoorraad = <span class="keyword">SELECTEDVALUE</span>(<span class="string">'Voorraad posities'</span>[MinimumVoorraad], <span class="number">0</span>)
+<span class="keyword">VAR</span> HuidigeStand = [Voorraad Stand Aantal]
+<span class="keyword">RETURN</span>
+    <span class="keyword">IF</span>(
+        HuidigeStand < MinVoorraad && MinVoorraad > <span class="number">0</span>,
+        MinVoorraad - HuidigeStand,
+        <span class="number">0</span>
+    )</pre>
+            </div>
+        </section>
+
+        <!-- DAX Analyse -->
+        <section id="dax-analyse" class="section">
+            <h2>DAX Measures: Analyse</h2>
+            <p>Folder: <code>Voorraad\4. Analyse</code></p>
+
+            <h4>Voorraad Omloopsnelheid</h4>
+            <div class="code-block">
+                <button class="copy-btn" onclick="copyCode(this)">Kopieer</button>
+<pre><span class="comment">// Omloopsnelheid voorraad (jaarlijks)</span>
+<span class="function">Voorraad Omloopsnelheid</span> =
+<span class="keyword">VAR</span> UitgifteJaar =
+    <span class="keyword">CALCULATE</span>(
+        [Voorraad Uitgifte Waarde Kostprijs],
+        <span class="keyword">DATESINPERIOD</span>(Kalender[Datum], <span class="keyword">MAX</span>(Kalender[Datum]), <span class="number">-1</span>, YEAR)
+    )
+<span class="keyword">VAR</span> GemiddeldeVoorraad =
+    <span class="keyword">AVERAGEX</span>(
+        <span class="keyword">SUMMARIZE</span>(
+            <span class="keyword">DATESINPERIOD</span>(Kalender[Datum], <span class="keyword">MAX</span>(Kalender[Datum]), <span class="number">-1</span>, YEAR),
+            Kalender[Maand]
+        ),
+        [Voorraad Stand Waarde Kostprijs]
+    )
+<span class="keyword">RETURN</span>
+    <span class="keyword">DIVIDE</span>(UitgifteJaar, GemiddeldeVoorraad, <span class="number">0</span>)</pre>
+            </div>
+
+            <h4>Voorraad Dagen Voorraad</h4>
+            <div class="code-block">
+                <button class="copy-btn" onclick="copyCode(this)">Kopieer</button>
+<pre><span class="comment">// Dagen voorraad (DSI - Days Sales of Inventory)</span>
+<span class="function">Voorraad Dagen Voorraad</span> =
+<span class="keyword">DIVIDE</span>(
+    <span class="number">365</span>,
+    [Voorraad Omloopsnelheid],
+    <span class="keyword">BLANK</span>()
+)</pre>
+            </div>
+
+            <h4>Voorraad Aantal Artikelen</h4>
+            <div class="code-block">
+                <button class="copy-btn" onclick="copyCode(this)">Kopieer</button>
+<pre><span class="comment">// Aantal unieke artikelen met voorraad > 0</span>
+<span class="function">Voorraad Aantal Artikelen</span> =
+<span class="keyword">CALCULATE</span>(
+    <span class="keyword">DISTINCTCOUNT</span>(<span class="string">'Voorraad posities'</span>[TariefKey]),
+    <span class="keyword">FILTER</span>(
+        <span class="string">'Voorraad posities'</span>,
+        [Voorraad Stand Aantal] > <span class="number">0</span>
+    )
+)</pre>
+            </div>
+        </section>
+
+        <!-- DAX Tijd -->
+        <section id="dax-tijd" class="section">
+            <h2>DAX Measures: Tijdvergelijking</h2>
+            <p>Folder: <code>Voorraad\5. Tijdvergelijking</code></p>
+
+            <div class="alert alert-warning">
+                <span>⚠️</span>
+                <div>
+                    <strong>LET OP - Geen Kalender relatie!</strong> De tabel <code>Voorraad mutaties</code> heeft een <code>Boekdatum</code> kolom maar <strong>GEEN actieve relatie naar Kalender</strong>.
+                    Voor tijdvergelijking moet je eerst een relatie aanmaken tussen <code>Voorraad mutaties[Boekdatum]</code> en <code>Kalender[Datum]</code>,
+                    of de measures aanpassen om direct op de Boekdatum kolom te filteren.
+                </div>
+            </div>
+
+            <h4>Voorraad Mutaties Per Periode (via Boekdatum filter)</h4>
+            <div class="code-block">
+                <button class="copy-btn" onclick="copyCode(this)">Kopieer</button>
+<pre><span class="comment">// Ontvangsten gefilterd op datum (zonder Kalender relatie)</span>
+<span class="function">Voorraad Ontvangst Deze Maand</span> =
+<span class="keyword">CALCULATE</span>(
+    [Voorraad Ontvangst Aantal],
+    <span class="keyword">MONTH</span>(<span class="string">'Voorraad mutaties'</span>[Boekdatum]) = <span class="keyword">MONTH</span>(<span class="keyword">TODAY</span>()),
+    <span class="keyword">YEAR</span>(<span class="string">'Voorraad mutaties'</span>[Boekdatum]) = <span class="keyword">YEAR</span>(<span class="keyword">TODAY</span>())
+)</pre>
+            </div>
+
+            <h4>Voorraad Ontvangst YTD (via Boekdatum)</h4>
+            <div class="code-block">
+                <button class="copy-btn" onclick="copyCode(this)">Kopieer</button>
+<pre><span class="comment">// Year-to-date ontvangsten via directe datum filter</span>
+<span class="function">Voorraad Ontvangst YTD</span> =
+<span class="keyword">CALCULATE</span>(
+    [Voorraad Ontvangst Aantal],
+    <span class="keyword">YEAR</span>(<span class="string">'Voorraad mutaties'</span>[Boekdatum]) = <span class="keyword">YEAR</span>(<span class="keyword">TODAY</span>()),
+    <span class="string">'Voorraad mutaties'</span>[Boekdatum] <= <span class="keyword">TODAY</span>()
+)</pre>
+            </div>
+
+            <h4>Optie: Met Kalender relatie (na aanmaken relatie)</h4>
+            <div class="code-block">
+                <button class="copy-btn" onclick="copyCode(this)">Kopieer</button>
+<pre><span class="comment">// Als je een relatie aanmaakt: Voorraad mutaties[Boekdatum] -> Kalender[Datum]</span>
+<span class="comment">// Dan werken deze measures:</span>
+
+<span class="function">Voorraad Stand VM</span> =
+<span class="keyword">CALCULATE</span>(
+    [Voorraad Stand Aantal],
+    <span class="keyword">PREVIOUSMONTH</span>(Kalender[Datum])
+)
+
+<span class="function">Voorraad Stand VJ</span> =
+<span class="keyword">CALCULATE</span>(
+    [Voorraad Stand Aantal],
+    <span class="keyword">SAMEPERIODLASTYEAR</span>(Kalender[Datum])
+)
+
+<span class="function">Voorraad Mutatie MoM %</span> =
+<span class="keyword">DIVIDE</span>(
+    [Voorraad Stand Aantal] - [Voorraad Stand VM],
+    [Voorraad Stand VM],
+    <span class="number">0</span>
+)</pre>
+            </div>
+        </section>
+
+        <!-- DAX Magazijn -->
+        <section id="dax-magazijn" class="section">
+            <h2>DAX Measures: Magazijn Specifiek</h2>
+            <p>Folder: <code>Voorraad\6. Magazijn Specifiek</code></p>
+
+            <h4>Voorraad Stand Standaard Magazijnen</h4>
+            <div class="code-block">
+                <button class="copy-btn" onclick="copyCode(this)">Kopieer</button>
+<pre><span class="comment">// Voorraad in standaard magazijnen (geen projectmagazijnen)</span>
+<span class="function">Voorraad Stand Standaard Magazijnen</span> =
+<span class="keyword">CALCULATE</span>(
+    [Voorraad Stand Aantal],
+    <span class="string">'Voorraad magazijnen'</span>[Projectmagazijn] = <span class="string">"Nee"</span>
+)</pre>
+            </div>
+
+            <h4>Voorraad Stand Projectmagazijnen</h4>
+            <div class="code-block">
+                <button class="copy-btn" onclick="copyCode(this)">Kopieer</button>
+<pre><span class="comment">// Voorraad in projectmagazijnen (OHW gerelateerd)</span>
+<span class="function">Voorraad Stand Projectmagazijnen</span> =
+<span class="keyword">CALCULATE</span>(
+    [Voorraad Stand Aantal],
+    <span class="string">'Voorraad magazijnen'</span>[Projectmagazijn] = <span class="string">"Ja"</span>
+)</pre>
+            </div>
+
+            <h4>Magazijnen Aantal Actief</h4>
+            <div class="code-block">
+                <button class="copy-btn" onclick="copyCode(this)">Kopieer</button>
+<pre><span class="comment">// Aantal actieve magazijnen</span>
+<span class="function">Magazijnen Aantal Actief</span> =
+<span class="keyword">CALCULATE</span>(
+    <span class="keyword">COUNTROWS</span>(<span class="string">'Voorraad magazijnen'</span>),
+    <span class="string">'Voorraad magazijnen'</span>[Status] = <span class="string">"Actueel"</span>,
+    <span class="string">'Voorraad magazijnen'</span>[MagazijnGeblokkeerd] = <span class="string">"Nee"</span>
+)</pre>
+            </div>
+        </section>
+
+        <!-- DAX KPI -->
+        <section id="dax-kpi" class="section">
+            <h2>DAX Measures: KPI Hulpmeasures</h2>
+            <p>Folder: <code>Voorraad\7. KPI Hulpmeasures</code></p>
+
+            <h4>Voorraad Waarde Display</h4>
+            <div class="code-block">
+                <button class="copy-btn" onclick="copyCode(this)">Kopieer</button>
+<pre><span class="comment">// Voorraadwaarde geformatteerd (voor card visuals)</span>
+<span class="function">Voorraad Waarde Display</span> =
+<span class="keyword">VAR</span> Waarde = [Voorraad Stand Waarde Kostprijs]
+<span class="keyword">RETURN</span>
+    <span class="keyword">IF</span>(
+        Waarde >= <span class="number">1000000</span>,
+        <span class="keyword">FORMAT</span>(Waarde / <span class="number">1000000</span>, <span class="string">"0.0"</span>) & <span class="string">" M"</span>,
+        <span class="keyword">IF</span>(
+            Waarde >= <span class="number">1000</span>,
+            <span class="keyword">FORMAT</span>(Waarde / <span class="number">1000</span>, <span class="string">"0.0"</span>) & <span class="string">" K"</span>,
+            <span class="keyword">FORMAT</span>(Waarde, <span class="string">"0"</span>)
+        )
+    )</pre>
+            </div>
+
+            <h4>Voorraad Bezettingsgraad</h4>
+            <div class="code-block">
+                <button class="copy-btn" onclick="copyCode(this)">Kopieer</button>
+<pre><span class="comment">// Bezettingsgraad magazijn (stand vs max capaciteit)</span>
+<span class="function">Voorraad Bezettingsgraad</span> =
+<span class="keyword">VAR</span> TotaalMax = <span class="keyword">SUM</span>(<span class="string">'Voorraad posities'</span>[MaximumVoorraad])
+<span class="keyword">VAR</span> TotaalStand = [Voorraad Stand Aantal]
+<span class="keyword">RETURN</span>
+    <span class="keyword">DIVIDE</span>(TotaalStand, TotaalMax, <span class="number">0</span>)</pre>
+            </div>
+        </section>
+
+        <!-- Rapportpagina's -->
+        <section id="pagina-overzicht" class="section">
+            <h2>Rapportpagina 1: Overzicht Dashboard</h2>
+
+            <div class="visual-mockup">
+                <h5>Layout Voorbeeld</h5>
+                <div class="mockup-grid" style="grid-template-columns: repeat(4, 1fr);">
+                    <div class="mockup-card kpi">
+                        <small>KPI Card</small>
+                        <div style="font-size: 1.5rem; font-weight: bold; color: var(--primary);">€ 1.2M</div>
+                        <div style="font-size: 0.8rem;">Totale Voorraadwaarde</div>
+                    </div>
+                    <div class="mockup-card kpi">
+                        <small>KPI Card</small>
+                        <div style="font-size: 1.5rem; font-weight: bold; color: var(--success);">12.450</div>
+                        <div style="font-size: 0.8rem;">Stuks op Voorraad</div>
+                    </div>
+                    <div class="mockup-card kpi">
+                        <small>KPI Card</small>
+                        <div style="font-size: 1.5rem; font-weight: bold; color: var(--warning);">23</div>
+                        <div style="font-size: 0.8rem;">Onder Minimum</div>
+                    </div>
+                    <div class="mockup-card kpi">
+                        <small>KPI Card</small>
+                        <div style="font-size: 1.5rem; font-weight: bold;">4.2x</div>
+                        <div style="font-size: 0.8rem;">Omloopsnelheid</div>
+                    </div>
+                </div>
+                <div class="mockup-grid" style="grid-template-columns: 1fr 1fr; margin-top: 1rem;">
+                    <div class="mockup-card chart">[Staafdiagram: Voorraadwaarde per Magazijn]</div>
+                    <div class="mockup-card chart">[Lijndiagram: Voorraadverloop 12 maanden]</div>
+                </div>
+            </div>
+
+            <h4>Benodigde visuals:</h4>
+            <ul>
+                <li>4x Card: Totale waarde, Aantal stuks, Onder minimum, Omloopsnelheid</li>
+                <li>Staafdiagram: Voorraadwaarde per magazijn</li>
+                <li>Lijndiagram: Voorraadverloop laatste 12 maanden</li>
+                <li>Slicer: Administratie</li>
+            </ul>
+        </section>
+
+        <section id="pagina-detail" class="section">
+            <h2>Rapportpagina 2: Detail per Magazijn</h2>
+
+            <div class="visual-mockup">
+                <h5>Layout Voorbeeld</h5>
+                <div class="mockup-grid" style="grid-template-columns: 250px 1fr;">
+                    <div class="mockup-card" style="text-align: left;">
+                        <strong>Slicers:</strong>
+                        <ul style="margin-top: 0.5rem; padding-left: 1rem; font-size: 0.85rem;">
+                            <li>Magazijn</li>
+                            <li>Locatie (hiërarchie)</li>
+                            <li>Status</li>
+                        </ul>
+                    </div>
+                    <div class="mockup-card chart">[Matrix: Locatie / Artikel / Aantal / Waarde / Status]</div>
+                </div>
+            </div>
+
+            <h4>Benodigde visuals:</h4>
+            <ul>
+                <li>Slicer: Magazijn (single select)</li>
+                <li>Slicer: Locatie (hiërarchie)</li>
+                <li>Matrix: Positiedetails met drill-down</li>
+                <li>KPI's: Bezettingsgraad, Aantal locaties</li>
+            </ul>
+        </section>
+
+        <section id="pagina-minmax" class="section">
+            <h2>Rapportpagina 3: Min-Max Bewaking</h2>
+
+            <div class="visual-mockup">
+                <h5>Layout Voorbeeld</h5>
+                <div class="mockup-grid" style="grid-template-columns: repeat(3, 1fr);">
+                    <div class="mockup-card kpi" style="border-top-color: #c62828;">
+                        <div style="font-size: 1.5rem; font-weight: bold; color: #c62828;">8</div>
+                        <div style="font-size: 0.8rem;">Geen voorraad</div>
+                    </div>
+                    <div class="mockup-card kpi" style="border-top-color: #f57c00;">
+                        <div style="font-size: 1.5rem; font-weight: bold; color: #f57c00;">23</div>
+                        <div style="font-size: 0.8rem;">Onder minimum</div>
+                    </div>
+                    <div class="mockup-card kpi" style="border-top-color: #1976d2;">
+                        <div style="font-size: 1.5rem; font-weight: bold; color: #1976d2;">5</div>
+                        <div style="font-size: 0.8rem;">Boven maximum</div>
+                    </div>
+                </div>
+                <div class="mockup-card chart" style="margin-top: 1rem;">[Tabel: Kritieke posities met conditional formatting]</div>
+            </div>
+
+            <h4>Benodigde visuals:</h4>
+            <ul>
+                <li>3x Card met conditional formatting (rood/oranje/blauw)</li>
+                <li>Tabel: Kritieke posities gesorteerd op urgentie</li>
+                <li>Gebruik [Voorraad Status Sorteer] voor sortering</li>
+            </ul>
+        </section>
+
+        <section id="pagina-beweging" class="section">
+            <h2>Rapportpagina 4: Voorraadbeweging</h2>
+
+            <h4>Benodigde visuals:</h4>
+            <ul>
+                <li>Waterfall chart: Beginstand → Ontvangsten → Uitgiftes → Eindstand</li>
+                <li>Lijndiagram: Ontvangsten vs Uitgiftes over tijd</li>
+                <li>Tabel: Recent mutaties (top 100)</li>
+                <li>Slicer: Datumbereik</li>
+            </ul>
+        </section>
+
+        <section id="pagina-artikel" class="section">
+            <h2>Rapportpagina 5: Per Artikel</h2>
+
+            <h4>Benodigde visuals:</h4>
+            <ul>
+                <li>Zoekbalk: Artikel (via Tarieven)</li>
+                <li>Detail card: Artikelinformatie</li>
+                <li>Tabel: Voorraad per locatie voor geselecteerd artikel</li>
+                <li>Lijndiagram: Voorraadverloop voor artikel</li>
+                <li>Mutatielog: Recent ontvangsten/uitgiftes</li>
+            </ul>
+        </section>
+
+        <section id="pagina-trend" class="section">
+            <h2>Rapportpagina 6: Trend Analyse</h2>
+
+            <h4>Benodigde visuals:</h4>
+            <ul>
+                <li>Lijndiagram: Voorraadwaarde YTD vs vorig jaar</li>
+                <li>Staafdiagram: Maandelijkse omloopsnelheid</li>
+                <li>KPI's: MoM%, YoY%, Dagen voorraad</li>
+                <li>Tabel: Top 10 snelst bewegende artikelen</li>
+            </ul>
+        </section>
+
+        <!-- ETL -->
+        <section id="etl-grip" class="section">
+            <h2>ETL: GRIP Queries</h2>
+            <p>De GRIP prepare en endview queries voor de voorraadtabellen.</p>
+
+            <h3>Bronstructuur</h3>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Syntess Tabel</th>
+                            <th>GRIP Prepare</th>
+                            <th>SSM Endview</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>AT_MAGAZIJN</td>
+                            <td>prepare_magazijnen.sql</td>
+                            <td>Voorraad magazijnen</td>
+                        </tr>
+                        <tr>
+                            <td>AT_VRDLOCAT</td>
+                            <td>prepare_voorraadlocaties.sql</td>
+                            <td>Voorraad locaties</td>
+                        </tr>
+                        <tr>
+                            <td>AT_VOORRAAD</td>
+                            <td>prepare_voorraadposities.sql</td>
+                            <td>Voorraad posities</td>
+                        </tr>
+                        <tr>
+                            <td>AT_VRDMUT</td>
+                            <td>prepare_voorraadmutaties.sql</td>
+                            <td>Voorraad mutaties</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3>Data Flow</h3>
+            <div class="diagram">
+<pre>
+┌──────────────┐     ┌──────────────┐     ┌──────────────┐
+│   SYNTESS    │────►│     GRIP     │────►│     SSM      │
+│   (Bron DB)  │     │   (Prepare)  │     │  (Semantic)  │
+└──────────────┘     └──────────────┘     └──────────────┘
+                            │
+                            ▼
+                     Transformaties:
+                     - Key generatie
+                     - Status mapping
+                     - Datum formatting
+                     - NULL handling
+</pre>
+            </div>
+        </section>
+
+        <!-- SSM Aanbevelingen -->
+        <section id="ssm-advies" class="section">
+            <h2>Aanbevelingen Semantisch Model</h2>
+            <p>Onderstaande aanpassingen aan het SSM worden aanbevolen voor optimale voorraadrapportages.</p>
+
+            <h3>Prioriteit 1: Kritieke aanpassingen</h3>
+
+            <div class="card" style="margin: 1rem 0; border-left-color: #c62828;">
+                <h4>1.1 Kalender relatie voor Voorraad mutaties</h4>
+                <p style="margin: 0.5rem 0;"><strong>Probleem:</strong> Er is geen relatie tussen <code>Voorraad mutaties[Boekdatum]</code> en <code>Kalender[Datum]</code>. Hierdoor werken time intelligence functies (YTD, PREVIOUSMONTH, SAMEPERIODLASTYEAR) niet.</p>
+                <p style="margin: 0.5rem 0;"><strong>Oplossing:</strong> Voeg een relatie toe in het model:</p>
+                <div class="code-block" style="margin: 0.5rem 0;">
+<pre><span class="comment">// In relationships.tmdl toevoegen:</span>
+relationship [nieuwe-guid]
+    fromColumn: 'Voorraad mutaties'.Boekdatum
+    toColumn: Kalender.Datum</pre>
+                </div>
+                <p style="margin: 0.5rem 0;"><strong>Impact:</strong> Hoog - Maakt alle tijdvergelijking measures mogelijk</p>
+            </div>
+
+            <div class="card" style="margin: 1rem 0; border-left-color: #c62828;">
+                <h4>1.2 MutatieDatumKey toevoegen aan Voorraad mutaties</h4>
+                <p style="margin: 0.5rem 0;"><strong>Probleem:</strong> De tabel gebruikt <code>Boekdatum</code> (datetime) i.p.v. een integer key voor datumkoppeling.</p>
+                <p style="margin: 0.5rem 0;"><strong>Oplossing:</strong> In GRIP prepare een <code>MutatieDatumKey</code> kolom toevoegen:</p>
+                <div class="code-block" style="margin: 0.5rem 0;">
+<pre><span class="comment">-- In prepare_voorraadmutaties.sql:</span>
+<span class="keyword">SELECT</span>
+    ...,
+    <span class="keyword">CONVERT</span>(<span class="keyword">INT</span>, <span class="keyword">CONVERT</span>(<span class="keyword">VARCHAR</span>(<span class="number">8</span>), boekdatum, <span class="number">112</span>)) <span class="keyword">AS</span> MutatieDatumKey
+<span class="keyword">FROM</span> AT_VRDMUT</pre>
+                </div>
+                <p style="margin: 0.5rem 0;"><strong>Impact:</strong> Hoog - Consistentie met andere tabellen, betere performance</p>
+            </div>
+
+            <h3>Prioriteit 2: Aanbevolen verbeteringen</h3>
+
+            <div class="card" style="margin: 1rem 0; border-left-color: #f57c00;">
+                <h4>2.1 Voorraadstand snapshot tabel</h4>
+                <p style="margin: 0.5rem 0;"><strong>Huidige situatie:</strong> Voorraadstand moet berekend worden uit alle historische mutaties (Ontvangsten - Uitgiftes). Bij grote volumes kan dit traag zijn.</p>
+                <p style="margin: 0.5rem 0;"><strong>Aanbeveling:</strong> Overweeg een <code>Voorraad snapshots</code> tabel met periodieke (dagelijkse/wekelijkse) voorraadstanden:</p>
+                <div class="code-block" style="margin: 0.5rem 0;">
+<pre><span class="comment">-- Nieuwe tabel: Voorraad snapshots</span>
+VoorraadsnapshotKey     <span class="keyword">INT</span>         <span class="comment">-- PK</span>
+VoorraadpositieKey      <span class="keyword">INT</span>         <span class="comment">-- FK</span>
+SnapshotDatumKey        <span class="keyword">INT</span>         <span class="comment">-- FK naar Kalender</span>
+AantalOpVoorraad        <span class="keyword">DECIMAL</span>
+WaardeKostprijs         <span class="keyword">DECIMAL</span>
+WaardeVerrekenprijs     <span class="keyword">DECIMAL</span></pre>
+                </div>
+                <p style="margin: 0.5rem 0;"><strong>Impact:</strong> Medium - Verbeterde performance voor historische analyses</p>
+            </div>
+
+            <div class="card" style="margin: 1rem 0; border-left-color: #f57c00;">
+                <h4>2.2 Artikelinformatie via Tarieven verrijken</h4>
+                <p style="margin: 0.5rem 0;"><strong>Huidige situatie:</strong> <code>Voorraad posities[TariefKey]</code> linkt naar Tarieven, maar Tarieven bevat mogelijk niet alle gewenste artikelattributen.</p>
+                <p style="margin: 0.5rem 0;"><strong>Aanbeveling:</strong> Controleer of de volgende velden beschikbaar zijn in Tarieven:</p>
+                <ul style="font-size: 0.9rem; margin: 0.5rem 0;">
+                    <li>Artikelcode / Artikelnummer</li>
+                    <li>Artikelomschrijving</li>
+                    <li>Artikelgroep / Categorie</li>
+                    <li>Eenheid (stuk, meter, kg, etc.)</li>
+                    <li>Leverancier (default)</li>
+                </ul>
+                <p style="margin: 0.5rem 0;"><strong>Impact:</strong> Medium - Betere artikelrapportages</p>
+            </div>
+
+            <div class="card" style="margin: 1rem 0; border-left-color: #f57c00;">
+                <h4>2.3 Locatie hiërarchie kolommen</h4>
+                <p style="margin: 0.5rem 0;"><strong>Huidige situatie:</strong> <code>Voorraad locaties</code> heeft <code>ParentVoorraadlocatieKey</code> voor hiërarchie, maar geen denormalized path kolommen.</p>
+                <p style="margin: 0.5rem 0;"><strong>Aanbeveling:</strong> Voeg toe in GRIP prepare:</p>
+                <div class="code-block" style="margin: 0.5rem 0;">
+<pre><span class="comment">-- Denormalized hiërarchie voor makkelijke filtering</span>
+LocatieLevel1       <span class="keyword">VARCHAR</span>(<span class="number">100</span>)    <span class="comment">-- Hal/Zone</span>
+LocatieLevel2       <span class="keyword">VARCHAR</span>(<span class="number">100</span>)    <span class="comment">-- Stelling</span>
+LocatieLevel3       <span class="keyword">VARCHAR</span>(<span class="number">100</span>)    <span class="comment">-- Vak</span>
+LocatieFullPath     <span class="keyword">VARCHAR</span>(<span class="number">500</span>)    <span class="comment">-- "Hal A > Stelling 1 > Vak 3"</span></pre>
+                </div>
+                <p style="margin: 0.5rem 0;"><strong>Impact:</strong> Medium - Betere drill-down in rapporten</p>
+            </div>
+
+            <h3>Prioriteit 3: Nice-to-have</h3>
+
+            <div class="card" style="margin: 1rem 0; border-left-color: #1976d2;">
+                <h4>3.1 Mutatiesoort kolom</h4>
+                <p style="margin: 0.5rem 0;"><strong>Aanbeveling:</strong> Voeg een <code>Mutatiesoort</code> kolom toe aan Voorraad mutaties:</p>
+                <div class="code-block" style="margin: 0.5rem 0;">
+<pre>Mutatiesoort = <span class="keyword">CASE</span>
+    <span class="keyword">WHEN</span> OntvangstVoorraadpositieKey <span class="keyword">IS NOT NULL</span>
+         <span class="keyword">AND</span> UitgifteVoorraadpositieKey <span class="keyword">IS NULL</span> <span class="keyword">THEN</span> <span class="string">'Ontvangst'</span>
+    <span class="keyword">WHEN</span> UitgifteVoorraadpositieKey <span class="keyword">IS NOT NULL</span>
+         <span class="keyword">AND</span> OntvangstVoorraadpositieKey <span class="keyword">IS NULL</span> <span class="keyword">THEN</span> <span class="string">'Uitgifte'</span>
+    <span class="keyword">WHEN</span> <span class="keyword">BOTH NOT NULL</span> <span class="keyword">THEN</span> <span class="string">'Transfer'</span>
+    <span class="keyword">ELSE</span> <span class="string">'Onbekend'</span>
+<span class="keyword">END</span></pre>
+                </div>
+                <p style="margin: 0.5rem 0;"><strong>Impact:</strong> Laag - Convenience voor filtering</p>
+            </div>
+
+            <div class="card" style="margin: 1rem 0; border-left-color: #1976d2;">
+                <h4>3.2 ABC-classificatie ondersteuning</h4>
+                <p style="margin: 0.5rem 0;"><strong>Aanbeveling:</strong> Voeg velden toe voor ABC-analyse:</p>
+                <ul style="font-size: 0.9rem; margin: 0.5rem 0;">
+                    <li><code>ABC_Classificatie</code> op Voorraad posities (A/B/C op basis van omloopsnelheid)</li>
+                    <li><code>LaatsteUitgifteDatum</code> voor dead stock detectie</li>
+                    <li><code>DagenZonderBeweging</code> calculated column</li>
+                </ul>
+                <p style="margin: 0.5rem 0;"><strong>Impact:</strong> Laag - Geavanceerde voorraadanalyse</p>
+            </div>
+
+            <h3>Samenvatting actiepunten</h3>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Prioriteit</th>
+                            <th>Actie</th>
+                            <th>Waar</th>
+                            <th>Impact</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr style="background: #ffebee;">
+                            <td><span class="badge badge-danger">P1</span></td>
+                            <td>Kalender relatie toevoegen</td>
+                            <td>SSM relationships.tmdl</td>
+                            <td>Hoog</td>
+                        </tr>
+                        <tr style="background: #ffebee;">
+                            <td><span class="badge badge-danger">P1</span></td>
+                            <td>MutatieDatumKey kolom</td>
+                            <td>GRIP prepare</td>
+                            <td>Hoog</td>
+                        </tr>
+                        <tr style="background: #fff3e0;">
+                            <td><span class="badge badge-warning">P2</span></td>
+                            <td>Snapshot tabel overwegen</td>
+                            <td>GRIP + SSM</td>
+                            <td>Medium</td>
+                        </tr>
+                        <tr style="background: #fff3e0;">
+                            <td><span class="badge badge-warning">P2</span></td>
+                            <td>Tarieven verrijking controleren</td>
+                            <td>GRIP endview</td>
+                            <td>Medium</td>
+                        </tr>
+                        <tr style="background: #fff3e0;">
+                            <td><span class="badge badge-warning">P2</span></td>
+                            <td>Locatie hiërarchie denormalize</td>
+                            <td>GRIP prepare</td>
+                            <td>Medium</td>
+                        </tr>
+                        <tr style="background: #e3f2fd;">
+                            <td><span class="badge badge-primary">P3</span></td>
+                            <td>Mutatiesoort kolom</td>
+                            <td>GRIP prepare</td>
+                            <td>Laag</td>
+                        </tr>
+                        <tr style="background: #e3f2fd;">
+                            <td><span class="badge badge-primary">P3</span></td>
+                            <td>ABC-classificatie velden</td>
+                            <td>GRIP + SSM</td>
+                            <td>Laag</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Roadmap -->
+        <section id="roadmap" class="section">
+            <h2>Implementatie Roadmap</h2>
+
+            <div class="card-grid">
+                <div class="card" style="border-left-color: var(--success);">
+                    <h4>Fase 1: Basis</h4>
+                    <ul style="font-size: 0.9rem; margin-top: 0.5rem;">
+                        <li>Importeer DAX measures</li>
+                        <li>Test measures op correctheid</li>
+                        <li>Valideer USERELATIONSHIP werking</li>
+                    </ul>
+                </div>
+                <div class="card" style="border-left-color: var(--secondary);">
+                    <h4>Fase 2: Rapportages</h4>
+                    <ul style="font-size: 0.9rem; margin-top: 0.5rem;">
+                        <li>Bouw Overzicht dashboard</li>
+                        <li>Bouw Min-Max bewaking</li>
+                        <li>Bouw Detail pagina</li>
+                    </ul>
+                </div>
+                <div class="card" style="border-left-color: var(--primary);">
+                    <h4>Fase 3: Uitbreiding</h4>
+                    <ul style="font-size: 0.9rem; margin-top: 0.5rem;">
+                        <li>Trend analyse toevoegen</li>
+                        <li>Artikel drillthrough</li>
+                        <li>Leverancier analyse</li>
+                    </ul>
+                </div>
+                <div class="card" style="border-left-color: #9c27b0;">
+                    <h4>Fase 4: Optimalisatie</h4>
+                    <ul style="font-size: 0.9rem; margin-top: 0.5rem;">
+                        <li>Performance tuning</li>
+                        <li>Row-level security</li>
+                        <li>Scheduled refresh</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="alert alert-success" style="margin-top: 1.5rem;">
+                <span>✅</span>
+                <div>
+                    <strong>Klaar om te starten!</strong> Kopieer de DAX measures naar je Power BI model en begin met het bouwen van de rapportages.
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+        function copyCode(button) {
+            const codeBlock = button.parentElement;
+            const code = codeBlock.querySelector('pre').textContent;
+            navigator.clipboard.writeText(code).then(() => {
+                button.textContent = 'Gekopieerd!';
+                setTimeout(() => {
+                    button.textContent = 'Kopieer';
+                }, 2000);
+            });
+        }
+
+        // Smooth scroll for navigation
+        document.querySelectorAll('.sidebar a').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+
+        // Highlight active section in sidebar
+        const sections = document.querySelectorAll('.section');
+        const navLinks = document.querySelectorAll('.sidebar a');
+
+        window.addEventListener('scroll', () => {
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                if (pageYOffset >= sectionTop - 150) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            navLinks.forEach(link => {
+                link.style.background = '';
+                link.style.color = '';
+                if (link.getAttribute('href') === '#' + current) {
+                    link.style.background = 'var(--bg-light)';
+                    link.style.color = 'var(--primary)';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

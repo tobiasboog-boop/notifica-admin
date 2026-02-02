@@ -1,0 +1,87 @@
+{
+  "main": [
+    {
+      "label": "Home",
+      "url": "/"
+    },
+    {
+      "label": "Inspiratie",
+      "url": "/inspiratie/"
+    },
+    {
+      "label": "Wensenkluis",
+      "url": "/wensenkluis/"
+    },
+    {
+      "label": "Documentenkluis",
+      "url": "/documentenkluis/"
+    },
+    {
+      "label": "Verdieping",
+      "url": "/verdieping/",
+      "children": [
+        {
+          "label": "Directe uren calculator",
+          "url": "/verdieping/directe-uren-calculator/"
+        }
+      ]
+    },
+    {
+      "label": "Contact",
+      "url": "/contact/"
+    }
+  ],
+  "authenticated": [
+    {
+      "label": "Mijn Nomalie",
+      "url": "/mijn-nomalie/"
+    },
+    {
+      "label": "Mijn Wensenkluis",
+      "url": "/mijn-nomalie/wensenkluis/"
+    },
+    {
+      "label": "Mijn Documentenkluis",
+      "url": "/mijn-nomalie/documentenkluis/"
+    },
+    {
+      "label": "Inspiratie",
+      "url": "/inspiratie/"
+    },
+    {
+      "label": "Instellingen",
+      "url": "/mijn-nomalie/instellingen/"
+    },
+    {
+      "label": "Uitloggen",
+      "url": "/uitloggen/"
+    }
+  ],
+  "cta": {
+    "label": "Plan een demo",
+    "url": "#",
+    "pipedrive_form": "demo"
+  },
+  "footer": [
+    {
+      "label": "Verwerkersovereenkomst",
+      "url": "/verwerkersovereenkomst/"
+    },
+    {
+      "label": "Algemene voorwaarden",
+      "url": "/algemene-voorwaarden/"
+    },
+    {
+      "label": "Privacy",
+      "url": "/privacy/"
+    },
+    {
+      "label": "Cookies",
+      "url": "/cookies/"
+    },
+    {
+      "label": "Disclaimer",
+      "url": "/disclaimer/"
+    }
+  ]
+}

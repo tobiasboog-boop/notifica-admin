@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ title or "Notifica | Power BI Dashboards voor Installatiebedrijven" }}</title>
+  <meta name="description" content="{{ description or "Professionele Power BI dashboards voor installatiebedrijven. Direct inzicht in projectresultaten, marges en efficiency. Live binnen 1 dag." }}">
+
+  <!-- Google Analytics loaded via cookie consent -->
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="{{ '/assets/css/notifica-notion.css' | url }}">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/x-icon" href="{{ '/assets/images/favicon.ico' | url }}">
+  <link rel="apple-touch-icon" sizes="180x180" href="{{ '/assets/images/Notifica_Favicon.png' | url }}">
+
+  <!-- Canonical URL -->
+  <link rel="canonical" href="{{ site.url }}{{ page.url }}">
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="{{ title or 'Notifica | Power BI Dashboards voor Installatiebedrijven' }}">
+  <meta property="og:description" content="{{ description or site.description }}">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="{{ site.url }}{{ page.url }}">
+  <meta property="og:site_name" content="Notifica">
+  <meta property="og:locale" content="nl_NL">
+  {% if og_image %}
+  <meta property="og:image" content="{{ site.url }}{{ og_image }}">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Notifica Power BI Dashboards voor Installatiebedrijven">
+  {% endif %}
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="{{ title or 'Notifica | Power BI Dashboards voor Installatiebedrijven' }}">
+  <meta name="twitter:description" content="{{ description or site.description }}">
+  {% if og_image %}
+  <meta name="twitter:image" content="{{ site.url }}{{ og_image }}">
+  <meta name="twitter:image:alt" content="Notifica Power BI Dashboards voor Installatiebedrijven">
+  {% endif %}
+
+  <!-- Schema.org JSON-LD for SEO -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "Notifica",
+    "description": "Power BI dashboards voor installatiebedrijven met directe Syntess koppeling",
+    "url": "https://notifica.nl",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://notifica.nl/assets/images/Notifica_Favicon.png",
+      "width": 180,
+      "height": 180
+    },
+    "image": "https://notifica.nl/assets/images/Notifica_blauw.png",
+    "sameAs": [
+      "https://www.linkedin.com/company/notifica-nl"
+    ],
+    "contactPoint": {
+      "@type": "ContactPoint",
+      "contactType": "Customer Service",
+      "telephone": "+31402303343",
+      "availableLanguage": "Dutch"
+    },
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "Kerkhofstraat 21",
+      "addressLocality": "Valkenswaard",
+      "postalCode": "5554 HG",
+      "addressCountry": "NL"
+    }
+  }
+  </script>
+
+  <!-- SiteNavigationElement for Google Sitelinks -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    "itemListElement": [
+      {
+        "@type": "SiteNavigationElement",
+        "position": 1,
+        "name": "Home",
+        "description": "Power BI Dashboards voor Syntess Installatiebedrijven",
+        "url": "https://notifica.nl/"
+      },
+      {
+        "@type": "SiteNavigationElement",
+        "position": 2,
+        "name": "ERP Koppelingen",
+        "description": "Power BI koppelingen met Syntess, 4PS, ACTO, Admicom en meer",
+        "url": "https://notifica.nl/bedrijfssoftware/"
+      },
+      {
+        "@type": "SiteNavigationElement",
+        "position": 3,
+        "name": "Syntess Atrium",
+        "description": "Power BI dashboards voor Syntess Atrium gebruikers",
+        "url": "https://notifica.nl/bedrijfssoftware/syntess-atrium/"
+      },
+      {
+        "@type": "SiteNavigationElement",
+        "position": 4,
+        "name": "Klanten",
+        "description": "Ervaringen van 60+ installatiebedrijven met Notifica",
+        "url": "https://notifica.nl/klanten-ervaringen/"
+      },
+      {
+        "@type": "SiteNavigationElement",
+        "position": 5,
+        "name": "Blogs",
+        "description": "Artikelen over Power BI, data-analyse en stuurinformatie",
+        "url": "https://notifica.nl/inspiratie/blogs/"
+      },
+      {
+        "@type": "SiteNavigationElement",
+        "position": 6,
+        "name": "Over ons",
+        "description": "Leer het team achter Notifica kennen",
+        "url": "https://notifica.nl/over-ons/"
+      }
+    ]
+  }
+  </script>
+
+  {% block head %}{% endblock %}
+</head>
+<body class="{{ bodyClass or '' }}">
+  {% include "header-notion.njk" %}
+
+  <main>
+    {% block content %}
+      {{ content | safe }}
+    {% endblock %}
+  </main>
+
+  {% include "footer-notion.njk" %}
+
+  {% if showContactPopup %}
+  {% include "contact-popup.njk" %}
+  {% endif %}
+
+  <!-- Pipedrive Popup Script -->
+  <script src="{{ '/assets/js/pipedrive-popup.js' | url }}"></script>
+
+  <!-- Pipedrive LeadFeeder (loaded directly for B2B lead tracking) -->
+  <script>
+    (function(ss,ex){
+      window.ldfdr=window.ldfdr||function(){(ldfdr._q=ldfdr._q||[]).push([].slice.call(arguments));};
+      (function(d,s){
+        fs=d.getElementsByTagName(s)[0];
+        function ce(src){
+          var cs=d.createElement(s);
+          cs.src=src;
+          cs.async=1;
+          fs.parentNode.insertBefore(cs,fs);
+        };
+        ce('https://sc.lfeeder.com/lftracker_v1_'+ss+(ex?'_'+ex:'')+'.js');
+      })(document,'script');
+    })('p1e024BOKE0aGB6d');
+  </script>
+
+  <!-- Cookie Consent (for Google Analytics) -->
+  <script src="{{ '/assets/js/cookie-consent.js' | url }}"></script>
+
+  <!-- Social Sharing Script -->
+  <script>
+    // Simple social sharing functionality
+    function shareOnLinkedIn() {
+      const url = encodeURIComponent(window.location.href);
+      window.open('https://www.linkedin.com/sharing/share-offsite/?url=' + url, '_blank');
+    }
+    function shareOnTwitter() {
+      const url = encodeURIComponent(window.location.href);
+      const text = encodeURIComponent(document.title);
+      window.open('https://twitter.com/intent/tweet?url=' + url + '&text=' + text, '_blank');
+    }
+  </script>
+
+  {% block scripts %}{% endblock %}
+</body>
+</html>

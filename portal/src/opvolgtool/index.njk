@@ -1,0 +1,2378 @@
+---
+layout: false
+title: Opvolgtool - Notifica
+description: Commerciele opvolgtool voor het beheren van deals en follow-ups.
+permalink: /opvolgtool/
+robots: noindex, nofollow
+---
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Opvolgtool - Notifica</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+/* ============================================
+   DESIGN TOKENS
+   ============================================ */
+.opvolgtool {
+    --primary: #16136f;
+    --primary-light: #3636A2;
+    --primary-bg: #f0f4ff;
+    --secondary: #fbba00;
+    --gray-50: #f9fafb;
+    --gray-100: #f3f4f6;
+    --gray-200: #e5e7eb;
+    --gray-300: #d1d5db;
+    --gray-400: #9ca3af;
+    --gray-500: #6b7280;
+    --gray-600: #4b5563;
+    --gray-700: #374151;
+    --gray-900: #111827;
+    --success: #16a34a;
+    --success-bg: #dcfce7;
+    --warning: #f59e0b;
+    --warning-bg: #fef3c7;
+    --danger: #dc2626;
+    --danger-bg: #fee2e2;
+    --radius-sm: 0.375rem;
+    --radius-md: 0.5rem;
+    --radius-lg: 0.75rem;
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+/* ============================================
+   LAYOUT
+   ============================================ */
+.opvolgtool {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 24px;
+}
+
+.opvolgtool-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.opvolgtool-header h1 {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--gray-900);
+    margin: 0;
+}
+
+.opvolgtool-header-actions {
+    display: flex;
+    gap: 12px;
+}
+
+/* ============================================
+   TABS
+   ============================================ */
+.tabs {
+    display: flex;
+    gap: 4px;
+    background: var(--gray-100);
+    padding: 4px;
+    border-radius: var(--radius-md);
+    margin-bottom: 24px;
+}
+
+.tab {
+    padding: 10px 20px;
+    border: none;
+    background: transparent;
+    color: var(--gray-600);
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    border-radius: var(--radius-sm);
+    transition: all 0.15s ease;
+}
+
+.tab:hover {
+    color: var(--gray-900);
+}
+
+.tab.active {
+    background: white;
+    color: var(--primary);
+    box-shadow: var(--shadow-sm);
+}
+
+.tab .badge {
+    background: var(--danger);
+    color: white;
+    font-size: 11px;
+    padding: 2px 6px;
+    border-radius: 10px;
+    margin-left: 6px;
+}
+
+/* ============================================
+   BUTTONS
+   ============================================ */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    font-size: 14px;
+    font-weight: 500;
+    border-radius: var(--radius-md);
+    border: none;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.btn-primary {
+    background: var(--primary);
+    color: white;
+}
+
+.btn-primary:hover {
+    background: var(--primary-light);
+}
+
+.btn-secondary {
+    background: white;
+    color: var(--gray-700);
+    border: 1px solid var(--gray-300);
+}
+
+.btn-secondary:hover {
+    background: var(--gray-50);
+    border-color: var(--gray-400);
+}
+
+.btn-danger {
+    background: var(--danger);
+    color: white;
+}
+
+.btn-danger:hover {
+    background: #b91c1c;
+}
+
+.btn-sm {
+    padding: 6px 12px;
+    font-size: 13px;
+}
+
+.btn-icon {
+    padding: 8px;
+    background: transparent;
+    border: none;
+    color: var(--gray-500);
+    cursor: pointer;
+    border-radius: var(--radius-sm);
+}
+
+.btn-icon:hover {
+    background: var(--gray-100);
+    color: var(--gray-700);
+}
+
+/* ============================================
+   CARDS
+   ============================================ */
+.card {
+    background: white;
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius-lg);
+    padding: 20px;
+    margin-bottom: 16px;
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.card-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--gray-900);
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.card-title .count {
+    background: var(--gray-100);
+    color: var(--gray-600);
+    font-size: 12px;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-weight: 500;
+}
+
+.card-title .count.danger {
+    background: var(--danger-bg);
+    color: var(--danger);
+}
+
+/* ============================================
+   STATS
+   ============================================ */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.stat-card {
+    background: white;
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius-lg);
+    padding: 16px 20px;
+}
+
+.stat-label {
+    font-size: 13px;
+    color: var(--gray-500);
+    margin-bottom: 4px;
+}
+
+.stat-value {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--gray-900);
+}
+
+.stat-value.success { color: var(--success); }
+.stat-value.warning { color: var(--warning); }
+.stat-value.danger { color: var(--danger); }
+
+/* ============================================
+   DEAL ITEMS
+   ============================================ */
+.deal-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.deal-item {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 14px 16px;
+    background: var(--gray-50);
+    border-radius: var(--radius-md);
+    transition: all 0.15s ease;
+}
+
+.deal-item:hover {
+    background: var(--gray-100);
+}
+
+.deal-item.overdue {
+    background: var(--danger-bg);
+    border-left: 3px solid var(--danger);
+}
+
+.deal-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.deal-company {
+    font-weight: 600;
+    color: var(--gray-900);
+    margin-bottom: 2px;
+}
+
+.deal-meta {
+    font-size: 13px;
+    color: var(--gray-500);
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.deal-amount {
+    font-weight: 600;
+    color: var(--primary);
+    white-space: nowrap;
+}
+
+.deal-actions {
+    display: flex;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+/* ============================================
+   TABLE
+   ============================================ */
+.table-wrapper {
+    overflow-x: auto;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table th,
+.table td {
+    padding: 12px 16px;
+    text-align: left;
+    border-bottom: 1px solid var(--gray-200);
+}
+
+.table th {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--gray-500);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    background: var(--gray-50);
+}
+
+.table tr:hover td {
+    background: var(--gray-50);
+}
+
+.table td {
+    font-size: 14px;
+    color: var(--gray-700);
+}
+
+/* ============================================
+   STATUS BADGES
+   ============================================ */
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 10px;
+    font-size: 12px;
+    font-weight: 500;
+    border-radius: 20px;
+}
+
+.status-badge.offerte_verstuurd {
+    background: var(--primary-bg);
+    color: var(--primary);
+}
+
+.status-badge.in_gesprek {
+    background: var(--warning-bg);
+    color: #92400e;
+}
+
+.status-badge.gewonnen {
+    background: var(--success-bg);
+    color: var(--success);
+}
+
+.status-badge.verloren {
+    background: var(--gray-100);
+    color: var(--gray-500);
+}
+
+/* ============================================
+   MODAL
+   ============================================ */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.2s ease;
+}
+
+.modal-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.modal {
+    background: white;
+    border-radius: var(--radius-lg);
+    width: 100%;
+    max-width: 560px;
+    max-height: 90vh;
+    overflow-y: auto;
+    transform: translateY(20px);
+    transition: transform 0.2s ease;
+}
+
+.modal-overlay.active .modal {
+    transform: translateY(0);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--gray-200);
+}
+
+.modal-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--gray-900);
+    margin: 0;
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    font-size: 24px;
+    color: var(--gray-400);
+    cursor: pointer;
+    padding: 0;
+    line-height: 1;
+}
+
+.modal-close:hover {
+    color: var(--gray-600);
+}
+
+.modal-body {
+    padding: 24px;
+}
+
+.modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    padding: 16px 24px;
+    border-top: 1px solid var(--gray-200);
+    background: var(--gray-50);
+}
+
+/* ============================================
+   FORMS
+   ============================================ */
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+.form-label {
+    display: block;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--gray-700);
+    margin-bottom: 6px;
+}
+
+.form-label .required {
+    color: var(--danger);
+}
+
+.form-input,
+.form-select,
+.form-textarea {
+    width: 100%;
+    padding: 10px 14px;
+    font-size: 14px;
+    border: 1px solid var(--gray-300);
+    border-radius: var(--radius-md);
+    background: white;
+    color: var(--gray-900);
+    transition: border-color 0.15s ease;
+}
+
+.form-input:focus,
+.form-select:focus,
+.form-textarea:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(22, 19, 111, 0.1);
+}
+
+.form-textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+
+.form-hint {
+    font-size: 12px;
+    color: var(--gray-500);
+    margin-top: 4px;
+}
+
+/* ============================================
+   EMAIL PREVIEW
+   ============================================ */
+.email-preview {
+    background: var(--gray-50);
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+}
+
+.email-header {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--gray-200);
+    background: white;
+}
+
+.email-field {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    margin-bottom: 6px;
+}
+
+.email-field:last-child {
+    margin-bottom: 0;
+}
+
+.email-field-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--gray-500);
+    min-width: 80px;
+}
+
+.email-field-value {
+    font-size: 14px;
+    color: var(--gray-900);
+}
+
+.email-body {
+    padding: 16px;
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--gray-700);
+    white-space: pre-wrap;
+}
+
+/* ============================================
+   EMPTY STATE
+   ============================================ */
+.empty-state {
+    text-align: center;
+    padding: 48px 24px;
+    color: var(--gray-500);
+}
+
+.empty-state-icon {
+    font-size: 48px;
+    margin-bottom: 16px;
+    opacity: 0.5;
+}
+
+.empty-state-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--gray-700);
+    margin-bottom: 8px;
+}
+
+.empty-state-text {
+    font-size: 14px;
+    margin-bottom: 20px;
+}
+
+/* ============================================
+   LOADING
+   ============================================ */
+.loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 48px;
+    color: var(--gray-500);
+}
+
+.loading-spinner {
+    width: 24px;
+    height: 24px;
+    border: 3px solid var(--gray-200);
+    border-top-color: var(--primary);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin-right: 12px;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* ============================================
+   ALERTS
+   ============================================ */
+.alert {
+    padding: 14px 16px;
+    border-radius: var(--radius-md);
+    margin-bottom: 16px;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.alert-info {
+    background: var(--primary-bg);
+    color: var(--primary);
+    border: 1px solid #c7d2fe;
+}
+
+.alert-success {
+    background: var(--success-bg);
+    color: var(--success);
+}
+
+.alert-warning {
+    background: var(--warning-bg);
+    color: #92400e;
+}
+
+.alert-error {
+    background: var(--danger-bg);
+    color: var(--danger);
+}
+
+/* ============================================
+   SEARCH & FILTERS
+   ============================================ */
+.filters {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.search-input {
+    flex: 1;
+    min-width: 200px;
+    padding: 10px 14px 10px 40px;
+    font-size: 14px;
+    border: 1px solid var(--gray-300);
+    border-radius: var(--radius-md);
+    background: white url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%239ca3af'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z'/%3E%3C/svg%3E") 12px center no-repeat;
+    background-size: 20px;
+}
+
+.filter-select {
+    padding: 10px 14px;
+    font-size: 14px;
+    border: 1px solid var(--gray-300);
+    border-radius: var(--radius-md);
+    background: white;
+    min-width: 150px;
+}
+
+/* ============================================
+   FOLLOWUP TYPE BADGES
+   ============================================ */
+.followup-type {
+    font-size: 12px;
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-weight: 500;
+}
+
+.followup-type.check-in {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+.followup-type.waarde {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.followup-type.incentive {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.followup-type.laatste-kans {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+/* ============================================
+   CSV IMPORT
+   ============================================ */
+.dropzone {
+    border: 2px dashed var(--gray-300);
+    border-radius: var(--radius-lg);
+    padding: 48px 24px;
+    text-align: center;
+    transition: all 0.15s ease;
+    cursor: pointer;
+}
+
+.dropzone:hover,
+.dropzone.dragover {
+    border-color: var(--primary);
+    background: var(--primary-bg);
+}
+
+.dropzone-icon {
+    font-size: 48px;
+    margin-bottom: 12px;
+    opacity: 0.6;
+}
+
+.dropzone-text {
+    font-size: 14px;
+    color: var(--gray-600);
+}
+
+.dropzone-text strong {
+    color: var(--primary);
+}
+
+/* ============================================
+   INCENTIVES LIST
+   ============================================ */
+.incentive-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px;
+    background: var(--gray-50);
+    border-radius: var(--radius-md);
+    margin-bottom: 8px;
+}
+
+.incentive-info h4 {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--gray-900);
+    margin: 0 0 4px 0;
+}
+
+.incentive-info p {
+    font-size: 13px;
+    color: var(--gray-500);
+    margin: 0;
+}
+
+.incentive-date {
+    font-size: 12px;
+    color: var(--gray-500);
+}
+
+/* ============================================
+   CONNECTION STATUS
+   ============================================ */
+.connection-status {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: var(--gray-500);
+}
+
+.connection-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--gray-400);
+}
+
+.connection-dot.connected {
+    background: var(--success);
+}
+
+.connection-dot.error {
+    background: var(--danger);
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+@media (max-width: 768px) {
+    .opvolgtool {
+        padding: 16px;
+    }
+
+    .opvolgtool-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+
+    .tabs {
+        width: 100%;
+        overflow-x: auto;
+    }
+
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+
+    .deal-item {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .deal-actions {
+        width: 100%;
+        margin-top: 12px;
+    }
+
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+    </style>
+</head>
+<body style="margin: 0; font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; background: #f9fafb;">
+    <!-- Header -->
+    <header style="background: white; border-bottom: 1px solid #e5e7eb; padding: 20px 24px;">
+        <div style="max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <a href="{{ '/admin/' | url }}" style="color: #6b7280; text-decoration: none; font-size: 0.85rem; display: inline-block; margin-bottom: 4px;">← Terug naar Admin</a>
+                <h1 style="font-size: 1.25rem; font-weight: 600; color: #111827; margin: 0;">Commerciele Opvolgtool</h1>
+            </div>
+            <span style="background: #e8eaff; color: #16136f; padding: 4px 12px; border-radius: 6px; font-size: 0.75rem; font-weight: 600;">Intern</span>
+        </div>
+    </header>
+
+    <main style="padding: 24px;">
+    <div class="opvolgtool" id="app">
+
+        <!-- Connection Setup -->
+        <div id="setup-screen" class="card" style="max-width: 600px; margin: 0 auto;">
+            <h2 style="margin-bottom: 16px;">Supabase Verbinding</h2>
+            <p style="color: var(--gray-600); margin-bottom: 20px;">
+                Vul je Supabase project gegevens in om de tool te activeren.
+                Deze worden veilig opgeslagen in je browser.
+            </p>
+            <div class="form-group">
+                <label class="form-label">Project URL <span class="required">*</span></label>
+                <input type="text" id="supabase-url" class="form-input" placeholder="https://xxxxx.supabase.co">
+                <p class="form-hint">Te vinden in Supabase: Settings → API → Project URL</p>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Anon Key <span class="required">*</span></label>
+                <input type="text" id="supabase-key" class="form-input" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6...">
+                <p class="form-hint">Te vinden in Supabase: Settings → API → anon public</p>
+            </div>
+            <button class="btn btn-primary" onclick="App.connect()">Verbinden</button>
+        </div>
+
+        <!-- Main App (hidden until connected) -->
+        <div id="main-app" style="display: none;">
+
+            <!-- Header -->
+            <div class="opvolgtool-header">
+                <div>
+                    <a href="{{ '/admin/' | url }}" style="color: var(--gray-500); text-decoration: none; font-size: 0.85rem; display: inline-block; margin-bottom: 8px;">← Terug naar Admin</a>
+                    <h1>Pipeline</h1>
+                    <div class="connection-status">
+                        <span class="connection-dot connected" id="connection-dot"></span>
+                        <span id="connection-text">Verbonden met Supabase</span>
+                    </div>
+                </div>
+                <div class="opvolgtool-header-actions">
+                    <button class="btn btn-secondary" onclick="App.showImportModal()">
+                        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+                        Importeren
+                    </button>
+                    <button class="btn btn-primary" onclick="App.showDealModal()">
+                        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                        Nieuwe Deal
+                    </button>
+                </div>
+            </div>
+
+            <!-- Tabs -->
+            <div class="tabs">
+                <button class="tab active" data-tab="dashboard" onclick="App.switchTab('dashboard')">
+                    Dashboard
+                    <span class="badge" id="overdue-badge" style="display: none;">0</span>
+                </button>
+                <button class="tab" data-tab="pipeline" onclick="App.switchTab('pipeline')">Pipeline</button>
+                <button class="tab" data-tab="incentives" onclick="App.switchTab('incentives')">Incentives</button>
+                <button class="tab" data-tab="settings" onclick="App.switchTab('settings')">Instellingen</button>
+            </div>
+
+            <!-- Tab Content -->
+            <div id="tab-content">
+                <!-- Content loaded dynamically -->
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Deal Modal -->
+<div class="modal-overlay" id="deal-modal">
+    <div class="modal">
+        <div class="modal-header">
+            <h2 class="modal-title" id="deal-modal-title">Nieuwe Deal</h2>
+            <button class="modal-close" onclick="App.closeDealModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <form id="deal-form" onsubmit="App.saveDeal(event)">
+                <input type="hidden" id="deal-id">
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Bedrijfsnaam <span class="required">*</span></label>
+                        <input type="text" id="deal-company" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Contactpersoon <span class="required">*</span></label>
+                        <input type="text" id="deal-contact" class="form-input" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">E-mail <span class="required">*</span></label>
+                        <input type="email" id="deal-email" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Telefoon</label>
+                        <input type="tel" id="deal-phone" class="form-input">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Offertebedrag <span class="required">*</span></label>
+                        <input type="number" id="deal-amount" class="form-input" step="0.01" min="0" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Offertedatum <span class="required">*</span></label>
+                        <input type="date" id="deal-date" class="form-input" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Referentie</label>
+                        <input type="text" id="deal-reference" class="form-input" placeholder="Offertenummer">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Status</label>
+                        <select id="deal-status" class="form-select">
+                            <option value="offerte_verstuurd">Offerte verstuurd</option>
+                            <option value="in_gesprek">In gesprek</option>
+                            <option value="gewonnen">Gewonnen</option>
+                            <option value="verloren">Verloren</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Notities</label>
+                    <textarea id="deal-notes" class="form-textarea" placeholder="Eventuele opmerkingen..."></textarea>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" onclick="App.closeDealModal()">Annuleren</button>
+            <button type="submit" form="deal-form" class="btn btn-primary">Opslaan</button>
+        </div>
+    </div>
+</div>
+
+<!-- Email Modal -->
+<div class="modal-overlay" id="email-modal">
+    <div class="modal" style="max-width: 640px;">
+        <div class="modal-header">
+            <h2 class="modal-title">E-mail versturen</h2>
+            <button class="modal-close" onclick="App.closeEmailModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+                <label class="form-label">Template</label>
+                <select id="email-template" class="form-select" onchange="App.updateEmailPreview()">
+                    <option value="check-in">Dag 7: Check-in</option>
+                    <option value="waarde">Dag 14: Waarde</option>
+                    <option value="incentive">Dag 21: Incentive</option>
+                    <option value="laatste-kans">Dag 28: Laatste kans</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Selecteer incentive (optioneel)</label>
+                <select id="email-incentive" class="form-select" onchange="App.updateEmailPreview()">
+                    <option value="">Geen incentive</option>
+                </select>
+            </div>
+
+            <div class="email-preview">
+                <div class="email-header">
+                    <div class="email-field">
+                        <span class="email-field-label">Aan:</span>
+                        <span class="email-field-value" id="email-to">-</span>
+                    </div>
+                    <div class="email-field">
+                        <span class="email-field-label">Onderwerp:</span>
+                        <span class="email-field-value" id="email-subject">-</span>
+                    </div>
+                </div>
+                <div class="email-body" id="email-body">-</div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" onclick="App.closeEmailModal()">Annuleren</button>
+            <button type="button" class="btn btn-secondary" onclick="App.copyEmailToClipboard()">
+                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"/></svg>
+                Kopieer tekst
+            </button>
+            <button type="button" class="btn btn-primary" onclick="App.openInOutlook()">
+                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                Open in Outlook
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Import Modal -->
+<div class="modal-overlay" id="import-modal">
+    <div class="modal">
+        <div class="modal-header">
+            <h2 class="modal-title">Importeren vanuit CSV</h2>
+            <button class="modal-close" onclick="App.closeImportModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div id="import-dropzone" class="dropzone">
+                <div class="dropzone-icon">📄</div>
+                <div class="dropzone-text">
+                    Sleep een CSV-bestand hierheen of<br>
+                    <strong>klik om te selecteren</strong>
+                </div>
+                <input type="file" id="import-file" accept=".csv" style="display: none;" onchange="App.handleFileSelect(event)">
+            </div>
+
+            <div id="import-preview" style="display: none; margin-top: 20px;">
+                <h4 style="margin-bottom: 12px;">Preview (<span id="import-count">0</span> deals)</h4>
+                <div class="table-wrapper" style="max-height: 300px; overflow-y: auto;">
+                    <table class="table" id="import-table">
+                        <thead>
+                            <tr>
+                                <th>Bedrijf</th>
+                                <th>Contact</th>
+                                <th>E-mail</th>
+                                <th>Bedrag</th>
+                                <th>Datum</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="alert alert-info" style="margin-top: 20px;">
+                <span>💡</span>
+                <span>Verwacht formaat: CSV met kolommen <code>bedrijfsnaam</code>, <code>contactpersoon</code>, <code>email</code>, <code>bedrag</code>, <code>datum</code></span>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" onclick="App.closeImportModal()">Annuleren</button>
+            <button type="button" class="btn btn-primary" id="import-btn" onclick="App.importDeals()" disabled>Importeren</button>
+        </div>
+    </div>
+</div>
+
+<!-- Incentive Modal -->
+<div class="modal-overlay" id="incentive-modal">
+    <div class="modal" style="max-width: 480px;">
+        <div class="modal-header">
+            <h2 class="modal-title" id="incentive-modal-title">Nieuwe Incentive</h2>
+            <button class="modal-close" onclick="App.closeIncentiveModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <form id="incentive-form" onsubmit="App.saveIncentive(event)">
+                <input type="hidden" id="incentive-id">
+
+                <div class="form-group">
+                    <label class="form-label">Naam <span class="required">*</span></label>
+                    <input type="text" id="incentive-name" class="form-input" placeholder="Bijv. Januari actie" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Beschrijving (voor in e-mail) <span class="required">*</span></label>
+                    <textarea id="incentive-description" class="form-textarea" placeholder="Bijv. Bij beslissing deze maand ontvangt u 2 maanden gratis na de eerste 6 maanden." required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Geldig tot <span class="required">*</span></label>
+                    <input type="date" id="incentive-end-date" class="form-input" required>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" onclick="App.closeIncentiveModal()">Annuleren</button>
+            <button type="submit" form="incentive-form" class="btn btn-primary">Opslaan</button>
+        </div>
+    </div>
+</div>
+
+<!-- Confirm Delete Modal -->
+<div class="modal-overlay" id="confirm-modal">
+    <div class="modal" style="max-width: 400px;">
+        <div class="modal-header">
+            <h2 class="modal-title">Bevestigen</h2>
+            <button class="modal-close" onclick="App.closeConfirmModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <p id="confirm-message">Weet je zeker dat je dit wilt verwijderen?</p>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" onclick="App.closeConfirmModal()">Annuleren</button>
+            <button type="button" class="btn btn-danger" id="confirm-btn">Verwijderen</button>
+        </div>
+    </div>
+</div>
+
+<!-- Supabase JS Client -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+(function() {
+    'use strict';
+
+    // ============================================
+    // CONFIG & STATE
+    // ============================================
+    const STORAGE_KEY = 'notifica_opvolgtool';
+    const FOLLOWUP_SCHEDULE = [
+        { day: 7, type: 'check-in', label: 'Dag 7: Check-in' },
+        { day: 14, type: 'waarde', label: 'Dag 14: Waarde' },
+        { day: 21, type: 'incentive', label: 'Dag 21: Incentive' },
+        { day: 28, type: 'laatste-kans', label: 'Dag 28: Laatste kans' }
+    ];
+
+    let supabase = null;
+    let state = {
+        deals: [],
+        incentives: [],
+        currentTab: 'dashboard',
+        selectedDeal: null,
+        importData: []
+    };
+
+    // ============================================
+    // EMAIL TEMPLATES
+    // ============================================
+    const EMAIL_TEMPLATES = {
+        'check-in': {
+            subject: 'Even checken: onze offerte voor {company}',
+            body: `Beste {contact},
+
+Vorige week stuurde ik u een offerte voor Power BI dashboards voor {company}. Ik wil even checken of u de offerte heeft ontvangen en of er vragen zijn.
+
+Heeft u interesse in een korte demo van 30 minuten? Ik laat graag zien hoe andere installatiebedrijven hun cijfers inzichtelijk maken met onze dashboards.
+
+Laat gerust weten wanneer het uitkomt, dan plan ik het in.
+
+Met vriendelijke groet,
+
+Tobias Schakel
+Notifica
++31 30 799 02 15`
+        },
+        'waarde': {
+            subject: 'Hoe {company} direct inzicht krijgt in projectmarges',
+            body: `Beste {contact},
+
+Ik wilde nog even terugkomen op onze offerte. Wist u dat de meeste installatiebedrijven pas aan het eind van het jaar zien hoe hun projecten hebben gepresteerd?
+
+Met onze Power BI dashboards ziet u dit dagelijks:
+- Welke projecten lopen uit budget
+- Waar uw beste marges zitten
+- Hoeveel omzet nog onderweg is
+
+Een recent voorbeeld: een klant ontdekte dat 3 van hun 20 projecten verliesgevend waren - en kon direct bijsturen.
+
+Mag ik u deze week even bellen om de mogelijkheden voor {company} te bespreken?
+
+Met vriendelijke groet,
+
+Tobias Schakel
+Notifica`
+        },
+        'incentive': {
+            subject: 'Speciaal aanbod voor {company}',
+            body: `Beste {contact},
+
+Omdat ik merkte dat u interesse heeft in onze dashboards, wil ik u graag een extra aanbod doen:
+
+{incentive}
+
+Dit aanbod is geldig tot {incentive_date}.
+
+Wat houdt dit concreet in voor {company}? Bij een offertebedrag van {amount} bespaart u direct aanzienlijk.
+
+Zullen we even bellen om de details te bespreken?
+
+Met vriendelijke groet,
+
+Tobias Schakel
+Notifica
++31 30 799 02 15`
+        },
+        'laatste-kans': {
+            subject: 'Laatste check: interesse in Power BI dashboards?',
+            body: `Beste {contact},
+
+Ik neem nog een laatste keer contact op over onze offerte van {quote_date} voor {company}.
+
+Ik begrijp dat timing niet altijd uitkomt. Mocht het nu niet het juiste moment zijn, dan hoor ik het graag. Ik sluit het dossier dan af en u kunt uiteraard altijd later contact opnemen.
+
+Mocht u alsnog interesse hebben, dan plan ik graag een vrijblijvend gesprek in om uw specifieke situatie te bespreken.
+
+Ik hoor graag van u.
+
+Met vriendelijke groet,
+
+Tobias Schakel
+Notifica
++31 30 799 02 15`
+        }
+    };
+
+    // ============================================
+    // UTILITIES
+    // ============================================
+    function formatCurrency(amount) {
+        return new Intl.NumberFormat('nl-NL', { style: 'currency', currency: 'EUR' }).format(amount);
+    }
+
+    function formatDate(dateStr) {
+        if (!dateStr) return '-';
+        const date = new Date(dateStr);
+        return date.toLocaleDateString('nl-NL', { day: 'numeric', month: 'long', year: 'numeric' });
+    }
+
+    function formatDateShort(dateStr) {
+        if (!dateStr) return '-';
+        const date = new Date(dateStr);
+        return date.toLocaleDateString('nl-NL', { day: 'numeric', month: 'short' });
+    }
+
+    function daysBetween(date1, date2) {
+        const d1 = new Date(date1);
+        const d2 = new Date(date2);
+        const diffTime = d2 - d1;
+        return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    }
+
+    function addDays(dateStr, days) {
+        const date = new Date(dateStr);
+        date.setDate(date.getDate() + days);
+        return date.toISOString().split('T')[0];
+    }
+
+    function getToday() {
+        return new Date().toISOString().split('T')[0];
+    }
+
+    function getStatusLabel(status) {
+        const labels = {
+            'offerte_verstuurd': 'Offerte verstuurd',
+            'in_gesprek': 'In gesprek',
+            'gewonnen': 'Gewonnen',
+            'verloren': 'Verloren'
+        };
+        return labels[status] || status;
+    }
+
+    function getFollowupLabel(day) {
+        const item = FOLLOWUP_SCHEDULE.find(s => s.day === day);
+        return item ? item.label : `Dag ${day}`;
+    }
+
+    function getFollowupType(day) {
+        const item = FOLLOWUP_SCHEDULE.find(s => s.day === day);
+        return item ? item.type : 'check-in';
+    }
+
+    function calculateNextFollowup(quoteDate, lastDay) {
+        const nextSchedule = FOLLOWUP_SCHEDULE.find(s => s.day > lastDay);
+        if (!nextSchedule) return null;
+        return addDays(quoteDate, nextSchedule.day);
+    }
+
+    function getNextFollowupDay(lastDay) {
+        const nextSchedule = FOLLOWUP_SCHEDULE.find(s => s.day > lastDay);
+        return nextSchedule ? nextSchedule.day : null;
+    }
+
+    // ============================================
+    // STORAGE
+    // ============================================
+    function saveConfig(url, key) {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify({ url, key }));
+    }
+
+    function loadConfig() {
+        const data = localStorage.getItem(STORAGE_KEY);
+        return data ? JSON.parse(data) : null;
+    }
+
+    function clearConfig() {
+        localStorage.removeItem(STORAGE_KEY);
+    }
+
+    // ============================================
+    // SUPABASE CONNECTION
+    // ============================================
+    async function connect() {
+        const url = document.getElementById('supabase-url').value.trim();
+        const key = document.getElementById('supabase-key').value.trim();
+
+        if (!url || !key) {
+            alert('Vul beide velden in');
+            return;
+        }
+
+        try {
+            supabase = window.supabase.createClient(url, key);
+
+            // Test connection
+            const { data, error } = await supabase.from('deals').select('id').limit(1);
+            if (error) throw error;
+
+            saveConfig(url, key);
+            showMainApp();
+            await loadData();
+        } catch (err) {
+            console.error('Connection failed:', err);
+            alert('Verbinding mislukt. Controleer de gegevens en zorg dat de tabellen bestaan.');
+        }
+    }
+
+    async function initFromStorage() {
+        const config = loadConfig();
+        if (config) {
+            document.getElementById('supabase-url').value = config.url;
+            document.getElementById('supabase-key').value = config.key;
+
+            try {
+                supabase = window.supabase.createClient(config.url, config.key);
+                const { error } = await supabase.from('deals').select('id').limit(1);
+                if (error) throw error;
+
+                showMainApp();
+                await loadData();
+            } catch (err) {
+                console.error('Auto-connect failed:', err);
+                showSetupScreen();
+            }
+        }
+    }
+
+    function showSetupScreen() {
+        document.getElementById('setup-screen').style.display = 'block';
+        document.getElementById('main-app').style.display = 'none';
+    }
+
+    function showMainApp() {
+        document.getElementById('setup-screen').style.display = 'none';
+        document.getElementById('main-app').style.display = 'block';
+    }
+
+    // ============================================
+    // DATA OPERATIONS
+    // ============================================
+    async function loadData() {
+        try {
+            const [dealsRes, incentivesRes] = await Promise.all([
+                supabase.from('deals').select('*').order('created_at', { ascending: false }),
+                supabase.from('incentives').select('*').order('created_at', { ascending: false })
+            ]);
+
+            if (dealsRes.error) throw dealsRes.error;
+            if (incentivesRes.error) throw incentivesRes.error;
+
+            state.deals = dealsRes.data || [];
+            state.incentives = incentivesRes.data || [];
+
+            renderCurrentTab();
+            updateOverdueBadge();
+            populateIncentiveSelect();
+        } catch (err) {
+            console.error('Failed to load data:', err);
+            showError('Kon data niet laden');
+        }
+    }
+
+    async function saveDeal(event) {
+        event.preventDefault();
+
+        const id = document.getElementById('deal-id').value;
+        const deal = {
+            company_name: document.getElementById('deal-company').value.trim(),
+            contact_person: document.getElementById('deal-contact').value.trim(),
+            email: document.getElementById('deal-email').value.trim(),
+            phone: document.getElementById('deal-phone').value.trim() || null,
+            quote_amount: parseFloat(document.getElementById('deal-amount').value),
+            quote_date: document.getElementById('deal-date').value,
+            quote_reference: document.getElementById('deal-reference').value.trim() || null,
+            status: document.getElementById('deal-status').value,
+            notes: document.getElementById('deal-notes').value.trim() || null
+        };
+
+        // Calculate next followup for new deals
+        if (!id) {
+            deal.last_followup_day = 0;
+            deal.next_followup_date = calculateNextFollowup(deal.quote_date, 0);
+        }
+
+        try {
+            if (id) {
+                deal.updated_at = new Date().toISOString();
+                const { error } = await supabase.from('deals').update(deal).eq('id', id);
+                if (error) throw error;
+            } else {
+                const { error } = await supabase.from('deals').insert(deal);
+                if (error) throw error;
+            }
+
+            closeDealModal();
+            await loadData();
+        } catch (err) {
+            console.error('Failed to save deal:', err);
+            alert('Kon deal niet opslaan: ' + err.message);
+        }
+    }
+
+    async function deleteDeal(id) {
+        try {
+            const { error } = await supabase.from('deals').delete().eq('id', id);
+            if (error) throw error;
+            await loadData();
+        } catch (err) {
+            console.error('Failed to delete deal:', err);
+            alert('Kon deal niet verwijderen');
+        }
+    }
+
+    async function markFollowupDone(dealId) {
+        const deal = state.deals.find(d => d.id === dealId);
+        if (!deal) return;
+
+        const nextDay = getNextFollowupDay(deal.last_followup_day);
+        if (!nextDay) return;
+
+        const nextNextDay = getNextFollowupDay(nextDay);
+        const nextFollowupDate = nextNextDay ? addDays(deal.quote_date, nextNextDay) : null;
+
+        try {
+            // Log the followup
+            await supabase.from('followup_logs').insert({
+                deal_id: dealId,
+                day: nextDay,
+                template_type: getFollowupType(nextDay)
+            });
+
+            // Update the deal
+            const { error } = await supabase.from('deals').update({
+                last_followup_day: nextDay,
+                next_followup_date: nextFollowupDate,
+                updated_at: new Date().toISOString()
+            }).eq('id', dealId);
+
+            if (error) throw error;
+            await loadData();
+        } catch (err) {
+            console.error('Failed to mark followup done:', err);
+            alert('Kon follow-up niet markeren');
+        }
+    }
+
+    async function saveIncentive(event) {
+        event.preventDefault();
+
+        const id = document.getElementById('incentive-id').value;
+        const incentive = {
+            name: document.getElementById('incentive-name').value.trim(),
+            description: document.getElementById('incentive-description').value.trim(),
+            end_date: document.getElementById('incentive-end-date').value,
+            is_active: true
+        };
+
+        try {
+            if (id) {
+                const { error } = await supabase.from('incentives').update(incentive).eq('id', id);
+                if (error) throw error;
+            } else {
+                const { error } = await supabase.from('incentives').insert(incentive);
+                if (error) throw error;
+            }
+
+            closeIncentiveModal();
+            await loadData();
+        } catch (err) {
+            console.error('Failed to save incentive:', err);
+            alert('Kon incentive niet opslaan');
+        }
+    }
+
+    async function toggleIncentive(id, isActive) {
+        try {
+            const { error } = await supabase.from('incentives').update({ is_active: !isActive }).eq('id', id);
+            if (error) throw error;
+            await loadData();
+        } catch (err) {
+            console.error('Failed to toggle incentive:', err);
+        }
+    }
+
+    async function deleteIncentive(id) {
+        try {
+            const { error } = await supabase.from('incentives').delete().eq('id', id);
+            if (error) throw error;
+            await loadData();
+        } catch (err) {
+            console.error('Failed to delete incentive:', err);
+        }
+    }
+
+    // ============================================
+    // RENDERING
+    // ============================================
+    function switchTab(tab) {
+        state.currentTab = tab;
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.querySelector(`[data-tab="${tab}"]`).classList.add('active');
+        renderCurrentTab();
+    }
+
+    function renderCurrentTab() {
+        const container = document.getElementById('tab-content');
+
+        switch (state.currentTab) {
+            case 'dashboard':
+                container.innerHTML = renderDashboard();
+                break;
+            case 'pipeline':
+                container.innerHTML = renderPipeline();
+                break;
+            case 'incentives':
+                container.innerHTML = renderIncentives();
+                break;
+            case 'settings':
+                container.innerHTML = renderSettings();
+                break;
+        }
+    }
+
+    function renderDashboard() {
+        const today = getToday();
+        const activeDeals = state.deals.filter(d => d.status === 'offerte_verstuurd' || d.status === 'in_gesprek');
+
+        const todayDeals = activeDeals.filter(d => d.next_followup_date === today);
+        const overdueDeals = activeDeals.filter(d => d.next_followup_date && d.next_followup_date < today);
+
+        const wonDeals = state.deals.filter(d => d.status === 'gewonnen');
+        const lostDeals = state.deals.filter(d => d.status === 'verloren');
+        const totalValue = activeDeals.reduce((sum, d) => sum + parseFloat(d.quote_amount || 0), 0);
+        const wonValue = wonDeals.reduce((sum, d) => sum + parseFloat(d.quote_amount || 0), 0);
+
+        return `
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-label">Actieve deals</div>
+                    <div class="stat-value">${activeDeals.length}</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Gewonnen</div>
+                    <div class="stat-value success">${wonDeals.length}</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Verloren</div>
+                    <div class="stat-value">${lostDeals.length}</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Pipeline waarde</div>
+                    <div class="stat-value">${formatCurrency(totalValue)}</div>
+                </div>
+            </div>
+
+            ${overdueDeals.length > 0 ? `
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">
+                        Achterstallig
+                        <span class="count danger">${overdueDeals.length}</span>
+                    </h3>
+                </div>
+                <div class="deal-list">
+                    ${overdueDeals.map(deal => renderDealItem(deal, true)).join('')}
+                </div>
+            </div>
+            ` : ''}
+
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">
+                        Vandaag
+                        <span class="count">${todayDeals.length}</span>
+                    </h3>
+                </div>
+                ${todayDeals.length > 0 ? `
+                <div class="deal-list">
+                    ${todayDeals.map(deal => renderDealItem(deal, false)).join('')}
+                </div>
+                ` : `
+                <div class="empty-state">
+                    <div class="empty-state-icon">✓</div>
+                    <div class="empty-state-title">Geen acties voor vandaag</div>
+                    <div class="empty-state-text">Alle follow-ups zijn up-to-date</div>
+                </div>
+                `}
+            </div>
+        `;
+    }
+
+    function renderDealItem(deal, isOverdue) {
+        const nextDay = getNextFollowupDay(deal.last_followup_day);
+        const followupType = getFollowupType(nextDay);
+        const daysOverdue = isOverdue ? daysBetween(deal.next_followup_date, getToday()) : 0;
+
+        return `
+            <div class="deal-item ${isOverdue ? 'overdue' : ''}">
+                <div class="deal-info">
+                    <div class="deal-company">${escapeHtml(deal.company_name)}</div>
+                    <div class="deal-meta">
+                        <span>${escapeHtml(deal.contact_person)}</span>
+                        <span class="followup-type ${followupType}">${getFollowupLabel(nextDay)}</span>
+                        ${isOverdue ? `<span style="color: var(--danger);">${daysOverdue} dagen te laat</span>` : ''}
+                    </div>
+                </div>
+                <div class="deal-amount">${formatCurrency(deal.quote_amount)}</div>
+                <div class="deal-actions">
+                    <button class="btn btn-sm btn-primary" onclick="App.showEmailModal('${deal.id}')">
+                        E-mail
+                    </button>
+                    <button class="btn btn-sm btn-secondary" onclick="App.markFollowupDone('${deal.id}')">
+                        Gedaan
+                    </button>
+                    <button class="btn-icon" onclick="App.showDealModal('${deal.id}')" title="Bewerken">
+                        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                    </button>
+                </div>
+            </div>
+        `;
+    }
+
+    function renderPipeline() {
+        const filteredDeals = state.deals; // Could add filtering here
+
+        return `
+            <div class="filters">
+                <input type="text" class="search-input" placeholder="Zoeken..." oninput="App.filterDeals(this.value)">
+                <select class="filter-select" onchange="App.filterByStatus(this.value)">
+                    <option value="">Alle statussen</option>
+                    <option value="offerte_verstuurd">Offerte verstuurd</option>
+                    <option value="in_gesprek">In gesprek</option>
+                    <option value="gewonnen">Gewonnen</option>
+                    <option value="verloren">Verloren</option>
+                </select>
+            </div>
+
+            <div class="card">
+                ${filteredDeals.length > 0 ? `
+                <div class="table-wrapper">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Bedrijf</th>
+                                <th>Contact</th>
+                                <th>Bedrag</th>
+                                <th>Offertedatum</th>
+                                <th>Volgende actie</th>
+                                <th>Status</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${filteredDeals.map(deal => `
+                                <tr>
+                                    <td><strong>${escapeHtml(deal.company_name)}</strong></td>
+                                    <td>${escapeHtml(deal.contact_person)}</td>
+                                    <td>${formatCurrency(deal.quote_amount)}</td>
+                                    <td>${formatDateShort(deal.quote_date)}</td>
+                                    <td>${deal.next_followup_date ? formatDateShort(deal.next_followup_date) : '-'}</td>
+                                    <td><span class="status-badge ${deal.status}">${getStatusLabel(deal.status)}</span></td>
+                                    <td>
+                                        <button class="btn-icon" onclick="App.showDealModal('${deal.id}')" title="Bewerken">
+                                            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                                        </button>
+                                        <button class="btn-icon" onclick="App.confirmDelete('deal', '${deal.id}')" title="Verwijderen">
+                                            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                        </button>
+                                    </td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+                ` : `
+                <div class="empty-state">
+                    <div class="empty-state-icon">📋</div>
+                    <div class="empty-state-title">Nog geen deals</div>
+                    <div class="empty-state-text">Voeg je eerste deal toe om te beginnen</div>
+                    <button class="btn btn-primary" onclick="App.showDealModal()">Nieuwe Deal</button>
+                </div>
+                `}
+            </div>
+        `;
+    }
+
+    function renderIncentives() {
+        const activeIncentives = state.incentives.filter(i => i.is_active);
+        const inactiveIncentives = state.incentives.filter(i => !i.is_active);
+
+        return `
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Actieve Incentives</h3>
+                    <button class="btn btn-primary btn-sm" onclick="App.showIncentiveModal()">
+                        + Nieuwe Incentive
+                    </button>
+                </div>
+
+                ${activeIncentives.length > 0 ? `
+                    ${activeIncentives.map(inc => `
+                        <div class="incentive-item">
+                            <div class="incentive-info">
+                                <h4>${escapeHtml(inc.name)}</h4>
+                                <p>${escapeHtml(inc.description)}</p>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 12px;">
+                                <span class="incentive-date">Geldig t/m ${formatDateShort(inc.end_date)}</span>
+                                <button class="btn-icon" onclick="App.showIncentiveModal('${inc.id}')" title="Bewerken">
+                                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                                </button>
+                                <button class="btn-icon" onclick="App.toggleIncentive('${inc.id}', true)" title="Deactiveren">
+                                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/></svg>
+                                </button>
+                            </div>
+                        </div>
+                    `).join('')}
+                ` : `
+                    <div class="empty-state" style="padding: 32px;">
+                        <div class="empty-state-text">Geen actieve incentives</div>
+                    </div>
+                `}
+            </div>
+
+            ${inactiveIncentives.length > 0 ? `
+            <div class="card" style="opacity: 0.7;">
+                <div class="card-header">
+                    <h3 class="card-title">Inactieve Incentives</h3>
+                </div>
+                ${inactiveIncentives.map(inc => `
+                    <div class="incentive-item">
+                        <div class="incentive-info">
+                            <h4>${escapeHtml(inc.name)}</h4>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <button class="btn btn-sm btn-secondary" onclick="App.toggleIncentive('${inc.id}', false)">
+                                Activeren
+                            </button>
+                            <button class="btn-icon" onclick="App.confirmDelete('incentive', '${inc.id}')" title="Verwijderen">
+                                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                            </button>
+                        </div>
+                    </div>
+                `).join('')}
+            </div>
+            ` : ''}
+        `;
+    }
+
+    function renderSettings() {
+        return `
+            <div class="card">
+                <h3 class="card-title" style="margin-bottom: 20px;">Verbinding</h3>
+                <p style="color: var(--gray-600); margin-bottom: 16px;">
+                    Huidige Supabase verbinding. Klik op "Opnieuw verbinden" om andere credentials te gebruiken.
+                </p>
+                <button class="btn btn-secondary" onclick="App.reconnect()">
+                    Opnieuw verbinden
+                </button>
+            </div>
+
+            <div class="card">
+                <h3 class="card-title" style="margin-bottom: 20px;">Follow-up Schema</h3>
+                <p style="color: var(--gray-600); margin-bottom: 16px;">
+                    Het standaard opvolgschema na versturen van een offerte:
+                </p>
+                <div class="table-wrapper">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Dag</th>
+                                <th>Type</th>
+                                <th>Doel</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Dag 7</td>
+                                <td><span class="followup-type check-in">Check-in</span></td>
+                                <td>Gesprek openen, vragen beantwoorden</td>
+                            </tr>
+                            <tr>
+                                <td>Dag 14</td>
+                                <td><span class="followup-type waarde">Waarde</span></td>
+                                <td>ROI tastbaar maken met case study</td>
+                            </tr>
+                            <tr>
+                                <td>Dag 21</td>
+                                <td><span class="followup-type incentive">Incentive</span></td>
+                                <td>Incentive presenteren</td>
+                            </tr>
+                            <tr>
+                                <td>Dag 28</td>
+                                <td><span class="followup-type laatste-kans">Laatste kans</span></td>
+                                <td>Laatste poging, deur open houden</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3 class="card-title" style="margin-bottom: 20px;">Database Setup</h3>
+                <p style="color: var(--gray-600); margin-bottom: 16px;">
+                    Kopieer onderstaande SQL naar de Supabase SQL Editor om de tabellen aan te maken:
+                </p>
+                <pre style="background: var(--gray-50); padding: 16px; border-radius: var(--radius-md); font-size: 12px; overflow-x: auto; white-space: pre-wrap;">-- Tabel: deals
+CREATE TABLE deals (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW(),
+  company_name TEXT NOT NULL,
+  contact_person TEXT NOT NULL,
+  email TEXT NOT NULL,
+  phone TEXT,
+  quote_amount DECIMAL(10,2) NOT NULL,
+  quote_date DATE NOT NULL,
+  quote_reference TEXT,
+  status TEXT NOT NULL DEFAULT 'offerte_verstuurd'
+    CHECK (status IN ('offerte_verstuurd', 'in_gesprek', 'gewonnen', 'verloren')),
+  last_followup_day INTEGER DEFAULT 0,
+  next_followup_date DATE,
+  notes TEXT
+);
+
+-- Tabel: followup_logs
+CREATE TABLE followup_logs (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  deal_id UUID REFERENCES deals(id) ON DELETE CASCADE,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  day INTEGER NOT NULL CHECK (day IN (7, 14, 21, 28)),
+  template_type TEXT NOT NULL,
+  notes TEXT
+);
+
+-- Tabel: incentives
+CREATE TABLE incentives (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  name TEXT NOT NULL,
+  description TEXT NOT NULL,
+  end_date DATE NOT NULL,
+  is_active BOOLEAN DEFAULT true
+);
+
+-- RLS Policies
+ALTER TABLE deals ENABLE ROW LEVEL SECURITY;
+ALTER TABLE followup_logs ENABLE ROW LEVEL SECURITY;
+ALTER TABLE incentives ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Allow all" ON deals FOR ALL USING (true);
+CREATE POLICY "Allow all" ON followup_logs FOR ALL USING (true);
+CREATE POLICY "Allow all" ON incentives FOR ALL USING (true);</pre>
+            </div>
+        `;
+    }
+
+    function updateOverdueBadge() {
+        const today = getToday();
+        const activeDeals = state.deals.filter(d => d.status === 'offerte_verstuurd' || d.status === 'in_gesprek');
+        const overdueCount = activeDeals.filter(d => d.next_followup_date && d.next_followup_date < today).length;
+
+        const badge = document.getElementById('overdue-badge');
+        if (overdueCount > 0) {
+            badge.textContent = overdueCount;
+            badge.style.display = 'inline';
+        } else {
+            badge.style.display = 'none';
+        }
+    }
+
+    function populateIncentiveSelect() {
+        const select = document.getElementById('email-incentive');
+        const activeIncentives = state.incentives.filter(i => i.is_active && new Date(i.end_date) >= new Date());
+
+        select.innerHTML = '<option value="">Geen incentive</option>' +
+            activeIncentives.map(i => `<option value="${i.id}">${escapeHtml(i.name)}</option>`).join('');
+    }
+
+    // ============================================
+    // MODALS
+    // ============================================
+    function showDealModal(dealId = null) {
+        const modal = document.getElementById('deal-modal');
+        const title = document.getElementById('deal-modal-title');
+        const form = document.getElementById('deal-form');
+
+        form.reset();
+        document.getElementById('deal-id').value = '';
+
+        if (dealId) {
+            const deal = state.deals.find(d => d.id === dealId);
+            if (deal) {
+                title.textContent = 'Deal bewerken';
+                document.getElementById('deal-id').value = deal.id;
+                document.getElementById('deal-company').value = deal.company_name;
+                document.getElementById('deal-contact').value = deal.contact_person;
+                document.getElementById('deal-email').value = deal.email;
+                document.getElementById('deal-phone').value = deal.phone || '';
+                document.getElementById('deal-amount').value = deal.quote_amount;
+                document.getElementById('deal-date').value = deal.quote_date;
+                document.getElementById('deal-reference').value = deal.quote_reference || '';
+                document.getElementById('deal-status').value = deal.status;
+                document.getElementById('deal-notes').value = deal.notes || '';
+            }
+        } else {
+            title.textContent = 'Nieuwe Deal';
+            document.getElementById('deal-date').value = getToday();
+        }
+
+        modal.classList.add('active');
+    }
+
+    function closeDealModal() {
+        document.getElementById('deal-modal').classList.remove('active');
+    }
+
+    function showEmailModal(dealId) {
+        const deal = state.deals.find(d => d.id === dealId);
+        if (!deal) return;
+
+        state.selectedDeal = deal;
+
+        const nextDay = getNextFollowupDay(deal.last_followup_day);
+        const template = getFollowupType(nextDay);
+
+        document.getElementById('email-template').value = template;
+        document.getElementById('email-incentive').value = '';
+
+        updateEmailPreview();
+        document.getElementById('email-modal').classList.add('active');
+    }
+
+    function closeEmailModal() {
+        document.getElementById('email-modal').classList.remove('active');
+        state.selectedDeal = null;
+    }
+
+    function updateEmailPreview() {
+        const deal = state.selectedDeal;
+        if (!deal) return;
+
+        const templateType = document.getElementById('email-template').value;
+        const incentiveId = document.getElementById('email-incentive').value;
+        const incentive = incentiveId ? state.incentives.find(i => i.id === incentiveId) : null;
+
+        const email = generateEmail(deal, templateType, incentive);
+
+        document.getElementById('email-to').textContent = deal.email;
+        document.getElementById('email-subject').textContent = email.subject;
+        document.getElementById('email-body').textContent = email.body;
+    }
+
+    function generateEmail(deal, templateType, incentive = null) {
+        const template = EMAIL_TEMPLATES[templateType];
+        if (!template) return { subject: '', body: '' };
+
+        const firstName = deal.contact_person.split(' ')[0];
+
+        let subject = template.subject
+            .replace('{company}', deal.company_name);
+
+        let body = template.body
+            .replace(/{company}/g, deal.company_name)
+            .replace(/{contact}/g, firstName)
+            .replace(/{amount}/g, formatCurrency(deal.quote_amount))
+            .replace(/{quote_date}/g, formatDate(deal.quote_date));
+
+        if (incentive) {
+            body = body
+                .replace('{incentive}', incentive.description)
+                .replace('{incentive_date}', formatDate(incentive.end_date));
+        } else {
+            body = body
+                .replace('{incentive}', 'Bij beslissing deze maand ontvangt u 2 maanden gratis na de eerste 6 maanden.')
+                .replace('{incentive_date}', 'eind van de maand');
+        }
+
+        return { subject, body };
+    }
+
+    function openInOutlook() {
+        const deal = state.selectedDeal;
+        if (!deal) return;
+
+        const templateType = document.getElementById('email-template').value;
+        const incentiveId = document.getElementById('email-incentive').value;
+        const incentive = incentiveId ? state.incentives.find(i => i.id === incentiveId) : null;
+
+        const email = generateEmail(deal, templateType, incentive);
+
+        const mailtoLink = `mailto:${encodeURIComponent(deal.email)}?subject=${encodeURIComponent(email.subject)}&body=${encodeURIComponent(email.body)}`;
+
+        window.location.href = mailtoLink;
+        closeEmailModal();
+    }
+
+    function copyEmailToClipboard() {
+        const subject = document.getElementById('email-subject').textContent;
+        const body = document.getElementById('email-body').textContent;
+
+        const text = `Onderwerp: ${subject}\n\n${body}`;
+
+        navigator.clipboard.writeText(text).then(() => {
+            alert('E-mail gekopieerd naar klembord');
+        }).catch(err => {
+            console.error('Copy failed:', err);
+        });
+    }
+
+    function showImportModal() {
+        document.getElementById('import-modal').classList.add('active');
+        document.getElementById('import-preview').style.display = 'none';
+        document.getElementById('import-btn').disabled = true;
+        state.importData = [];
+
+        // Setup dropzone
+        const dropzone = document.getElementById('import-dropzone');
+        const fileInput = document.getElementById('import-file');
+
+        dropzone.onclick = () => fileInput.click();
+
+        dropzone.ondragover = (e) => {
+            e.preventDefault();
+            dropzone.classList.add('dragover');
+        };
+
+        dropzone.ondragleave = () => {
+            dropzone.classList.remove('dragover');
+        };
+
+        dropzone.ondrop = (e) => {
+            e.preventDefault();
+            dropzone.classList.remove('dragover');
+            const file = e.dataTransfer.files[0];
+            if (file) handleFile(file);
+        };
+    }
+
+    function closeImportModal() {
+        document.getElementById('import-modal').classList.remove('active');
+    }
+
+    function handleFileSelect(event) {
+        const file = event.target.files[0];
+        if (file) handleFile(file);
+    }
+
+    function handleFile(file) {
+        if (!file.name.endsWith('.csv')) {
+            alert('Selecteer een CSV-bestand');
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            parseCSV(e.target.result);
+        };
+        reader.readAsText(file);
+    }
+
+    function parseCSV(content) {
+        const lines = content.split('\n').filter(line => line.trim());
+        if (lines.length < 2) {
+            alert('CSV-bestand is leeg of heeft geen data');
+            return;
+        }
+
+        const headers = lines[0].toLowerCase().split(/[,;]/).map(h => h.trim().replace(/"/g, ''));
+
+        // Find column indices
+        const companyIdx = headers.findIndex(h => h.includes('bedrijf') || h.includes('company'));
+        const contactIdx = headers.findIndex(h => h.includes('contact') || h.includes('naam'));
+        const emailIdx = headers.findIndex(h => h.includes('email') || h.includes('e-mail'));
+        const amountIdx = headers.findIndex(h => h.includes('bedrag') || h.includes('amount') || h.includes('totaal'));
+        const dateIdx = headers.findIndex(h => h.includes('datum') || h.includes('date'));
+
+        if (companyIdx === -1 || emailIdx === -1) {
+            alert('CSV moet minstens kolommen voor bedrijfsnaam en email bevatten');
+            return;
+        }
+
+        const deals = [];
+        for (let i = 1; i < lines.length; i++) {
+            const values = lines[i].split(/[,;]/).map(v => v.trim().replace(/"/g, ''));
+
+            if (values.length >= Math.max(companyIdx, emailIdx) + 1) {
+                const deal = {
+                    company_name: values[companyIdx] || '',
+                    contact_person: contactIdx >= 0 ? values[contactIdx] : '',
+                    email: values[emailIdx] || '',
+                    quote_amount: amountIdx >= 0 ? parseFloat(values[amountIdx].replace(/[^0-9.,]/g, '').replace(',', '.')) || 0 : 0,
+                    quote_date: dateIdx >= 0 ? parseDate(values[dateIdx]) : getToday()
+                };
+
+                if (deal.company_name && deal.email) {
+                    deals.push(deal);
+                }
+            }
+        }
+
+        state.importData = deals;
+        showImportPreview(deals);
+    }
+
+    function parseDate(dateStr) {
+        if (!dateStr) return getToday();
+
+        // Try DD-MM-YYYY or DD/MM/YYYY
+        const dmyMatch = dateStr.match(/(\d{1,2})[-\/](\d{1,2})[-\/](\d{4})/);
+        if (dmyMatch) {
+            return `${dmyMatch[3]}-${dmyMatch[2].padStart(2, '0')}-${dmyMatch[1].padStart(2, '0')}`;
+        }
+
+        // Try YYYY-MM-DD
+        const ymdMatch = dateStr.match(/(\d{4})[-\/](\d{1,2})[-\/](\d{1,2})/);
+        if (ymdMatch) {
+            return `${ymdMatch[1]}-${ymdMatch[2].padStart(2, '0')}-${ymdMatch[3].padStart(2, '0')}`;
+        }
+
+        return getToday();
+    }
+
+    function showImportPreview(deals) {
+        document.getElementById('import-count').textContent = deals.length;
+
+        const tbody = document.querySelector('#import-table tbody');
+        tbody.innerHTML = deals.slice(0, 10).map(deal => `
+            <tr>
+                <td>${escapeHtml(deal.company_name)}</td>
+                <td>${escapeHtml(deal.contact_person)}</td>
+                <td>${escapeHtml(deal.email)}</td>
+                <td>${formatCurrency(deal.quote_amount)}</td>
+                <td>${formatDateShort(deal.quote_date)}</td>
+            </tr>
+        `).join('');
+
+        if (deals.length > 10) {
+            tbody.innerHTML += `<tr><td colspan="5" style="text-align: center; color: var(--gray-500);">...en ${deals.length - 10} meer</td></tr>`;
+        }
+
+        document.getElementById('import-preview').style.display = 'block';
+        document.getElementById('import-btn').disabled = deals.length === 0;
+    }
+
+    async function importDeals() {
+        if (state.importData.length === 0) return;
+
+        const deals = state.importData.map(d => ({
+            ...d,
+            status: 'offerte_verstuurd',
+            last_followup_day: 0,
+            next_followup_date: calculateNextFollowup(d.quote_date, 0)
+        }));
+
+        try {
+            const { error } = await supabase.from('deals').insert(deals);
+            if (error) throw error;
+
+            closeImportModal();
+            await loadData();
+            alert(`${deals.length} deals succesvol geimporteerd`);
+        } catch (err) {
+            console.error('Import failed:', err);
+            alert('Import mislukt: ' + err.message);
+        }
+    }
+
+    function showIncentiveModal(incentiveId = null) {
+        const modal = document.getElementById('incentive-modal');
+        const title = document.getElementById('incentive-modal-title');
+        const form = document.getElementById('incentive-form');
+
+        form.reset();
+        document.getElementById('incentive-id').value = '';
+
+        if (incentiveId) {
+            const incentive = state.incentives.find(i => i.id === incentiveId);
+            if (incentive) {
+                title.textContent = 'Incentive bewerken';
+                document.getElementById('incentive-id').value = incentive.id;
+                document.getElementById('incentive-name').value = incentive.name;
+                document.getElementById('incentive-description').value = incentive.description;
+                document.getElementById('incentive-end-date').value = incentive.end_date;
+            }
+        } else {
+            title.textContent = 'Nieuwe Incentive';
+        }
+
+        modal.classList.add('active');
+    }
+
+    function closeIncentiveModal() {
+        document.getElementById('incentive-modal').classList.remove('active');
+    }
+
+    function confirmDelete(type, id) {
+        const modal = document.getElementById('confirm-modal');
+        const message = document.getElementById('confirm-message');
+        const btn = document.getElementById('confirm-btn');
+
+        message.textContent = type === 'deal'
+            ? 'Weet je zeker dat je deze deal wilt verwijderen?'
+            : 'Weet je zeker dat je deze incentive wilt verwijderen?';
+
+        btn.onclick = async () => {
+            if (type === 'deal') {
+                await deleteDeal(id);
+            } else {
+                await deleteIncentive(id);
+            }
+            closeConfirmModal();
+        };
+
+        modal.classList.add('active');
+    }
+
+    function closeConfirmModal() {
+        document.getElementById('confirm-modal').classList.remove('active');
+    }
+
+    function reconnect() {
+        clearConfig();
+        showSetupScreen();
+    }
+
+    function showError(message) {
+        alert(message);
+    }
+
+    function escapeHtml(text) {
+        if (!text) return '';
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+
+    // ============================================
+    // FILTERING (basic implementation)
+    // ============================================
+    function filterDeals(query) {
+        // For now, just re-render. In a full implementation, filter state.deals
+        renderCurrentTab();
+    }
+
+    function filterByStatus(status) {
+        // For now, just re-render. In a full implementation, filter by status
+        renderCurrentTab();
+    }
+
+    // ============================================
+    // INITIALIZATION
+    // ============================================
+    function init() {
+        // Close modals on escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeDealModal();
+                closeEmailModal();
+                closeImportModal();
+                closeIncentiveModal();
+                closeConfirmModal();
+            }
+        });
+
+        // Close modals on overlay click
+        document.querySelectorAll('.modal-overlay').forEach(overlay => {
+            overlay.addEventListener('click', (e) => {
+                if (e.target === overlay) {
+                    overlay.classList.remove('active');
+                }
+            });
+        });
+
+        initFromStorage();
+    }
+
+    // ============================================
+    // EXPOSE PUBLIC API
+    // ============================================
+    window.App = {
+        connect,
+        switchTab,
+        showDealModal,
+        closeDealModal,
+        saveDeal,
+        showEmailModal,
+        closeEmailModal,
+        updateEmailPreview,
+        openInOutlook,
+        copyEmailToClipboard,
+        showImportModal,
+        closeImportModal,
+        handleFileSelect,
+        importDeals,
+        showIncentiveModal,
+        closeIncentiveModal,
+        saveIncentive,
+        toggleIncentive,
+        confirmDelete,
+        closeConfirmModal,
+        markFollowupDone,
+        filterDeals,
+        filterByStatus,
+        reconnect
+    };
+
+    // Initialize on DOM ready
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+    } else {
+        init();
+    }
+})();
+</script>
+    </main>
+</body>
+</html>

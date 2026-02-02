@@ -1,0 +1,58 @@
+<footer class="footer">
+  <div class="container">
+    <div class="footer-grid">
+      <!-- Company Info -->
+      <div class="footer-col">
+        <a href="/" class="footer-logo">
+          <img src="{{ '/assets/images/notifica-logo-white.svg' | url }}" alt="{{ site.name }}" width="180" height="50">
+        </a>
+        <p class="footer-tagline">{{ site.tagline }}</p>
+      </div>
+
+      <!-- Contact -->
+      <div class="footer-col">
+        <h4>Contact</h4>
+        <address>
+          {{ site.address.street }}<br>
+          {{ site.address.postal }} {{ site.address.city }}
+        </address>
+        <p>
+          <a href="tel:{{ site.phone | replace(' ', '') | replace('(', '') | replace(')', '') }}">{{ site.phone }}</a><br>
+          <a href="mailto:{{ site.email }}">{{ site.email }}</a>
+        </p>
+      </div>
+
+      <!-- Support -->
+      <div class="footer-col">
+        <h4>Support</h4>
+        <p>
+          <a href="mailto:support@notifica.nl">support@notifica.nl</a>
+        </p>
+        <p>
+          <a href="https://get.teamviewer.com/6by29qn" target="_blank" rel="noopener">Download quicksupport</a>
+        </p>
+      </div>
+
+      <!-- CTA -->
+      <div class="footer-col">
+        <h4>Direct aan de slag?</h4>
+        <p>Plan een vrijblijvende demo en ontdek wat Notifica voor jouw bedrijf kan betekenen.</p>
+        <button class="btn btn-primary" data-pipedrive-form="demo">
+          Plan een demo
+        </button>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <div class="footer-legal">
+        <p>&copy; {% year %} {{ site.name }}. Alle rechten voorbehouden.</p>
+        <p>KVK: {{ site.kvk }} | BTW: {{ site.btw }}</p>
+      </div>
+      <ul class="footer-legal-links">
+        {% for item in navigation.footer %}
+        <li><a href="{{ item.url }}">{{ item.label }}</a></li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+</footer>

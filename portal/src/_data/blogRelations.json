@@ -1,0 +1,173 @@
+{
+  "categories": {
+    "kpis-dashboards": {
+      "name": "KPI's & Dashboards",
+      "blogs": [
+        "24-essentiele-kpis-installateurs",
+        "stuurinformatie-bespaar-12-uur",
+        "winstoptimalisatie-installatiebedrijven"
+      ]
+    },
+    "ohw-projecten": {
+      "name": "OHW & Projecten",
+      "blogs": [
+        "grip-op-ohw-5-stappen",
+        "onderhanden-werk-projectsturing"
+      ]
+    },
+    "ai-technologie": {
+      "name": "AI & Technologie",
+      "blogs": [
+        "ai-dashboards-voordelen",
+        "ai-servicedesk-werkbondata-installateurs",
+        "betere-besluiten-voorspellen",
+        "chatgpt-vs-copilot",
+        "predictive-maintenance-innovaties"
+      ]
+    },
+    "power-bi-basics": {
+      "name": "Power BI Basics",
+      "blogs": [
+        "4-power-bi-stappen-installateurs",
+        "controle-realtime-power-bi",
+        "power-bi-vs-excel"
+      ]
+    },
+    "implementatie": {
+      "name": "Implementatie",
+      "blogs": [
+        "direct-inzicht-betere-cijfers",
+        "flexibele-abonnementsvorm",
+        "mkb-implementatiegids",
+        "razendsnel-rapporten-live",
+        "uitbesteden-rapportage-mkb"
+      ]
+    },
+    "case-studies": {
+      "name": "Case Studies",
+      "blogs": [
+        "case-study-storm-overwinnen",
+        "60-tevreden-klanten"
+      ]
+    },
+    "finance-rapportage": {
+      "name": "Finance & Rapportage",
+      "blogs": [
+        "verbeter-datakwaliteit-erp",
+        "versnel-maandrapportage"
+      ]
+    }
+  },
+  "relatedBlogs": {
+    "24-essentiele-kpis-installateurs": [
+      {"url": "/inspiratie/blogs/winstoptimalisatie-installatiebedrijven/", "title": "Winstoptimalisatie: 5 Kengetallen die het Verschil Maken", "description": "Ontdek hoe je met vijf essentiële kengetallen de winstgevendheid van je installatiebedrijf kunt voorspellen en verbeteren."},
+      {"url": "/inspiratie/blogs/stuurinformatie-bespaar-12-uur/", "title": "Stuurinformatie: bespaar 12 uur per week met Power BI", "description": "Ontdek hoe je met gestructureerde stuurinformatie tot 12 uur per week bespaart op rapportages."},
+      {"url": "/inspiratie/blogs/grip-op-ohw-5-stappen/", "title": "Eenvoudig grip op OHW: 5 krachtige stappen", "description": "Ontdek hoe je met Notifica's stappenplan realtime inzicht krijgt in de stand van het OHW."}
+    ],
+    "4-power-bi-stappen-installateurs": [
+      {"url": "/inspiratie/blogs/power-bi-vs-excel/", "title": "Power BI versus Excel: 5 onmisbare voordelen", "description": "Ontdek waarom Power BI de betere keuze is voor installatiebedrijven die willen groeien."},
+      {"url": "/inspiratie/blogs/controle-realtime-power-bi/", "title": "Real-time Power BI-inzichten voor de installatiebranche", "description": "Ontketen onmiddellijke controle met real-time dashboards voor jouw installatiebedrijf."},
+      {"url": "/inspiratie/blogs/razendsnel-rapporten-live/", "title": "Razendsnel live: binnen 2 weken met Power BI", "description": "Ontdek hoe je binnen twee weken live kunt gaan met professionele Power BI dashboards."}
+    ],
+    "60-tevreden-klanten": [
+      {"url": "/inspiratie/blogs/case-study-storm-overwinnen/", "title": "Storm overwinnen: financieel inzicht als reddingsboei", "description": "Lees hoe een installateur met Power BI dashboards een financiële storm overwon."},
+      {"url": "/inspiratie/blogs/flexibele-abonnementsvorm/", "title": "5 onmisbare voordelen van ons alles-in-één abonnement", "description": "Ontdek de voordelen van Notifica's flexibele abonnementsvorm voor installatiebedrijven."},
+      {"url": "/inspiratie/blogs/direct-inzicht-betere-cijfers/", "title": "Van rommelige cijfers naar helder inzicht", "description": "Ontdek Notifica's bewezen aanpak voor datagedreven werken in de installatiebranche."}
+    ],
+    "ai-dashboards-voordelen": [
+      {"url": "/inspiratie/blogs/chatgpt-vs-copilot/", "title": "Copilot vs ChatGPT: de ultieme Power BI AI keuzewijzer", "description": "Welke AI-tool past het beste bij jouw installatiebedrijf? Een complete vergelijking."},
+      {"url": "/inspiratie/blogs/ai-servicedesk-werkbondata-installateurs/", "title": "AI in de Servicedesk: slimmer werken met werkbondata", "description": "Ontdek hoe AI jouw servicedesk kan versterken met slimme werkbonanalyse."},
+      {"url": "/inspiratie/blogs/betere-besluiten-voorspellen/", "title": "Stop met terugkijken, begin met vooruitkijken!", "description": "Maak betere besluiten met voorspellen en forecasting in Power BI."}
+    ],
+    "ai-servicedesk-werkbondata-installateurs": [
+      {"url": "/inspiratie/blogs/ai-dashboards-voordelen/", "title": "AI dashboards: Ontdek 7 gigantische voordelen", "description": "Ontdek hoe AI-gestuurde dashboards jouw installatiebedrijf kunnen transformeren."},
+      {"url": "/inspiratie/blogs/predictive-maintenance-innovaties/", "title": "Predictive maintenance: 5 krachtige toepassingen", "description": "Ontdek hoe predictive maintenance met data je onderhoudsprocessen optimaliseert."},
+      {"url": "/inspiratie/blogs/chatgpt-vs-copilot/", "title": "Copilot vs ChatGPT: de ultieme AI keuzewijzer", "description": "Welke AI-tool past het beste bij jouw installatiebedrijf?"}
+    ],
+    "betere-besluiten-voorspellen": [
+      {"url": "/inspiratie/blogs/ai-dashboards-voordelen/", "title": "AI dashboards: Ontdek 7 gigantische voordelen", "description": "Ontdek hoe AI-gestuurde dashboards jouw installatiebedrijf kunnen transformeren."},
+      {"url": "/inspiratie/blogs/winstoptimalisatie-installatiebedrijven/", "title": "Winstoptimalisatie: 5 Kengetallen die het Verschil Maken", "description": "Ontdek hoe je met vijf essentiële kengetallen je winstgevendheid verbetert."},
+      {"url": "/inspiratie/blogs/grip-op-ohw-5-stappen/", "title": "Eenvoudig grip op OHW: 5 krachtige stappen", "description": "Ontdek hoe je met realtime inzicht in OHW betere beslissingen neemt."}
+    ],
+    "case-study-storm-overwinnen": [
+      {"url": "/inspiratie/blogs/60-tevreden-klanten/", "title": "Meer dan 60 tevreden klanten", "description": "Ontdek hoe meer dan 60 installatiebedrijven succesvol zijn met onze dashboards."},
+      {"url": "/inspiratie/blogs/onderhanden-werk-projectsturing/", "title": "5 Tips voor Onderhanden Werk", "description": "Efficiënt je cashflow en projecten besturen met realtime inzichten."},
+      {"url": "/inspiratie/blogs/grip-op-ohw-5-stappen/", "title": "Eenvoudig grip op OHW: 5 krachtige stappen", "description": "Ontdek Notifica's stappenplan voor realtime OHW-inzicht."}
+    ],
+    "chatgpt-vs-copilot": [
+      {"url": "/inspiratie/blogs/ai-dashboards-voordelen/", "title": "AI dashboards: Ontdek 7 gigantische voordelen", "description": "Ontdek hoe AI-gestuurde dashboards jouw bedrijf kunnen transformeren."},
+      {"url": "/inspiratie/blogs/ai-servicedesk-werkbondata-installateurs/", "title": "AI in de Servicedesk", "description": "Hoe installatiebedrijven slimmer werken met werkbondata en AI."},
+      {"url": "/inspiratie/blogs/betere-besluiten-voorspellen/", "title": "Betere besluiten met voorspellen", "description": "Stop met terugkijken, begin met vooruitkijken in Power BI."}
+    ],
+    "controle-realtime-power-bi": [
+      {"url": "/inspiratie/blogs/4-power-bi-stappen-installateurs/", "title": "Datagedreven dashboards installatiesector", "description": "Meer grip met Power BI in de installatiebranche."},
+      {"url": "/inspiratie/blogs/power-bi-vs-excel/", "title": "Power BI versus Excel: 5 onmisbare voordelen", "description": "Waarom Power BI de betere keuze is voor installateurs."},
+      {"url": "/inspiratie/blogs/razendsnel-rapporten-live/", "title": "Razendsnel live: binnen 2 weken met Power BI", "description": "Ontdek hoe snel je live kunt gaan met professionele dashboards."}
+    ],
+    "direct-inzicht-betere-cijfers": [
+      {"url": "/inspiratie/blogs/mkb-implementatiegids/", "title": "MKB-implementatiegids: 6 essentiële stappen", "description": "Een complete gids voor het implementeren van BI in het MKB."},
+      {"url": "/inspiratie/blogs/flexibele-abonnementsvorm/", "title": "5 voordelen van ons alles-in-één abonnement", "description": "Ontdek de voordelen van Notifica's flexibele abonnementsvorm."},
+      {"url": "/inspiratie/blogs/razendsnel-rapporten-live/", "title": "Razendsnel live: binnen 2 weken met Power BI", "description": "Snel aan de slag met professionele Power BI dashboards."}
+    ],
+    "flexibele-abonnementsvorm": [
+      {"url": "/inspiratie/blogs/60-tevreden-klanten/", "title": "Meer dan 60 tevreden klanten", "description": "Ontdek waarom meer dan 60 installatiebedrijven voor Notifica kiezen."},
+      {"url": "/inspiratie/blogs/uitbesteden-rapportage-mkb/", "title": "7 Redenen Waarom Uitbesteden Slim Is", "description": "Ontdek waarom uitbesteden van rapportages een slimme keuze is."},
+      {"url": "/inspiratie/blogs/direct-inzicht-betere-cijfers/", "title": "Van rommelige cijfers naar helder inzicht", "description": "Notifica's aanpak voor datagedreven werken."}
+    ],
+    "grip-op-ohw-5-stappen": [
+      {"url": "/inspiratie/blogs/onderhanden-werk-projectsturing/", "title": "5 Tips voor Onderhanden Werk", "description": "Efficiënt je cashflow en projecten besturen."},
+      {"url": "/inspiratie/blogs/versnel-maandrapportage/", "title": "Maandrapportage: 5 tips voor tijdbesparing", "description": "Automatiseer je maandrapportage en bespaar tijd."},
+      {"url": "/inspiratie/blogs/24-essentiele-kpis-installateurs/", "title": "24 essentiële KPI's in één overzicht", "description": "Alle KPI's die je nodig hebt voor je installatiebedrijf."}
+    ],
+    "mkb-implementatiegids": [
+      {"url": "/inspiratie/blogs/direct-inzicht-betere-cijfers/", "title": "Van rommelige cijfers naar helder inzicht", "description": "Notifica's bewezen aanpak voor datagedreven werken."},
+      {"url": "/inspiratie/blogs/razendsnel-rapporten-live/", "title": "Razendsnel live: binnen 2 weken met Power BI", "description": "Ontdek hoe snel je live kunt gaan met dashboards."},
+      {"url": "/inspiratie/blogs/uitbesteden-rapportage-mkb/", "title": "7 Redenen Waarom Uitbesteden Slim Is", "description": "Ontdek de voordelen van het uitbesteden van rapportages."}
+    ],
+    "onderhanden-werk-projectsturing": [
+      {"url": "/inspiratie/blogs/grip-op-ohw-5-stappen/", "title": "Eenvoudig grip op OHW: 5 krachtige stappen", "description": "Notifica's stappenplan voor realtime OHW-inzicht."},
+      {"url": "/inspiratie/blogs/case-study-storm-overwinnen/", "title": "Storm overwinnen: financieel inzicht als reddingsboei", "description": "Hoe een installateur met dashboards een financiële storm overwon."},
+      {"url": "/inspiratie/blogs/versnel-maandrapportage/", "title": "Maandrapportage: 5 tips voor tijdbesparing", "description": "Automatiseer je maandrapportage en bespaar tijd."}
+    ],
+    "power-bi-vs-excel": [
+      {"url": "/inspiratie/blogs/4-power-bi-stappen-installateurs/", "title": "Datagedreven dashboards installatiesector", "description": "Meer grip met Power BI in de installatiebranche."},
+      {"url": "/inspiratie/blogs/controle-realtime-power-bi/", "title": "Real-time Power BI-inzichten", "description": "Ontketen onmiddellijke controle met real-time dashboards."},
+      {"url": "/inspiratie/blogs/razendsnel-rapporten-live/", "title": "Razendsnel live: binnen 2 weken met Power BI", "description": "Snel aan de slag met professionele dashboards."}
+    ],
+    "predictive-maintenance-innovaties": [
+      {"url": "/inspiratie/blogs/ai-dashboards-voordelen/", "title": "AI dashboards: Ontdek 7 gigantische voordelen", "description": "Hoe AI-gestuurde dashboards jouw bedrijf transformeren."},
+      {"url": "/inspiratie/blogs/ai-servicedesk-werkbondata-installateurs/", "title": "AI in de Servicedesk", "description": "Slimmer werken met werkbondata en AI."},
+      {"url": "/inspiratie/blogs/betere-besluiten-voorspellen/", "title": "Betere besluiten met voorspellen", "description": "Stop met terugkijken, begin met vooruitkijken."}
+    ],
+    "razendsnel-rapporten-live": [
+      {"url": "/inspiratie/blogs/mkb-implementatiegids/", "title": "MKB-implementatiegids: 6 essentiële stappen", "description": "Complete gids voor het implementeren van BI in het MKB."},
+      {"url": "/inspiratie/blogs/direct-inzicht-betere-cijfers/", "title": "Van rommelige cijfers naar helder inzicht", "description": "Notifica's aanpak voor datagedreven werken."},
+      {"url": "/inspiratie/blogs/4-power-bi-stappen-installateurs/", "title": "Datagedreven dashboards installatiesector", "description": "Meer grip met Power BI in de installatiebranche."}
+    ],
+    "stuurinformatie-bespaar-12-uur": [
+      {"url": "/inspiratie/blogs/24-essentiele-kpis-installateurs/", "title": "24 essentiële KPI's in één overzicht", "description": "Alle KPI's die je nodig hebt voor je installatiebedrijf."},
+      {"url": "/inspiratie/blogs/winstoptimalisatie-installatiebedrijven/", "title": "Winstoptimalisatie: 5 Kengetallen", "description": "Ontdek de kengetallen die het verschil maken."},
+      {"url": "/inspiratie/blogs/versnel-maandrapportage/", "title": "Maandrapportage: 5 tips voor tijdbesparing", "description": "Automatiseer je maandrapportage en bespaar tijd."}
+    ],
+    "uitbesteden-rapportage-mkb": [
+      {"url": "/inspiratie/blogs/flexibele-abonnementsvorm/", "title": "5 voordelen van ons alles-in-één abonnement", "description": "Ontdek de voordelen van Notifica's abonnementsvorm."},
+      {"url": "/inspiratie/blogs/mkb-implementatiegids/", "title": "MKB-implementatiegids: 6 essentiële stappen", "description": "Complete gids voor het implementeren van BI in het MKB."},
+      {"url": "/inspiratie/blogs/direct-inzicht-betere-cijfers/", "title": "Van rommelige cijfers naar helder inzicht", "description": "Notifica's aanpak voor datagedreven werken."}
+    ],
+    "verbeter-datakwaliteit-erp": [
+      {"url": "/inspiratie/blogs/versnel-maandrapportage/", "title": "Maandrapportage: 5 tips voor tijdbesparing", "description": "Automatiseer je maandrapportage en bespaar tijd."},
+      {"url": "/inspiratie/blogs/direct-inzicht-betere-cijfers/", "title": "Van rommelige cijfers naar helder inzicht", "description": "Notifica's aanpak voor datagedreven werken."},
+      {"url": "/inspiratie/blogs/mkb-implementatiegids/", "title": "MKB-implementatiegids: 6 essentiële stappen", "description": "Complete gids voor het implementeren van BI."}
+    ],
+    "versnel-maandrapportage": [
+      {"url": "/inspiratie/blogs/verbeter-datakwaliteit-erp/", "title": "5 tips voor verbeteren van datakwaliteit", "description": "Verbeter de datakwaliteit in je ERP-systeem."},
+      {"url": "/inspiratie/blogs/stuurinformatie-bespaar-12-uur/", "title": "Stuurinformatie: bespaar 12 uur per week", "description": "Bespaar tijd op rapportages met goede stuurinformatie."},
+      {"url": "/inspiratie/blogs/grip-op-ohw-5-stappen/", "title": "Eenvoudig grip op OHW: 5 krachtige stappen", "description": "Notifica's stappenplan voor realtime OHW-inzicht."}
+    ],
+    "winstoptimalisatie-installatiebedrijven": [
+      {"url": "/inspiratie/blogs/24-essentiele-kpis-installateurs/", "title": "24 essentiële KPI's in één overzicht", "description": "Alle KPI's die je nodig hebt voor je installatiebedrijf."},
+      {"url": "/inspiratie/blogs/stuurinformatie-bespaar-12-uur/", "title": "Stuurinformatie: bespaar 12 uur per week", "description": "Bespaar tijd met goede stuurinformatie."},
+      {"url": "/inspiratie/blogs/betere-besluiten-voorspellen/", "title": "Betere besluiten met voorspellen", "description": "Stop met terugkijken, begin met vooruitkijken."}
+    ]
+  }
+}

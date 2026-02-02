@@ -1,0 +1,840 @@
+<style>
+/* Bedrijfsanalysetool Calculator Styles */
+.bat-container { max-width: 1200px; margin: 0 auto; padding: 0 15px; }
+
+/* Steps Section */
+.bat-steps {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 25px;
+  margin-bottom: 35px;
+  padding: 25px 0;
+}
+
+.bat-step {
+  text-align: center;
+}
+
+.bat-step-icon {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 12px;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.bat-step-1 { background: #e8f5e9; color: #2e7d32; }
+.bat-step-2 { background: #fff3cd; color: #856404; }
+.bat-step-3 { background: #e3f2fd; color: #1565c0; }
+
+.bat-step h3 {
+  font-size: 16px;
+  color: #16136f;
+  margin-bottom: 6px;
+  font-weight: 600;
+}
+
+.bat-step p {
+  font-size: 13px;
+  color: #777;
+  margin: 0;
+  line-height: 1.4;
+}
+
+/* Title */
+.bat-page-title {
+  text-align: center;
+  color: #16136f;
+  font-size: 26px;
+  margin-bottom: 6px;
+  font-weight: 700;
+}
+
+.bat-page-subtitle {
+  text-align: center;
+  color: #777;
+  font-size: 15px;
+  margin-bottom: 35px;
+}
+
+/* Calculator Layout */
+.bat-calc-grid {
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  gap: 25px;
+  margin-bottom: 15px;
+}
+
+/* Section Headers */
+.bat-section-header {
+  font-size: 13px;
+  font-weight: 700;
+  color: #16136f;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 18px;
+  padding-bottom: 6px;
+  border-bottom: 2px solid #16136f;
+}
+
+/* Cards */
+.bat-card {
+  background: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+  border: 1px solid #ececec;
+  margin-bottom: 18px;
+}
+
+.bat-card h3 {
+  font-size: 17px;
+  color: #16136f;
+  margin-bottom: 14px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #eee;
+  font-weight: 600;
+}
+
+.bat-card h3 span {
+  color: #16136f;
+  margin-right: 4px;
+}
+
+/* Form Elements */
+.bat-input-group {
+  margin-bottom: 14px;
+  position: relative;
+}
+
+.bat-input-group label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #555;
+  margin-bottom: 5px;
+}
+
+.bat-info-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background: #e3f2fd;
+  color: #1565c0;
+  font-size: 10px;
+  font-weight: 700;
+  cursor: help;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.bat-info-icon:hover .bat-tooltip {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.bat-tooltip {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%) translateY(4px);
+  background: #16136f;
+  color: white;
+  padding: 10px 12px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 400;
+  white-space: normal;
+  width: 240px;
+  text-align: left;
+  line-height: 1.4;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.2s;
+  z-index: 100;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+.bat-tooltip em {
+  display: block;
+  margin-top: 6px;
+  font-style: normal;
+  color: #aebbf0;
+  font-size: 10px;
+  font-weight: 600;
+}
+
+.bat-tooltip::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 4px solid transparent;
+  border-top-color: #16136f;
+}
+
+.bat-input-group input[type="number"] {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid #e3e3e3;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  text-align: right;
+  font-family: inherit;
+  transition: border-color 0.2s;
+}
+
+.bat-input-group input[type="number"]:focus {
+  outline: none;
+  border-color: #16136f;
+}
+
+.bat-capacity-summary {
+  background: #f4f6fc;
+  padding: 8px 12px;
+  border-radius: 6px;
+  display: flex;
+  justify-content: space-between;
+  font-weight: 700;
+  color: #16136f;
+  font-size: 12px;
+  margin-top: 14px;
+}
+
+.bat-prod-note {
+  font-size: 10px;
+  color: #999;
+  text-align: right;
+  margin-top: 3px;
+  display: block;
+}
+
+/* Sliders Card */
+.bat-sliders-card {
+  background: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+  border: 1px solid #ececec;
+  margin-bottom: 18px;
+}
+
+.bat-sliders-card h3 {
+  font-size: 17px;
+  color: #16136f;
+  margin-bottom: 6px;
+  font-weight: 600;
+}
+
+.bat-sliders-subtitle {
+  font-size: 12px;
+  color: #777;
+  margin-bottom: 16px;
+}
+
+.bat-slider-group {
+  margin-bottom: 15px;
+}
+
+.bat-slider-group:last-child {
+  margin-bottom: 0;
+}
+
+.bat-slider-header {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  font-weight: 600;
+  margin-bottom: 5px;
+}
+
+.bat-slider-value {
+  color: #16136f;
+  transition: color 0.2s;
+}
+
+.bat-container input[type="range"] {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 4px;
+  background: #ddd;
+  border-radius: 2px;
+  outline: none;
+  cursor: pointer;
+}
+
+.bat-container input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #16136f;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  transition: transform 0.1s;
+}
+
+.bat-container input[type="range"]::-webkit-slider-thumb:hover {
+  transform: scale(1.1);
+}
+
+.bat-container input[type="range"]::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #16136f;
+  cursor: pointer;
+  border: none;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+/* Results Box */
+.bat-results-card {
+  background: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+  border: 1px solid #ececec;
+  border-top: 3px solid #16136f;
+  margin-bottom: 20px;
+}
+
+.bat-results-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.bat-results-header h3 {
+  margin: 0;
+  font-size: 17px;
+  color: #16136f;
+  font-weight: 600;
+}
+
+.bat-results-header .bat-subtitle {
+  font-size: 10px;
+  color: #999;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.bat-results-grid {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.bat-result-item {
+  flex: 1;
+}
+
+.bat-result-item:last-child {
+  text-align: right;
+}
+
+.bat-result-label {
+  font-size: 10px;
+  color: #999;
+  text-transform: uppercase;
+  font-weight: 700;
+  margin-bottom: 3px;
+}
+
+.bat-result-value {
+  font-size: 20px;
+  font-weight: 700;
+  color: #333;
+}
+
+.bat-improvement-box {
+  background: #f5f5f5;
+  padding: 10px 12px;
+  border-radius: 6px;
+  border: 1px solid #e0e0e0;
+  text-align: center;
+  transition: all 0.3s;
+}
+
+.bat-improvement-title {
+  font-size: 10px;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: #666;
+  display: block;
+}
+
+.bat-improvement-amount {
+  font-size: 24px;
+  font-weight: 800;
+  display: block;
+  margin: 3px 0;
+  color: #666;
+}
+
+.bat-improvement-percent {
+  font-size: 12px;
+  font-weight: 700;
+  color: #666;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .bat-calc-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .bat-steps {
+    grid-template-columns: 1fr;
+    gap: 18px;
+    padding: 20px 0;
+    margin-bottom: 25px;
+  }
+
+  .bat-step-icon {
+    width: 45px;
+    height: 45px;
+    font-size: 16px;
+  }
+
+  .bat-step h3 {
+    font-size: 15px;
+  }
+
+  .bat-step p {
+    font-size: 12px;
+  }
+
+  .bat-page-title {
+    font-size: 22px;
+  }
+
+  .bat-page-subtitle {
+    font-size: 14px;
+  }
+
+  .bat-card, .bat-results-card, .bat-sliders-card {
+    padding: 16px;
+  }
+
+  .bat-card h3, .bat-sliders-card h3, .bat-results-header h3 {
+    font-size: 16px;
+  }
+
+  .bat-input-group label {
+    font-size: 11px;
+  }
+
+  .bat-input-group input[type="number"] {
+    padding: 7px 9px;
+    font-size: 13px;
+  }
+
+  .bat-info-icon {
+    width: 14px;
+    height: 14px;
+    font-size: 9px;
+  }
+
+  .bat-tooltip {
+    font-size: 9px;
+    padding: 5px 8px;
+    width: 180px;
+  }
+
+  .bat-capacity-summary {
+    font-size: 11px;
+    padding: 7px 10px;
+  }
+
+  .bat-slider-header {
+    font-size: 11px;
+  }
+
+  .bat-result-value {
+    font-size: 18px;
+  }
+
+  .bat-improvement-amount {
+    font-size: 22px;
+  }
+}
+
+@media (max-width: 400px) {
+  .bat-page-title {
+    font-size: 20px;
+  }
+
+  .bat-card, .bat-results-card, .bat-sliders-card {
+    padding: 14px;
+  }
+
+  .bat-result-value {
+    font-size: 16px;
+  }
+
+  .bat-improvement-amount {
+    font-size: 20px;
+  }
+
+  .bat-improvement-box {
+    padding: 8px 10px;
+  }
+
+  .bat-improvement-title {
+    font-size: 9px;
+  }
+
+  .bat-improvement-percent {
+    font-size: 11px;
+  }
+}
+</style>
+
+<div class="bat-container">
+
+  <div class="bat-steps">
+    <div class="bat-step">
+      <div class="bat-step-icon bat-step-1">1</div>
+      <h3>Vul de gegevens in</h3>
+      <p>Start met de huidige monteurs, uren en kosten.</p>
+    </div>
+    <div class="bat-step">
+      <div class="bat-step-icon bat-step-2">2</div>
+      <h3>Verstel de doelen</h3>
+      <p>Gebruik de sliders om verbeteringen te simuleren.</p>
+    </div>
+    <div class="bat-step">
+      <div class="bat-step-icon bat-step-3">3</div>
+      <h3>Bekijk de impact</h3>
+      <p>Zie direct de impact op het bedrijfsresultaat.</p>
+    </div>
+  </div>
+
+  <h2 class="bat-page-title">Bereken het potentieel</h2>
+  <p class="bat-page-subtitle">Bij verbetering van enkele KPI's</p>
+
+  <div class="bat-calc-grid">
+
+    <div class="bat-calc-inputs">
+
+      <div class="bat-section-header">Huidige situatie</div>
+
+      <div class="bat-card">
+        <h3><span>1.</span> Capaciteit</h3>
+
+        <div class="bat-input-group">
+          <label>
+            Aantal FTE monteurs
+            <span class="bat-info-icon">
+              i
+              <span class="bat-tooltip">Totaal aantal fulltime monteurs in vaste dienst plus de structurele inleen.<br><em>Bron: Notifica Urenrapportage</em></span>
+            </span>
+          </label>
+          <input type="number" id="inp_fte" value="58.8" step="0.1">
+        </div>
+
+        <div class="bat-input-group">
+          <label>
+            Uren per monteur per jaar
+            <span class="bat-info-icon">
+              i
+              <span class="bat-tooltip">Het aantal contracturen per fte op jaarbasis (minus verlof en feestdagen).<br><em>Bron: Notifica Urenrapportage</em></span>
+            </span>
+          </label>
+          <input type="number" id="inp_hours" value="1600" step="10">
+        </div>
+
+        <div class="bat-capacity-summary">
+          <span>Totale capaciteit</span>
+          <span id="out_cap">94.080</span>
+        </div>
+      </div>
+
+      <div class="bat-card">
+        <h3><span>2.</span> Financieel</h3>
+
+        <div class="bat-input-group">
+          <label>
+            Productiviteit (%)
+            <span class="bat-info-icon">
+              i
+              <span class="bat-tooltip">Percentage tijd dat daadwerkelijk gefactureerd kan worden. Beinvloed door reisuren, ziekte en efficientie.<br><em>Bron: Notifica Urenrapportage & HR Dashboard</em></span>
+            </span>
+          </label>
+          <input type="number" id="inp_prod" value="80" step="0.1">
+          <small class="bat-prod-note">Productieve uren: <span id="out_prod_hrs">75.264</span></small>
+        </div>
+
+        <div class="bat-input-group">
+          <label>
+            Toegevoegde waarde per uur (€)
+            <span class="bat-info-icon">
+              i
+              <span class="bat-tooltip">Omzet minus materiaalkosten en inhuur, gedeeld door productieve uren. Dit dekt je eigen kosten en winst.<br><em>Bron: Notifica Projectrapportage</em></span>
+            </span>
+          </label>
+          <input type="number" id="inp_rate" value="84" step="1">
+        </div>
+
+        <div class="bat-input-group">
+          <label>
+            Variabele personeelskosten per productief uur (€)
+            <span class="bat-info-icon">
+              i
+              <span class="bat-tooltip">Directe loonkosten (incl. sociale lasten) en flexibele schil per productief uur.<br><em>Bron: Notifica HR Dashboard</em></span>
+            </span>
+          </label>
+          <input type="number" id="inp_cost_var" value="30" step="1">
+        </div>
+
+        <div class="bat-input-group">
+          <label>
+            Vaste kosten per productief uur (€)
+            <span class="bat-info-icon">
+              i
+              <span class="bat-tooltip">Overheadkosten (huisvesting, auto's, kantoor) gedeeld door totaal aantal productieve uren.<br><em>Bron: Notifica Financieel Rapport</em></span>
+            </span>
+          </label>
+          <input type="number" id="inp_cost_fixed" value="30" step="1">
+        </div>
+      </div>
+
+    </div>
+
+    <div class="bat-calc-results">
+
+      <div class="bat-sliders-card">
+        <h3>Verbeterdoelen</h3>
+        <p class="bat-sliders-subtitle">Verstel de sliders om de impact te berekenen</p>
+
+        <div class="bat-slider-group">
+          <div class="bat-slider-header">
+            <span>Aantal FTE monteurs</span>
+            <span class="bat-slider-value" id="txt_sl_fte">0%</span>
+          </div>
+          <input type="range" id="sl_fte" min="-10" max="10" step="0.5" value="0">
+        </div>
+
+        <div class="bat-slider-group">
+          <div class="bat-slider-header">
+            <span>Productiviteit</span>
+            <span class="bat-slider-value" id="txt_sl_prod">0%</span>
+          </div>
+          <input type="range" id="sl_prod" min="-10" max="10" step="0.5" value="0">
+        </div>
+
+        <div class="bat-slider-group">
+          <div class="bat-slider-header">
+            <span>Toegevoegde waarde</span>
+            <span class="bat-slider-value" id="txt_sl_rate">0%</span>
+          </div>
+          <input type="range" id="sl_rate" min="-10" max="10" step="0.5" value="0">
+        </div>
+
+        <div class="bat-slider-group">
+          <div class="bat-slider-header">
+            <span>Variabele kosten</span>
+            <span class="bat-slider-value" id="txt_sl_cvar">0%</span>
+          </div>
+          <input type="range" id="sl_cvar" min="-10" max="10" step="0.5" value="0">
+        </div>
+
+        <div class="bat-slider-group">
+          <div class="bat-slider-header">
+            <span>Vaste kosten</span>
+            <span class="bat-slider-value" id="txt_sl_cfixed">0%</span>
+          </div>
+          <input type="range" id="sl_cfixed" min="-10" max="10" step="0.5" value="0">
+        </div>
+      </div>
+
+      <div class="bat-results-card">
+        <div class="bat-results-header">
+          <h3>Het resultaat</h3>
+          <span class="bat-subtitle">Indicatie jaarbasis</span>
+        </div>
+
+        <div class="bat-results-grid">
+          <div class="bat-result-item">
+            <div class="bat-result-label">Huidig resultaat</div>
+            <div class="bat-result-value" id="res_curr">€ 1.806.336</div>
+          </div>
+          <div class="bat-result-item">
+            <div class="bat-result-label">Na verbetering</div>
+            <div class="bat-result-value" id="res_goal">€ 1.806.336</div>
+          </div>
+        </div>
+
+        <div class="bat-improvement-box" id="improvement_box">
+          <span class="bat-improvement-title" id="improvement_label">Verschil</span>
+          <span class="bat-improvement-amount" id="res_diff">€ 0</span>
+          <span class="bat-improvement-percent" id="res_perc">0%</span>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+<!-- Calculator Script -->
+<script>
+(function() {
+  'use strict';
+
+  const fmt = {
+    money: new Intl.NumberFormat('nl-NL', {style: 'currency', currency: 'EUR', maximumFractionDigits: 0}),
+    num: new Intl.NumberFormat('nl-NL', {maximumFractionDigits: 0})
+  };
+
+  function val(id) {
+    const el = document.getElementById(id);
+    if (!el) return 0;
+    const raw = (el.value || '').toString().replace(',', '.');
+    const num = parseFloat(raw);
+    return isNaN(num) ? 0 : num;
+  }
+
+  function txt(id, text) {
+    const el = document.getElementById(id);
+    if (el) el.textContent = text;
+  }
+
+  function calc() {
+    // Inputs
+    const fte = val('inp_fte');
+    const hrs = val('inp_hours');
+    const prod = val('inp_prod');
+    const rate = val('inp_rate');
+    const costVar = val('inp_cost_var');
+    const costFixed = val('inp_cost_fixed');
+
+    // Sliders
+    const sFte = val('sl_fte');
+    const sProd = val('sl_prod');
+    const sRate = val('sl_rate');
+    const sCVar = val('sl_cvar');
+    const sCFixed = val('sl_cfixed');
+
+    // Update slider labels met kleuren
+    function updateLabel(txtId, value, isGood) {
+      let color = '#16136f';
+      if (value !== 0) {
+        color = isGood ? (value > 0 ? '#2e7d32' : '#d32f2f') : (value > 0 ? '#d32f2f' : '#2e7d32');
+      }
+      const el = document.getElementById(txtId);
+      if (el) {
+        el.textContent = (value > 0 ? '+' : '') + value.toFixed(1) + '%';
+        el.style.color = color;
+      }
+    }
+
+    updateLabel('txt_sl_fte', sFte, true);
+    updateLabel('txt_sl_prod', sProd, true);
+    updateLabel('txt_sl_rate', sRate, true);
+    updateLabel('txt_sl_cvar', sCVar, false);
+    updateLabel('txt_sl_cfixed', sCFixed, false);
+
+    // Current calculation
+    const cap = fte * hrs;
+    const prodH = cap * (prod / 100);
+    const addedValue = prodH * rate;
+    const totalCostVar = prodH * costVar;
+    const totalCostFixed = prodH * costFixed;
+    const curr = addedValue - totalCostVar - totalCostFixed;
+
+    txt('out_cap', fmt.num.format(cap));
+    txt('out_prod_hrs', fmt.num.format(prodH));
+
+    // Goal calculation - ABSOLUTE toevoeging voor productiviteit
+    const dFte = fte * (1 + sFte / 100);
+    const dCap = dFte * hrs;
+    const dProdP = prod + sProd; // ABSOLUTE
+    const dProdH = dCap * (dProdP / 100);
+    const dRate = rate * (1 + sRate / 100);
+    const dCostVar = costVar * (1 + sCVar / 100);
+    const dCostFixed = costFixed * (1 + sCFixed / 100);
+
+    const dAddedValue = dProdH * dRate;
+    const dTotalCostVar = dProdH * dCostVar;
+    const dTotalCostFixed = dProdH * dCostFixed;
+    const goal = dAddedValue - dTotalCostVar - dTotalCostFixed;
+
+    const diff = goal - curr;
+    const diffP = curr !== 0 ? (diff / curr) * 100 : 0;
+
+    // Update results
+    txt('res_curr', fmt.money.format(curr));
+    txt('res_goal', fmt.money.format(goal));
+    txt('res_diff', (diff > 0 ? '+' : '') + fmt.money.format(diff));
+    txt('res_perc', (diffP > 0 ? '+' : '') + diffP.toFixed(1) + '%');
+
+    // Update label: Verbetering / Verslechtering / Verschil
+    const labelEl = document.getElementById('improvement_label');
+    if (labelEl) {
+      if (diff > 0) {
+        labelEl.textContent = 'Verbetering';
+      } else if (diff < 0) {
+        labelEl.textContent = 'Verslechtering';
+      } else {
+        labelEl.textContent = 'Verschil';
+      }
+    }
+
+    // Update colors
+    const box = document.getElementById('improvement_box');
+    const diffEl = document.getElementById('res_diff');
+    const percEl = document.getElementById('res_perc');
+    const goalEl = document.getElementById('res_goal');
+
+    if (diff > 0) {
+      if (box) { box.style.background = '#e8f5e9'; box.style.borderColor = '#a5d6a7'; }
+      if (diffEl) diffEl.style.color = '#2e7d32';
+      if (percEl) percEl.style.color = '#2e7d32';
+      if (goalEl) goalEl.style.color = '#2e7d32';
+    } else if (diff < 0) {
+      if (box) { box.style.background = '#ffebee'; box.style.borderColor = '#ef9a9a'; }
+      if (diffEl) diffEl.style.color = '#d32f2f';
+      if (percEl) percEl.style.color = '#d32f2f';
+      if (goalEl) goalEl.style.color = '#d32f2f';
+    } else {
+      if (box) { box.style.background = '#f5f5f5'; box.style.borderColor = '#e0e0e0'; }
+      if (diffEl) diffEl.style.color = '#666';
+      if (percEl) percEl.style.color = '#666';
+      if (goalEl) goalEl.style.color = '#333';
+    }
+  }
+
+  // Event listeners
+  const ids = ['inp_fte', 'inp_hours', 'inp_prod', 'inp_rate', 'inp_cost_var', 'inp_cost_fixed',
+               'sl_fte', 'sl_prod', 'sl_rate', 'sl_cvar', 'sl_cfixed'];
+
+  ids.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) {
+      el.addEventListener('input', calc);
+      el.addEventListener('change', calc);
+    }
+  });
+
+  // Initial run
+  calc();
+})();
+</script>

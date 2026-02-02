@@ -1,0 +1,112 @@
+<nav>
+    <div class="container">
+        <div class="logo">
+            <a href="{{ '/' | url }}">
+                <img src="{{ '/assets/images/Notifica - Logo - Kleur.svg' | url }}" alt="Notifica">
+            </a>
+        </div>
+        <div class="nav-links">
+            <a href="{{ '/' | url }}">Home</a>
+            <div class="nav-dropdown">
+                <a href="#" class="nav-dropdown-toggle">
+                    Bedrijfssoftware
+                    <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor">
+                        <path d="M2 4l4 4 4-4H2z"/>
+                    </svg>
+                </a>
+                <div class="nav-dropdown-menu">
+                    <a href="{{ '/bedrijfssoftware/' | url }}">ERP Koppelingen</a>
+                    <a href="{{ '/bedrijfssoftware/syntess-atrium/' | url }}">Syntess Atrium</a>
+                    <a href="{{ '/bedrijfssoftware/4ps/' | url }}">4PS</a>
+                    <a href="{{ '/bedrijfssoftware/acto/' | url }}">ACTO</a>
+                    <a href="{{ '/bedrijfssoftware/admicom/' | url }}">Admicom</a>
+                    <a href="{{ '/bedrijfssoftware/enk-software/' | url }}">ENK Software</a>
+                    <a href="{{ '/bedrijfssoftware/bouwinfosys/' | url }}">BouwInfosys</a>
+                </div>
+            </div>
+            <div class="nav-dropdown">
+                <a href="#" class="nav-dropdown-toggle">
+                    Inspiratie
+                    <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor">
+                        <path d="M2 4l4 4 4-4H2z"/>
+                    </svg>
+                </a>
+                <div class="nav-dropdown-menu">
+                    <a href="{{ '/inspiratie/blogs/' | url }}">Blogs</a>
+                    <a href="{{ '/inspiratie/whitepapers/' | url }}">Whitepapers</a>
+                    <a href="{{ '/inspiratie/videos/' | url }}">Video's</a>
+                </div>
+            </div>
+            <div class="nav-dropdown">
+                <a href="{{ '/verdieping/' | url }}" class="nav-dropdown-toggle">
+                    Verdieping
+                    <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor">
+                        <path d="M2 4l4 4 4-4H2z"/>
+                    </svg>
+                </a>
+                <div class="nav-dropdown-menu">
+                    <a href="{{ '/verdieping/bedrijfsanalysetool/' | url }}">Bedrijfsanalysetool</a>
+                    <a href="{{ '/verdieping/directe-uren-calculator/' | url }}">Directe uren calculator</a>
+                    <a href="{{ '/webinars/' | url }}">Webinars</a>
+                </div>
+            </div>
+            <a href="{{ '/klanten-ervaringen/' | url }}">Klanten</a>
+            <a href="{{ '/veelgestelde-vragen/' | url }}">FAQ</a>
+            <a href="{{ '/over-ons/' | url }}">Over ons</a>
+            <a href="{{ '/contact/' | url }}" class="btn">Contact</a>
+        </div>
+        <button class="mobile-menu-btn" aria-label="Menu openen">
+            <span></span>
+        </button>
+    </div>
+</nav>
+
+<!-- Mobile Navigation (aria-hidden to prevent duplicate anchor text issues for SEO) -->
+<div class="mobile-nav" aria-hidden="true">
+    <a href="{{ '/' | url }}">Home</a>
+    <a href="{{ '/bedrijfssoftware/' | url }}">Bedrijfssoftware</a>
+    <a href="{{ '/bedrijfssoftware/syntess-atrium/' | url }}">Syntess Atrium</a>
+    <a href="{{ '/bedrijfssoftware/4ps/' | url }}">4PS</a>
+    <a href="{{ '/bedrijfssoftware/acto/' | url }}">ACTO</a>
+    <a href="{{ '/bedrijfssoftware/admicom/' | url }}">Admicom</a>
+    <a href="{{ '/bedrijfssoftware/enk-software/' | url }}">ENK Software</a>
+    <a href="{{ '/bedrijfssoftware/bouwinfosys/' | url }}">BouwInfosys</a>
+    <a href="{{ '/inspiratie/blogs/' | url }}">Blogs</a>
+    <a href="{{ '/inspiratie/whitepapers/' | url }}">Whitepapers</a>
+    <a href="{{ '/inspiratie/videos/' | url }}">Video's</a>
+    <a href="{{ '/verdieping/bedrijfsanalysetool/' | url }}">Bedrijfsanalysetool</a>
+    <a href="{{ '/verdieping/directe-uren-calculator/' | url }}">Directe uren calculator</a>
+    <a href="{{ '/webinars/' | url }}">Webinars</a>
+    <a href="{{ '/klanten-ervaringen/' | url }}">Klanten</a>
+    <a href="{{ '/veelgestelde-vragen/' | url }}">FAQ</a>
+    <a href="{{ '/over-ons/' | url }}">Over ons</a>
+    <a href="{{ '/contact/' | url }}" class="btn">Contact</a>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const menuBtn = document.querySelector('.mobile-menu-btn');
+    const mobileNav = document.querySelector('.mobile-nav');
+
+    if (menuBtn && mobileNav) {
+        menuBtn.addEventListener('click', function() {
+            menuBtn.classList.toggle('active');
+            mobileNav.classList.toggle('active');
+            const isActive = mobileNav.classList.contains('active');
+            document.body.style.overflow = isActive ? 'hidden' : '';
+            // Toggle aria-hidden for accessibility when menu is open
+            mobileNav.setAttribute('aria-hidden', !isActive);
+        });
+
+        // Close menu when clicking a link
+        mobileNav.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', function() {
+                menuBtn.classList.remove('active');
+                mobileNav.classList.remove('active');
+                document.body.style.overflow = '';
+                mobileNav.setAttribute('aria-hidden', 'true');
+            });
+        });
+    }
+});
+</script>

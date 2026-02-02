@@ -1,0 +1,107 @@
+<!-- nav-v2 -->
+<header class="header">
+  <div class="container">
+    <nav class="nav">
+      <a href="/" class="logo" id="logo-link">
+        <img src="{{ '/assets/images/notifica-logo.svg' | url }}" alt="{{ site.name }}" width="200" height="60">
+      </a>
+
+      <ul class="nav-menu" id="nav-menu" data-authenticated="false">
+        {% for item in navigation.main %}
+        <li class="nav-item{% if item.children %} has-dropdown{% endif %}">
+          <a href="{{ item.url }}" class="nav-link{% if page.url == item.url %} active{% endif %}">
+            {{ item.label }}
+            {% if item.children %}
+            <svg class="dropdown-icon" width="12" height="12" viewBox="0 0 12 12" fill="currentColor">
+              <path d="M6 8L2 4h8L6 8z"/>
+            </svg>
+            {% endif %}
+          </a>
+          {% if item.children %}
+          <ul class="dropdown-menu">
+            {% for child in item.children %}
+            <li>
+              <a href="{{ child.url }}" class="dropdown-link{% if page.url == child.url %} active{% endif %}">
+                {{ child.label }}
+              </a>
+            </li>
+            {% endfor %}
+          </ul>
+          {% endif %}
+        </li>
+        {% endfor %}
+      </ul>
+
+      <button class="nav-toggle" aria-label="Menu openen" aria-expanded="false">
+        <span class="hamburger"></span>
+      </button>
+    </nav>
+  </div>
+</header>
+
+<script>
+// Navigation data
+const navigationData = {
+  main: {{ navigation.main | dump | safe }},
+  authenticated: {{ navigation.authenticated | dump | safe }}
+};
+
+// Check if user is authenticated
+function isAuthenticated() {
+  // Check for authentication token in localStorage or sessionStorage
+  const token = localStorage.getItem('nomalie_auth_token') || sessionStorage.getItem('nomalie_auth_token');
+  return !!token;
+}
+
+// Update navigation based on auth state
+function updateNavigation() {
+  const navMenu = document.getElementById('nav-menu');
+  const logoLink = document.getElementById('logo-link');
+  const authenticated = isAuthenticated();
+
+  if (authenticated) {
+    // Update logo to point to Mijn Nomalie
+    logoLink.href = '/mijn-nomalie/';
+
+    // Update menu items
+    navMenu.innerHTML = '';
+    navMenu.setAttribute('data-authenticated', 'true');
+
+    navigationData.authenticated.forEach(item => {
+      const li = document.createElement('li');
+      li.className = 'nav-item';
+
+      const a = document.createElement('a');
+      a.href = item.url;
+      a.className = 'nav-link';
+      a.textContent = item.label;
+
+      // Check if current page
+      if (window.location.pathname === item.url) {
+        a.classList.add('active');
+      }
+
+      li.appendChild(a);
+      navMenu.appendChild(li);
+    });
+  } else {
+    // Keep default navigation (already rendered)
+    navMenu.setAttribute('data-authenticated', 'false');
+    logoLink.href = '/';
+  }
+}
+
+// Run on page load
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', updateNavigation);
+} else {
+  updateNavigation();
+}
+
+// Listen for auth state changes
+window.addEventListener('storage', function(e) {
+  if (e.key === 'nomalie_auth_token') {
+    updateNavigation();
+  }
+});
+</script>

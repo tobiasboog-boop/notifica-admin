@@ -1,0 +1,12 @@
+{
+  "name": "notifica-admin-portal",
+  "version": "1.0.0",
+  "description": "Notifica Admin Portal - Interne tools en documentatie",
+  "scripts": {
+    "dev": "eleventy --serve",
+    "build": "eleventy"
+  },
+  "devDependencies": {
+    "@11ty/eleventy": "^2.0.1"
+  }
+}

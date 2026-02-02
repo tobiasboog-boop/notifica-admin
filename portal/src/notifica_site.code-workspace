@@ -1,0 +1,16 @@
+{
+	"folders": [
+		{
+			"path": "../.."
+		},
+		{
+			"path": "G:/Mijn Drive/3.0_Design/Website werkversie"
+		},
+		{
+			"path": "../../../syntess_analyse"
+		}
+	],
+	"settings": {
+		"liveServer.settings.multiRootWorkspaceName": "notifica_site"
+	}
+}

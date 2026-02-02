@@ -1,0 +1,144 @@
+---
+layout: false
+title: Consultancy Forecast - Notifica
+permalink: /tools/consultancy/
+robots: noindex, nofollow
+---
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Consultancy Forecast - Notifica</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body { height: 100%; overflow: hidden; }
+        .header {
+            background: white;
+            border-bottom: 1px solid #e5e7eb;
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 50px;
+            position: relative;
+            z-index: 1000;
+        }
+        .header h1 {
+            font-family: 'Inter', -apple-system, sans-serif;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #111827;
+        }
+        .header a {
+            font-family: 'Inter', -apple-system, sans-serif;
+            font-size: 0.85rem;
+            color: #6b7280;
+            text-decoration: none;
+        }
+        .header a:hover { color: #16136F; }
+        iframe {
+            width: 100%;
+            height: calc(100vh - 50px);
+            border: none;
+        }
+        .placeholder {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: calc(100vh - 50px);
+            background: #f9fafb;
+            font-family: 'Inter', -apple-system, sans-serif;
+        }
+        .placeholder .icon { font-size: 4rem; margin-bottom: 20px; }
+        .placeholder h2 { font-size: 1.5rem; color: #111827; margin-bottom: 12px; }
+        .placeholder p { font-size: 0.95rem; color: #6b7280; max-width: 500px; text-align: center; line-height: 1.6; margin-bottom: 24px; }
+        .placeholder .btn {
+            display: inline-block;
+            background: #16136F;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 500;
+            margin-bottom: 16px;
+        }
+        .placeholder .btn:hover { background: #0f0d4d; }
+        .placeholder code {
+            background: #e5e7eb;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-family: 'SF Mono', 'Consolas', monospace;
+            font-size: 0.85rem;
+            color: #374151;
+        }
+        .placeholder .note { font-size: 0.8rem; color: #9ca3af; margin-top: 16px; }
+        .placeholder .features {
+            display: flex;
+            gap: 24px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .placeholder .feature {
+            background: white;
+            padding: 16px 20px;
+            border-radius: 8px;
+            border: 1px solid #e5e7eb;
+            text-align: center;
+            min-width: 140px;
+        }
+        .placeholder .feature .emoji { font-size: 1.5rem; margin-bottom: 8px; }
+        .placeholder .feature .label { font-size: 0.85rem; color: #374151; font-weight: 500; }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <a href="{{ '/admin/' | url }}">← Terug naar Admin</a>
+        <h1>Consultancy Forecast</h1>
+    </header>
+
+    <div class="placeholder" id="placeholder">
+        <span class="icon">📊</span>
+        <h2>Consultancy Forecast</h2>
+        <p>Dashboard voor consultancy omzet targets, forecast en urenregistratie. Sturen op 50% facturabele tijd voor alle partners.</p>
+
+        <div class="features">
+            <div class="feature">
+                <div class="emoji">🎯</div>
+                <div class="label">Targets</div>
+            </div>
+            <div class="feature">
+                <div class="emoji">📋</div>
+                <div class="label">Projecten</div>
+            </div>
+            <div class="feature">
+                <div class="emoji">⏱️</div>
+                <div class="label">Uren</div>
+            </div>
+            <div class="feature">
+                <div class="emoji">📈</div>
+                <div class="label">Forecast</div>
+            </div>
+        </div>
+
+        <a href="https://notificasite-a9cqgbgw5yv7hrfwyfvn5z.streamlit.app/" target="_blank" class="btn">Open Dashboard</a>
+        <span class="note">Dashboard wordt gehost op Streamlit Cloud</span>
+    </div>
+
+    <iframe id="dashboard" src="https://notificasite-a9cqgbgw5yv7hrfwyfvn5z.streamlit.app/?embed=true" allow="clipboard-write" style="display:none;"></iframe>
+
+    <script>
+        // Load the Streamlit Cloud dashboard
+        const iframe = document.getElementById('dashboard');
+        const placeholder = document.getElementById('placeholder');
+
+        // Show iframe after a short delay to allow it to load
+        setTimeout(function() {
+            placeholder.style.display = 'none';
+            iframe.style.display = 'block';
+        }, 1500);
+    </script>
+</body>
+</html>

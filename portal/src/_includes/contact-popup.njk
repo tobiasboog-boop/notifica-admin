@@ -1,0 +1,77 @@
+<!-- Contact Popup -->
+<div id="contactPopup" class="contact-popup">
+    <div class="contact-popup-content">
+        <button class="contact-popup-close" onclick="closeContactPopup()">&times;</button>
+        <h2 id="contactPopupTitle">Neem contact met ons op</h2>
+        <p class="section-subtitle" id="contactPopupSubtitle">Vul onderstaand formulier in en we nemen binnen 24 uur contact met je op.</p>
+
+        <form>
+            <div class="form-group">
+                <label for="popup-name">Naam</label>
+                <input type="text" id="popup-name" required>
+            </div>
+            <div class="form-group">
+                <label for="popup-email">E-mailadres</label>
+                <input type="email" id="popup-email" required>
+            </div>
+            <div class="form-group">
+                <label for="popup-phone">Telefoonnummer</label>
+                <input type="tel" id="popup-phone">
+            </div>
+            <div class="form-group">
+                <label for="popup-message">Bericht</label>
+                <textarea id="popup-message" required></textarea>
+            </div>
+            <button type="submit" class="btn btn-large" style="width: 100%;">Verstuur bericht</button>
+        </form>
+    </div>
+</div>
+
+<script>
+function openContactPopup(title) {
+    const popup = document.getElementById('contactPopup');
+    const titleElement = document.getElementById('contactPopupTitle');
+    const subtitleElement = document.getElementById('contactPopupSubtitle');
+
+    if (title) {
+        titleElement.textContent = 'Neem contact met ons op';
+        subtitleElement.textContent = 'Geef aan welke whitepapers je wenst te ontvangen in onderstaand bericht.';
+    } else {
+        titleElement.textContent = 'Neem contact met ons op';
+        subtitleElement.textContent = 'Vul onderstaand formulier in en we nemen binnen 24 uur contact met je op.';
+    }
+
+    popup.classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeContactPopup() {
+    document.getElementById('contactPopup').classList.remove('active');
+    document.body.style.overflow = '';
+}
+
+// Close popup when clicking outside
+document.getElementById('contactPopup').addEventListener('click', function(e) {
+    if (e.target === this) {
+        closeContactPopup();
+    }
+});
+
+// Close popup with Escape key
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        closeContactPopup();
+    }
+});
+
+// Handle all contact links
+document.addEventListener('DOMContentLoaded', function() {
+    const contactLinks = document.querySelectorAll('a[href="#contact"]');
+    contactLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            openContactPopup();
+        });
+    });
+});
+</script>
