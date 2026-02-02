@@ -28,3 +28,4 @@ Thumbs.db
 
 # Data files (optional - remove if you want to include default data)
 # data/*.xlsx
+portal/_site/
