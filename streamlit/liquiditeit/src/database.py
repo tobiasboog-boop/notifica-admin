@@ -353,7 +353,7 @@ class SyntessDWHConnection:
     """
 
     def __init__(self, config: Optional[DatabaseConfig] = None):
-        self.config = config or DatabaseConfig.from_env()
+        self.config = config or DatabaseConfig.from_secrets()
         self._connection = None
 
     @contextmanager
@@ -1087,8 +1087,8 @@ def get_database(use_mock: bool = True, customer_code: Optional[str] = None) -> 
         print("[WARNING] No customer code provided, returning mock database")
         return MockDatabase()
 
-    # Build config met customer_code
-    config = DatabaseConfig.from_env(customer_code=customer_code)
+    # Build config met customer_code (probeert eerst Streamlit secrets, dan env vars)
+    config = DatabaseConfig.from_secrets(customer_code=customer_code)
 
     # Debug output - useful for troubleshooting
     print(f"[INFO] Attempting connection to database: {config.database} on {config.host}:{config.port}")

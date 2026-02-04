@@ -12,6 +12,13 @@ from dotenv import load_dotenv
 # Load .env file if present
 load_dotenv()
 
+# Check if Streamlit is available (for secrets support)
+try:
+    import streamlit as st
+    STREAMLIT_AVAILABLE = True
+except ImportError:
+    STREAMLIT_AVAILABLE = False
+
 
 @dataclass
 class DatabaseConfig:
@@ -20,6 +27,11 @@ class DatabaseConfig:
 
     The Notifica DWH uses customer-specific databases:
     - Database name = klantnummer (bijv. 1241, 1209, etc.)
+
+    Configuration sources (in order of priority):
+    1. Streamlit secrets (st.secrets["database"]) - for Streamlit Cloud deployment
+    2. Environment variables - for local development
+    3. Hardcoded defaults - fallback
 
     Environment variables:
     - SYNTESS_DB_HOST: Database server hostname
@@ -33,6 +45,33 @@ class DatabaseConfig:
     database: str
     username: str
     password: str
+
+    @classmethod
+    def from_secrets(cls, customer_code: Optional[str] = None) -> "DatabaseConfig":
+        """
+        Load config from Streamlit secrets (for Streamlit Cloud deployment).
+
+        Args:
+            customer_code: Optional 4-digit customer code. If provided,
+                          overrides the database name from secrets.
+        """
+        if STREAMLIT_AVAILABLE and hasattr(st, 'secrets') and 'database' in st.secrets:
+            db = st.secrets["database"]
+
+            # Database name can be overridden by customer_code
+            database = db.get("database", "1241")
+            if customer_code and len(customer_code) == 4 and customer_code.isdigit():
+                database = customer_code
+
+            return cls(
+                host=db.get("host", "10.3.152.9"),
+                port=int(db.get("port", 5432)),
+                database=database,
+                username=db.get("user", "postgres"),
+                password=db.get("password", ""),
+            )
+        # Fallback to environment variables
+        return cls.from_env(customer_code=customer_code)
 
     @classmethod
     def from_env(cls, customer_code: Optional[str] = None) -> "DatabaseConfig":
