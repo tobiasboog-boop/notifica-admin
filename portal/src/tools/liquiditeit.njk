@@ -89,8 +89,8 @@ robots: noindex, nofollow
         <div id="status-message">
             <p style="color: #f59e0b; font-weight: 600; margin-bottom: 16px;">⚠️ Controleert of dashboard beschikbaar is...</p>
         </div>
-        <a href="http://localhost:8501" target="_blank" class="btn" id="open-btn" style="display:none;">Open Dashboard</a>
-        <code>python -m streamlit run streamlit/liquiditeit/app.py --server.port 8501</code>
+        <a href="http://localhost:8503" target="_blank" class="btn" id="open-btn" style="display:none;">Open Dashboard</a>
+        <code>python -m streamlit run streamlit/liquiditeit/app.py --server.port 8503</code>
         <span class="note">⚠️ Let op: Dit dashboard werkt alleen op Tobias' computer vanwege directe DWH toegang</span>
     </div>
 
@@ -101,7 +101,7 @@ robots: noindex, nofollow
         const placeholder = document.getElementById('placeholder');
         const statusMessage = document.getElementById('status-message');
         const openBtn = document.getElementById('open-btn');
-        const LOCALHOST_URL = 'http://localhost:8501';
+        const LOCALHOST_URL = 'http://localhost:8503';
         const LAUNCHER_URL = 'http://localhost:8500';
 
         // Check if we're running locally (not on GitHub Pages or other remote hosts)
