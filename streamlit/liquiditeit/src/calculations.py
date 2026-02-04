@@ -2,12 +2,18 @@
 Liquiditeit Dashboard - Calculations
 ====================================
 Business logic voor liquiditeitsberekeningen en cashflow prognoses.
+
+Methoden:
+- DSO per debiteur: Adjusted Due Date logica op basis van historisch betaalgedrag
+- Fading Weight Ensemble: Glijdende schaal tussen ERP data en statistische forecast
+- ML Forecast: Seizoenspatronen, trend en weighted moving average
 """
 
 import pandas as pd
 import numpy as np
+import math
 from datetime import datetime, timedelta
-from typing import Tuple, Optional
+from typing import Tuple, Optional, Dict
 from dataclasses import dataclass
 
 
@@ -70,6 +76,412 @@ def calculate_liquidity_metrics(
         net_working_capital=net_working_capital,
         days_cash_on_hand=round(days_cash, 1),
     )
+
+
+# =============================================================================
+# FASE 1: DSO PER DEBITEUR - ADJUSTED DUE DATE LOGICA
+# =============================================================================
+
+def calculate_dso_adjustment(
+    betaalgedrag: pd.DataFrame,
+    standaard_betaaltermijn: int = 30,
+    fallback_dagen: float = None
+) -> Dict[str, float]:
+    """
+    Bereken de DSO correctie per debiteur.
+
+    Voor elke debiteur berekenen we hoeveel dagen EXTRA (of minder)
+    we moeten optellen bij de vervaldatum om de verwachte betaaldatum te krijgen.
+
+    Args:
+        betaalgedrag: DataFrame met kolommen:
+            - debiteur_code
+            - gem_dagen_tot_betaling
+            - betrouwbaarheid (0-1)
+        standaard_betaaltermijn: Standaard betaaltermijn in dagen (bijv. 30)
+        fallback_dagen: Fallback voor onbekende debiteuren (default: gemiddelde)
+
+    Returns:
+        Dict met debiteur_code -> extra_dagen (kan negatief zijn voor snelle betalers)
+    """
+    if betaalgedrag.empty:
+        return {"_fallback": 0}
+
+    # Bereken gemiddelde als fallback
+    gem_alle = betaalgedrag["gem_dagen_tot_betaling"].mean()
+    if fallback_dagen is None:
+        fallback_dagen = gem_alle - standaard_betaaltermijn
+
+    adjustments = {"_fallback": round(fallback_dagen, 1)}
+
+    for _, row in betaalgedrag.iterrows():
+        debiteur = row["debiteur_code"]
+        gem_dagen = row["gem_dagen_tot_betaling"]
+        betrouwbaarheid = row.get("betrouwbaarheid", 0.5)
+
+        # Extra dagen = werkelijke betaaltijd - standaard termijn
+        # Positief = betaalt later dan termijn
+        # Negatief = betaalt eerder dan termijn
+        extra_dagen = gem_dagen - standaard_betaaltermijn
+
+        # Weeg de correctie met betrouwbaarheid
+        # Lage betrouwbaarheid -> correctie richting gemiddelde
+        gewogen_extra = (
+            betrouwbaarheid * extra_dagen +
+            (1 - betrouwbaarheid) * (gem_alle - standaard_betaaltermijn)
+        )
+
+        adjustments[debiteur] = round(gewogen_extra, 1)
+
+    return adjustments
+
+
+def adjust_receivables_due_dates(
+    debiteuren: pd.DataFrame,
+    dso_adjustments: Dict[str, float],
+    date_column: str = "vervaldatum"
+) -> pd.DataFrame:
+    """
+    Pas de vervaldatums aan op basis van historisch betaalgedrag per debiteur.
+
+    Dit is de kern van de "Adjusted Due Date" methode:
+    Verwachte betaaldatum = Vervaldatum + DSO correctie per klant
+
+    Args:
+        debiteuren: DataFrame met openstaande debiteuren
+        dso_adjustments: Dict van debiteur_code -> extra_dagen
+        date_column: Naam van de datum kolom
+
+    Returns:
+        DataFrame met extra kolom 'verwachte_betaling'
+    """
+    if debiteuren.empty:
+        return debiteuren
+
+    df = debiteuren.copy()
+
+    # Zorg dat vervaldatum een date is
+    df[date_column] = pd.to_datetime(df[date_column]).dt.date
+
+    # Fallback voor onbekende debiteuren
+    fallback = dso_adjustments.get("_fallback", 0)
+
+    def get_expected_date(row):
+        debiteur = row.get("debiteur_code", row.get("debiteur_naam", ""))
+        vervaldatum = row[date_column]
+
+        if pd.isna(vervaldatum):
+            return None
+
+        # Zoek DSO correctie voor deze debiteur
+        extra_dagen = dso_adjustments.get(debiteur, fallback)
+
+        # Bereken verwachte betaaldatum
+        if isinstance(vervaldatum, datetime):
+            return (vervaldatum + timedelta(days=extra_dagen)).date()
+        else:
+            return vervaldatum + timedelta(days=extra_dagen)
+
+    df["verwachte_betaling"] = df.apply(get_expected_date, axis=1)
+    df["dso_correctie_dagen"] = df.apply(
+        lambda row: dso_adjustments.get(
+            row.get("debiteur_code", row.get("debiteur_naam", "")),
+            fallback
+        ),
+        axis=1
+    )
+
+    return df
+
+
+# =============================================================================
+# FASE 2: FADING WEIGHT ENSEMBLE MODEL
+# =============================================================================
+
+def sigmoid_fading_weight(week: int, midpoint: int = 5, steepness: float = 1.5) -> Tuple[float, float]:
+    """
+    Bereken fading weights met sigmoid functie voor natuurlijke overgang.
+
+    Week 1-2: ~90-95% ERP data (bekende posten)
+    Week 5-6: ~50% ERP, 50% statistiek
+    Week 10+: ~10-20% ERP, 80-90% statistiek
+
+    Args:
+        week: Week nummer (1 = eerste forecast week)
+        midpoint: Week waar 50/50 split is (default: 5)
+        steepness: Hoe snel de overgang is (hoger = steilere curve)
+
+    Returns:
+        Tuple van (weight_erp, weight_statistiek)
+    """
+    # Sigmoid: 1 / (1 + e^((week - midpoint) / steepness))
+    weight_erp = 1 / (1 + math.exp((week - midpoint) / steepness))
+
+    # Begrens tussen 0.05 en 0.95 (nooit 100% één bron)
+    weight_erp = max(0.05, min(0.95, weight_erp))
+    weight_stat = 1 - weight_erp
+
+    return round(weight_erp, 3), round(weight_stat, 3)
+
+
+def calculate_ensemble_forecast_week(
+    week_num: int,
+    bekende_inkomsten: float,
+    bekende_uitgaven: float,
+    stat_inkomsten: float,
+    stat_uitgaven: float,
+    midpoint: int = 5
+) -> Tuple[float, float, float, float, str]:
+    """
+    Bereken de ensemble forecast voor één week.
+
+    Combineert bekende openstaande posten (ERP) met statistische forecast
+    met een glijdende schaal gebaseerd op de voorspelhorizon.
+
+    Args:
+        week_num: Week nummer (1 = eerste forecast week)
+        bekende_inkomsten: Som van openstaande debiteuren met verwachte betaling in deze week
+        bekende_uitgaven: Som van openstaande crediteuren met verwachte betaling in deze week
+        stat_inkomsten: Statistische forecast inkomsten (ML model output)
+        stat_uitgaven: Statistische forecast uitgaven (ML model output)
+        midpoint: Week waar 50/50 split is
+
+    Returns:
+        Tuple van (forecast_in, forecast_uit, weight_erp, weight_stat, methode_beschrijving)
+    """
+    w_erp, w_stat = sigmoid_fading_weight(week_num, midpoint)
+
+    # Ensemble berekening
+    # Als er bekende posten zijn, gebruik die met w_erp gewicht
+    # Anders valt de w_erp component weg en gebruiken we alleen stat
+
+    if bekende_inkomsten > 0 or bekende_uitgaven > 0:
+        # We hebben ERP data
+        forecast_in = (w_erp * bekende_inkomsten) + (w_stat * stat_inkomsten)
+        forecast_uit = (w_erp * bekende_uitgaven) + (w_stat * stat_uitgaven)
+        methode = f"ensemble: ERP {w_erp*100:.0f}% + stat {w_stat*100:.0f}%"
+    else:
+        # Geen ERP data voor deze week - gebruik alleen statistiek
+        # maar met lagere confidence (zie create_fading_weight_forecast)
+        forecast_in = stat_inkomsten
+        forecast_uit = stat_uitgaven
+        methode = f"statistisch (geen bekende posten)"
+
+    return forecast_in, forecast_uit, w_erp, w_stat, methode
+
+
+def create_fading_weight_forecast(
+    banksaldo: pd.DataFrame,
+    debiteuren: pd.DataFrame,
+    crediteuren: pd.DataFrame,
+    historische_cashflow: pd.DataFrame,
+    betaalgedrag_debiteuren: pd.DataFrame,
+    betaalgedrag_crediteuren: pd.DataFrame = None,
+    weeks: int = 13,
+    weeks_history: int = 4,
+    reference_date=None,
+    standaard_betaaltermijn: int = 30,
+    ensemble_midpoint: int = 5,
+) -> Tuple[pd.DataFrame, int, Dict]:
+    """
+    Creëer cashflow forecast met Fading Weight Ensemble methode.
+
+    Deze methode combineert:
+    1. DSO-gecorrigeerde openstaande posten (korte termijn, hoge zekerheid)
+    2. Statistische forecast uit ML model (lange termijn, lagere zekerheid)
+    3. Sigmoid-based fading weights voor natuurlijke overgang
+
+    Args:
+        banksaldo: Huidige banksaldi
+        debiteuren: Openstaande debiteuren
+        crediteuren: Openstaande crediteuren
+        historische_cashflow: Historische wekelijkse cashflow
+        betaalgedrag_debiteuren: DSO data per debiteur
+        betaalgedrag_crediteuren: DPO data per crediteur (optioneel)
+        weeks: Aantal weken forecast
+        weeks_history: Aantal weken realisatie data
+        reference_date: Standdatum
+        standaard_betaaltermijn: Standaard betaaltermijn voor DSO berekening
+        ensemble_midpoint: Week waar 50/50 split is
+
+    Returns:
+        Tuple van (forecast DataFrame, forecast_start_idx, metadata dict)
+    """
+    if reference_date is None:
+        reference_date = datetime.now().date()
+    elif isinstance(reference_date, datetime):
+        reference_date = reference_date.date()
+
+    # =========================================================================
+    # STAP 1: Bereken DSO correcties per debiteur
+    # =========================================================================
+    dso_adjustments = calculate_dso_adjustment(
+        betaalgedrag_debiteuren,
+        standaard_betaaltermijn=standaard_betaaltermijn
+    )
+
+    # Pas vervaldatums aan op basis van DSO
+    debiteuren_adjusted = adjust_receivables_due_dates(debiteuren, dso_adjustments)
+
+    # Crediteur DPO (optioneel - vaak betalen we zelf op tijd)
+    if betaalgedrag_crediteuren is not None and not betaalgedrag_crediteuren.empty:
+        dpo_adjustments = calculate_dso_adjustment(
+            betaalgedrag_crediteuren.rename(columns={"crediteur_code": "debiteur_code"}),
+            standaard_betaaltermijn=standaard_betaaltermijn
+        )
+        crediteuren_adjusted = adjust_receivables_due_dates(
+            crediteuren.rename(columns={"crediteur_code": "debiteur_code"}),
+            dpo_adjustments
+        ).rename(columns={"debiteur_code": "crediteur_code"})
+    else:
+        # Geen DPO data - gebruik vervaldatum direct
+        crediteuren_adjusted = crediteuren.copy()
+        if not crediteuren_adjusted.empty and "vervaldatum" in crediteuren_adjusted.columns:
+            crediteuren_adjusted["verwachte_betaling"] = pd.to_datetime(
+                crediteuren_adjusted["vervaldatum"]
+            ).dt.date
+
+    # =========================================================================
+    # STAP 2: Leer statistisch model uit historische data
+    # =========================================================================
+    pattern = learn_weekly_pattern(historische_cashflow)
+
+    all_rows = []
+
+    # =========================================================================
+    # STAP 3: REALISATIE - Historische weken
+    # =========================================================================
+    if weeks_history > 0 and not historische_cashflow.empty:
+        hist = historische_cashflow.copy()
+        hist["week_start"] = pd.to_datetime(hist["week_start"]).dt.date
+        hist = hist[hist["week_start"] < reference_date]
+        hist = hist.sort_values("week_start", ascending=False).head(weeks_history)
+        hist = hist.sort_values("week_start", ascending=True)
+
+        for i, row in enumerate(hist.itertuples()):
+            week_num = -(weeks_history - i)
+            inkomsten = getattr(row, "inkomsten", 0)
+            uitgaven = getattr(row, "uitgaven", 0)
+            netto = inkomsten - uitgaven
+
+            all_rows.append({
+                "week_nummer": week_num,
+                "week_label": f"Week {week_num}",
+                "week_start": row.week_start,
+                "week_eind": row.week_start + timedelta(days=7),
+                "maand": row.week_start.month if hasattr(row.week_start, 'month') else 0,
+                "inkomsten_debiteuren": round(inkomsten, 2),
+                "uitgaven_crediteuren": round(uitgaven, 2),
+                "netto_cashflow": round(netto, 2),
+                "data_type": "Realisatie",
+                "is_realisatie": True,
+                "confidence": 1.0,
+                "weight_erp": 1.0,
+                "weight_stat": 0.0,
+                "methode": "realisatie",
+            })
+
+    forecast_start_idx = len(all_rows)
+
+    # =========================================================================
+    # STAP 4: PROGNOSE - Fading Weight Ensemble
+    # =========================================================================
+    week_starts = [reference_date + timedelta(weeks=i) for i in range(weeks + 1)]
+
+    for i in range(weeks):
+        week_start = week_starts[i]
+        week_end = week_starts[i + 1]
+        week_maand = week_start.month
+        week_num = i + 1
+
+        # --- Bekende inkomsten uit DSO-gecorrigeerde debiteuren ---
+        bekende_in = 0.0
+        if not debiteuren_adjusted.empty and "verwachte_betaling" in debiteuren_adjusted.columns:
+            mask = (
+                (debiteuren_adjusted["verwachte_betaling"] >= week_start) &
+                (debiteuren_adjusted["verwachte_betaling"] < week_end)
+            )
+            bekende_in = debiteuren_adjusted.loc[mask, "openstaand"].sum()
+
+        # --- Bekende uitgaven uit crediteuren ---
+        bekende_uit = 0.0
+        if not crediteuren_adjusted.empty and "verwachte_betaling" in crediteuren_adjusted.columns:
+            mask = (
+                (crediteuren_adjusted["verwachte_betaling"] >= week_start) &
+                (crediteuren_adjusted["verwachte_betaling"] < week_end)
+            )
+            bekende_uit = crediteuren_adjusted.loc[mask, "openstaand"].sum()
+
+        # --- Statistische forecast uit ML model ---
+        stat_in, stat_uit, ml_conf, ml_methode = predict_week_ml(
+            week_idx=i,
+            week_maand=week_maand,
+            pattern=pattern,
+            bekende_in=0,  # Geef 0 mee, we doen zelf de blending
+            bekende_uit=0,
+            weeks_ahead=week_num
+        )
+
+        # --- Ensemble berekening ---
+        forecast_in, forecast_uit, w_erp, w_stat, methode = calculate_ensemble_forecast_week(
+            week_num=week_num,
+            bekende_inkomsten=bekende_in,
+            bekende_uitgaven=bekende_uit,
+            stat_inkomsten=stat_in,
+            stat_uitgaven=stat_uit,
+            midpoint=ensemble_midpoint
+        )
+
+        # --- Confidence berekening ---
+        # Basis: sigmoid weight (hoe meer ERP, hoe hoger confidence)
+        base_confidence = w_erp * 0.95 + w_stat * ml_conf
+
+        # Verlaag confidence als geen bekende posten
+        if bekende_in == 0 and bekende_uit == 0:
+            base_confidence *= 0.8
+
+        confidence = round(min(0.95, max(0.2, base_confidence)), 2)
+
+        netto = forecast_in - forecast_uit
+
+        all_rows.append({
+            "week_nummer": week_num,
+            "week_label": f"Week {week_num}",
+            "week_start": week_start,
+            "week_eind": week_end,
+            "maand": week_maand,
+            "inkomsten_debiteuren": round(forecast_in, 2),
+            "uitgaven_crediteuren": round(forecast_uit, 2),
+            "inkomsten_bekend": round(bekende_in, 2),
+            "uitgaven_bekend": round(bekende_uit, 2),
+            "inkomsten_stat": round(stat_in, 2),
+            "uitgaven_stat": round(stat_uit, 2),
+            "netto_cashflow": round(netto, 2),
+            "data_type": "Prognose",
+            "is_realisatie": False,
+            "confidence": confidence,
+            "weight_erp": w_erp,
+            "weight_stat": w_stat,
+            "methode": methode,
+        })
+
+    df = pd.DataFrame(all_rows)
+
+    # Bereken cumulatief saldo
+    start_balance = banksaldo["saldo"].sum() if not banksaldo.empty else 0
+    df["cumulatief_saldo"] = start_balance + df["netto_cashflow"].cumsum()
+
+    # Metadata voor debugging/rapportage
+    metadata = {
+        "methode": "fading_weight_ensemble",
+        "dso_adjustments": dso_adjustments,
+        "ensemble_midpoint": ensemble_midpoint,
+        "standaard_betaaltermijn": standaard_betaaltermijn,
+        "pattern_has_data": pattern.get("has_pattern", False),
+        "n_debiteuren_met_dso": len([k for k in dso_adjustments.keys() if k != "_fallback"]),
+    }
+
+    return df, forecast_start_idx, metadata
 
 
 def create_weekly_cashflow_forecast(

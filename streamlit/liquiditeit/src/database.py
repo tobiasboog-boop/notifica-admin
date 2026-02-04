@@ -127,6 +127,123 @@ GROUP BY DATE_TRUNC('month', j."Boekdatum")
 ORDER BY maand DESC
 """
 
+QUERY_BETAALGEDRAG_PER_DEBITEUR = """
+-- Historisch betaalgedrag per debiteur (DSO analyse)
+-- Berekent per debiteur het gemiddelde aantal dagen tussen factuurdatum en betaaldatum
+-- Gebruikt verkoopfactuur termijnen waar zowel factuur als betaling zijn geboekt
+--
+-- Logica:
+-- - We kijken naar termijnen die VOLLEDIG betaald zijn (Bedrag = 0 na allocatie)
+-- - De "dagen tot betaling" = laatste allocatiedatum - eerste allocatiedatum voor die termijn
+-- - Gewogen gemiddelde: recentere betalingen tellen zwaarder (exponentieel)
+WITH betaalde_facturen AS (
+    SELECT
+        vft."Debiteur" as debiteur_code,
+        vft."VerkoopfactuurDocumentKey" as factuur_key,
+        MIN(vft."Alloc_datum") as factuurdatum,
+        MAX(vft."Alloc_datum") as betaaldatum,
+        ABS(SUM(CASE WHEN vft."Bedrag" > 0 THEN vft."Bedrag" ELSE 0 END)) as factuurbedrag
+    FROM notifica."SSM Verkoopfactuur termijnen" vft
+    LEFT JOIN notifica."SSM Documenten" d ON vft."VerkoopfactuurDocumentKey" = d."DocumentKey"
+    LEFT JOIN notifica."SSM Bedrijfseenheden" be ON d."BedrijfseenheidKey"::bigint = be."BedrijfseenheidKey"
+    LEFT JOIN notifica."SSM Administraties" a ON be."AdministratieKey" = a."AdministratieKey"
+    WHERE vft."Alloc_datum" >= %(startdatum)s
+      AND vft."Alloc_datum" <= %(einddatum)s
+      AND a."Administratie" = %(administratie)s
+    GROUP BY vft."Debiteur", vft."VerkoopfactuurDocumentKey"
+    -- Filter op volledig betaalde facturen (som van termijnen = 0)
+    HAVING ABS(SUM(vft."Bedrag")) < 0.01
+       AND COUNT(*) >= 2  -- Minimaal factuur + betaling
+),
+debiteur_stats AS (
+    SELECT
+        debiteur_code,
+        COUNT(*) as aantal_facturen,
+        AVG(EXTRACT(EPOCH FROM (betaaldatum - factuurdatum)) / 86400) as gem_dagen_tot_betaling,
+        STDDEV(EXTRACT(EPOCH FROM (betaaldatum - factuurdatum)) / 86400) as std_dagen_tot_betaling,
+        MIN(EXTRACT(EPOCH FROM (betaaldatum - factuurdatum)) / 86400) as min_dagen,
+        MAX(EXTRACT(EPOCH FROM (betaaldatum - factuurdatum)) / 86400) as max_dagen,
+        SUM(factuurbedrag) as totaal_factuurbedrag,
+        MAX(betaaldatum) as laatste_betaling
+    FROM betaalde_facturen
+    WHERE EXTRACT(EPOCH FROM (betaaldatum - factuurdatum)) / 86400 >= 0  -- Filter negatieve dagen
+      AND EXTRACT(EPOCH FROM (betaaldatum - factuurdatum)) / 86400 <= 365  -- Max 1 jaar
+    GROUP BY debiteur_code
+    HAVING COUNT(*) >= 2  -- Minimaal 2 facturen voor betrouwbare statistiek
+)
+SELECT
+    debiteur_code,
+    aantal_facturen,
+    ROUND(gem_dagen_tot_betaling::numeric, 1) as gem_dagen_tot_betaling,
+    ROUND(COALESCE(std_dagen_tot_betaling, 0)::numeric, 1) as std_dagen_tot_betaling,
+    ROUND(min_dagen::numeric, 0) as min_dagen,
+    ROUND(max_dagen::numeric, 0) as max_dagen,
+    ROUND(totaal_factuurbedrag::numeric, 2) as totaal_factuurbedrag,
+    laatste_betaling,
+    -- Betrouwbaarheidsscore: hoe consistent is de betaler?
+    -- Score 0-1: lage std = hoge score, veel facturen = hogere score
+    ROUND(
+        LEAST(1.0,
+            (1.0 - LEAST(1.0, COALESCE(std_dagen_tot_betaling, 30) / 30.0)) * 0.7 +
+            LEAST(1.0, aantal_facturen / 10.0) * 0.3
+        )::numeric, 2
+    ) as betrouwbaarheid
+FROM debiteur_stats
+ORDER BY totaal_factuurbedrag DESC
+"""
+
+QUERY_BETAALGEDRAG_PER_CREDITEUR = """
+-- Historisch betaalgedrag per crediteur (DPO analyse)
+-- Berekent per crediteur het gemiddelde aantal dagen tussen factuurdatum en betaaldatum
+WITH betaalde_facturen AS (
+    SELECT
+        ift."Crediteur" as crediteur_code,
+        ift."InkoopFactuurKey" as factuur_key,
+        MIN(ift."Alloc_datum") as factuurdatum,
+        MAX(ift."Alloc_datum") as betaaldatum,
+        ABS(SUM(CASE WHEN ift."Bedrag" > 0 THEN ift."Bedrag" ELSE 0 END)) as factuurbedrag
+    FROM notifica."SSM Inkoopfactuur termijnen" ift
+    LEFT JOIN notifica."SSM Documenten" d ON ift."InkoopFactuurKey" = d."DocumentKey"
+    LEFT JOIN notifica."SSM Bedrijfseenheden" be ON d."BedrijfseenheidKey"::bigint = be."BedrijfseenheidKey"
+    LEFT JOIN notifica."SSM Administraties" a ON be."AdministratieKey" = a."AdministratieKey"
+    WHERE ift."Alloc_datum" >= %(startdatum)s
+      AND ift."Alloc_datum" <= %(einddatum)s
+      AND ift."Bankafschrift status" = 'Betaald'
+      AND a."Administratie" = %(administratie)s
+    GROUP BY ift."Crediteur", ift."InkoopFactuurKey"
+    HAVING COUNT(*) >= 2
+),
+crediteur_stats AS (
+    SELECT
+        crediteur_code,
+        COUNT(*) as aantal_facturen,
+        AVG(EXTRACT(EPOCH FROM (betaaldatum - factuurdatum)) / 86400) as gem_dagen_tot_betaling,
+        STDDEV(EXTRACT(EPOCH FROM (betaaldatum - factuurdatum)) / 86400) as std_dagen_tot_betaling,
+        SUM(factuurbedrag) as totaal_factuurbedrag,
+        MAX(betaaldatum) as laatste_betaling
+    FROM betaalde_facturen
+    WHERE EXTRACT(EPOCH FROM (betaaldatum - factuurdatum)) / 86400 >= 0
+      AND EXTRACT(EPOCH FROM (betaaldatum - factuurdatum)) / 86400 <= 365
+    GROUP BY crediteur_code
+    HAVING COUNT(*) >= 2
+)
+SELECT
+    crediteur_code,
+    aantal_facturen,
+    ROUND(gem_dagen_tot_betaling::numeric, 1) as gem_dagen_tot_betaling,
+    ROUND(COALESCE(std_dagen_tot_betaling, 0)::numeric, 1) as std_dagen_tot_betaling,
+    ROUND(totaal_factuurbedrag::numeric, 2) as totaal_factuurbedrag,
+    laatste_betaling,
+    ROUND(
+        LEAST(1.0,
+            (1.0 - LEAST(1.0, COALESCE(std_dagen_tot_betaling, 30) / 30.0)) * 0.7 +
+            LEAST(1.0, aantal_facturen / 10.0) * 0.3
+        )::numeric, 2
+    ) as betrouwbaarheid
+FROM crediteur_stats
+ORDER BY totaal_factuurbedrag DESC
+"""
+
 QUERY_VOORZIENING_DEBITEUREN = """
 -- Voorziening debiteuren: netto beweging op rubriek 1230 in het boekjaar van de standdatum
 -- Power BI toont dit als aparte regel die van bruto debiteuren wordt afgetrokken
@@ -469,6 +586,116 @@ class SyntessDWHConnection:
                 "uitgaven": [],
             })
 
+    def get_betaalgedrag_per_debiteur(
+        self,
+        startdatum: date = None,
+        einddatum: date = None,
+        administratie: str = None
+    ) -> pd.DataFrame:
+        """
+        Get historical payment behavior per debtor (DSO analysis).
+
+        Calculates for each debtor:
+        - Average days to payment (weighted, recent = heavier)
+        - Standard deviation (consistency indicator)
+        - Reliability score (0-1)
+
+        Args:
+            startdatum: Start date for analysis (default: 24 months ago)
+            einddatum: End date for analysis (default: today)
+            administratie: Administration name (required)
+
+        Returns:
+            DataFrame with payment behavior per debtor
+        """
+        if einddatum is None:
+            einddatum = date.today()
+        if startdatum is None:
+            # 24 months for better statistics
+            startdatum = date(einddatum.year - 2, einddatum.month, 1)
+        if not administratie:
+            return pd.DataFrame({
+                "debiteur_code": [],
+                "aantal_facturen": [],
+                "gem_dagen_tot_betaling": [],
+                "std_dagen_tot_betaling": [],
+                "min_dagen": [],
+                "max_dagen": [],
+                "totaal_factuurbedrag": [],
+                "laatste_betaling": [],
+                "betrouwbaarheid": [],
+            })
+
+        try:
+            df = self.execute_query(
+                QUERY_BETAALGEDRAG_PER_DEBITEUR,
+                {"startdatum": startdatum, "einddatum": einddatum, "administratie": administratie}
+            )
+            return df
+        except Exception as e:
+            print(f"Error fetching debtor payment behavior: {e}")
+            return pd.DataFrame({
+                "debiteur_code": [],
+                "aantal_facturen": [],
+                "gem_dagen_tot_betaling": [],
+                "std_dagen_tot_betaling": [],
+                "min_dagen": [],
+                "max_dagen": [],
+                "totaal_factuurbedrag": [],
+                "laatste_betaling": [],
+                "betrouwbaarheid": [],
+            })
+
+    def get_betaalgedrag_per_crediteur(
+        self,
+        startdatum: date = None,
+        einddatum: date = None,
+        administratie: str = None
+    ) -> pd.DataFrame:
+        """
+        Get historical payment behavior per creditor (DPO analysis).
+
+        Args:
+            startdatum: Start date for analysis (default: 24 months ago)
+            einddatum: End date for analysis (default: today)
+            administratie: Administration name (required)
+
+        Returns:
+            DataFrame with payment behavior per creditor
+        """
+        if einddatum is None:
+            einddatum = date.today()
+        if startdatum is None:
+            startdatum = date(einddatum.year - 2, einddatum.month, 1)
+        if not administratie:
+            return pd.DataFrame({
+                "crediteur_code": [],
+                "aantal_facturen": [],
+                "gem_dagen_tot_betaling": [],
+                "std_dagen_tot_betaling": [],
+                "totaal_factuurbedrag": [],
+                "laatste_betaling": [],
+                "betrouwbaarheid": [],
+            })
+
+        try:
+            df = self.execute_query(
+                QUERY_BETAALGEDRAG_PER_CREDITEUR,
+                {"startdatum": startdatum, "einddatum": einddatum, "administratie": administratie}
+            )
+            return df
+        except Exception as e:
+            print(f"Error fetching creditor payment behavior: {e}")
+            return pd.DataFrame({
+                "crediteur_code": [],
+                "aantal_facturen": [],
+                "gem_dagen_tot_betaling": [],
+                "std_dagen_tot_betaling": [],
+                "totaal_factuurbedrag": [],
+                "laatste_betaling": [],
+                "betrouwbaarheid": [],
+            })
+
     def get_terugkerende_kosten(self, startdatum: date = None, einddatum: date = None, administratie: str = None) -> pd.DataFrame:
         """
         Get recurring costs (salaries, rent, etc.) from historical bookings.
@@ -764,6 +991,83 @@ class MockDatabase:
 
         return pd.DataFrame(rows)
 
+    def get_betaalgedrag_per_debiteur(self, startdatum: date = None, einddatum: date = None, administratie: str = None) -> pd.DataFrame:
+        """Generate mock payment behavior per debtor (DSO analysis)."""
+        self.np.random.seed(47)
+
+        # Simuleer verschillende type betalers
+        debiteuren = [
+            # (code, gem_dagen, std, betrouwbaarheid_type)
+            ("DEB0001", 25, 5, "excellent"),    # Snelle, consistente betaler
+            ("DEB0002", 32, 8, "good"),         # Goede betaler
+            ("DEB0003", 45, 15, "average"),     # Gemiddeld
+            ("DEB0004", 38, 10, "good"),        # Goede betaler
+            ("DEB0005", 60, 25, "poor"),        # Trage, inconsistente betaler
+            ("DEB0006", 28, 6, "excellent"),    # Snelle betaler
+            ("DEB0007", 55, 20, "poor"),        # Trage betaler
+            ("DEB0008", 35, 12, "average"),     # Gemiddeld
+            ("DEB0009", 30, 7, "good"),         # Goede betaler
+            ("DEB0010", 42, 18, "average"),     # Gemiddeld
+        ]
+
+        rows = []
+        for code, gem_dagen, std_dagen, betaal_type in debiteuren:
+            # Betrouwbaarheid berekenen zoals in echte query
+            betrouwbaarheid = round(
+                min(1.0,
+                    (1.0 - min(1.0, std_dagen / 30.0)) * 0.7 +
+                    min(1.0, self.np.random.randint(3, 15) / 10.0) * 0.3
+                ), 2
+            )
+
+            rows.append({
+                "debiteur_code": code,
+                "aantal_facturen": self.np.random.randint(3, 20),
+                "gem_dagen_tot_betaling": gem_dagen + self.np.random.uniform(-3, 3),
+                "std_dagen_tot_betaling": std_dagen + self.np.random.uniform(-2, 2),
+                "min_dagen": max(1, gem_dagen - std_dagen * 2),
+                "max_dagen": gem_dagen + std_dagen * 2,
+                "totaal_factuurbedrag": round(self.np.random.uniform(10000, 150000), 2),
+                "laatste_betaling": self.today - pd.Timedelta(days=self.np.random.randint(5, 60)),
+                "betrouwbaarheid": betrouwbaarheid,
+            })
+
+        return pd.DataFrame(rows)
+
+    def get_betaalgedrag_per_crediteur(self, startdatum: date = None, einddatum: date = None, administratie: str = None) -> pd.DataFrame:
+        """Generate mock payment behavior per creditor (DPO analysis)."""
+        self.np.random.seed(48)
+
+        # Onze eigen betaalgedrag naar leveranciers
+        crediteuren = [
+            ("CRED0001", 28, 5),   # We betalen snel
+            ("CRED0002", 35, 8),
+            ("CRED0003", 30, 6),
+            ("CRED0004", 25, 4),
+            ("CRED0005", 32, 10),
+        ]
+
+        rows = []
+        for code, gem_dagen, std_dagen in crediteuren:
+            betrouwbaarheid = round(
+                min(1.0,
+                    (1.0 - min(1.0, std_dagen / 30.0)) * 0.7 +
+                    min(1.0, self.np.random.randint(3, 12) / 10.0) * 0.3
+                ), 2
+            )
+
+            rows.append({
+                "crediteur_code": code,
+                "aantal_facturen": self.np.random.randint(5, 25),
+                "gem_dagen_tot_betaling": gem_dagen + self.np.random.uniform(-2, 2),
+                "std_dagen_tot_betaling": std_dagen + self.np.random.uniform(-1, 1),
+                "totaal_factuurbedrag": round(self.np.random.uniform(5000, 80000), 2),
+                "laatste_betaling": self.today - pd.Timedelta(days=self.np.random.randint(3, 30)),
+                "betrouwbaarheid": betrouwbaarheid,
+            })
+
+        return pd.DataFrame(rows)
+
 
 def get_database(use_mock: bool = True, customer_code: Optional[str] = None) -> Union[SyntessDWHConnection, MockDatabase, "FailedConnectionDatabase"]:
     """
@@ -811,7 +1115,7 @@ class FailedConnectionDatabase:
         self.host = host
         self.error_msg = f"Kon niet verbinden met database {customer_code} op {host}"
 
-    def get_banksaldo(self, standdatum: date = None) -> pd.DataFrame:
+    def get_banksaldo(self, standdatum: date = None, administratie: str = None) -> pd.DataFrame:
         return pd.DataFrame({
             "bank_naam": [f"[FOUT: {self.error_msg}]"],
             "rekeningnummer": [""],
@@ -819,7 +1123,7 @@ class FailedConnectionDatabase:
             "datum": [pd.Timestamp.now()],
         })
 
-    def get_openstaande_debiteuren(self, standdatum: date = None) -> pd.DataFrame:
+    def get_openstaande_debiteuren(self, standdatum: date = None, administratie: str = None) -> pd.DataFrame:
         return pd.DataFrame({
             "debiteur_code": [],
             "debiteur_naam": [],
@@ -862,6 +1166,47 @@ class FailedConnectionDatabase:
             "gem_betaaltermijn_crediteuren": [],
             "inkomsten": [],
             "uitgaven": [],
+        })
+
+    def get_betaalgedrag_per_debiteur(self, startdatum: date = None, einddatum: date = None, administratie: str = None) -> pd.DataFrame:
+        return pd.DataFrame({
+            "debiteur_code": [],
+            "aantal_facturen": [],
+            "gem_dagen_tot_betaling": [],
+            "std_dagen_tot_betaling": [],
+            "min_dagen": [],
+            "max_dagen": [],
+            "totaal_factuurbedrag": [],
+            "laatste_betaling": [],
+            "betrouwbaarheid": [],
+        })
+
+    def get_betaalgedrag_per_crediteur(self, startdatum: date = None, einddatum: date = None, administratie: str = None) -> pd.DataFrame:
+        return pd.DataFrame({
+            "crediteur_code": [],
+            "aantal_facturen": [],
+            "gem_dagen_tot_betaling": [],
+            "std_dagen_tot_betaling": [],
+            "totaal_factuurbedrag": [],
+            "laatste_betaling": [],
+            "betrouwbaarheid": [],
+        })
+
+    def get_historische_cashflow_per_week(self, startdatum: date = None, einddatum: date = None, administratie: str = None, administratie_key: int = None) -> pd.DataFrame:
+        return pd.DataFrame({
+            "week_start": [],
+            "week_nummer": [],
+            "maand": [],
+            "inkomsten": [],
+            "uitgaven": [],
+            "netto": [],
+        })
+
+    def get_terugkerende_kosten(self, startdatum: date = None, einddatum: date = None, administratie: str = None) -> pd.DataFrame:
+        return pd.DataFrame({
+            "maand": [],
+            "kostensoort": [],
+            "bedrag": [],
         })
 
 

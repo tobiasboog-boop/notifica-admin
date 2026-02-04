@@ -36,6 +36,9 @@ from src.calculations import (
     backtest_forecast_model,
     ForecastModelMetrics,
     LiquidityMetrics,
+    # Nieuwe Fading Weight Ensemble methode
+    create_fading_weight_forecast,
+    calculate_dso_adjustment,
 )
 
 # Page configuration
@@ -388,6 +391,34 @@ def load_data(use_mock: bool = True, customer_code: Optional[str] = None, standd
     else:
         data["terugkerende_kosten"] = pd.DataFrame()
         data["historische_cashflow"] = pd.DataFrame()
+
+    # =========================================================================
+    # NIEUW: Laad betaalgedrag per debiteur/crediteur voor DSO/DPO correctie
+    # =========================================================================
+    # Periode: 24 maanden voor betere statistieken
+    dso_startdatum = date(standdatum.year - 2, standdatum.month, 1)
+
+    if hasattr(db, 'get_betaalgedrag_per_debiteur'):
+        if isinstance(db, MockDatabase):
+            data["betaalgedrag_debiteuren"] = db.get_betaalgedrag_per_debiteur()
+            data["betaalgedrag_crediteuren"] = db.get_betaalgedrag_per_crediteur()
+        elif administratie:
+            data["betaalgedrag_debiteuren"] = db.get_betaalgedrag_per_debiteur(
+                startdatum=dso_startdatum,
+                einddatum=standdatum,
+                administratie=administratie
+            )
+            data["betaalgedrag_crediteuren"] = db.get_betaalgedrag_per_crediteur(
+                startdatum=dso_startdatum,
+                einddatum=standdatum,
+                administratie=administratie
+            )
+        else:
+            data["betaalgedrag_debiteuren"] = pd.DataFrame()
+            data["betaalgedrag_crediteuren"] = pd.DataFrame()
+    else:
+        data["betaalgedrag_debiteuren"] = pd.DataFrame()
+        data["betaalgedrag_crediteuren"] = pd.DataFrame()
 
     return data
 
@@ -912,23 +943,34 @@ def render_scenario_sidebar():
 
     forecast_method = st.sidebar.radio(
         "Kies forecast model",
-        options=["ML Ensemble (aanbevolen)", "Blend (oud)", "Alleen openstaande posten"],
+        options=[
+            "Fading Weight + DSO (nieuw)",
+            "ML Ensemble",
+            "Blend (oud)",
+            "Alleen openstaande posten"
+        ],
         index=0,
         help="""
-        **ML Ensemble**: Combineert seizoenspatroon, trend, weighted moving average en bekende posten.
-        Inclusief automatische backtesting voor betrouwbaarheidsmeting.
+        **Fading Weight + DSO (nieuw)**: Geavanceerde methode met:
+        - DSO correctie per debiteur (historisch betaalgedrag)
+        - Sigmoid fading weight tussen ERP data en statistiek
+        - Korte termijn: ~95% bekende posten
+        - Lange termijn: ~90% statistiek
 
-        **Blend**: Eenvoudige combinatie van bekende posten en historisch gemiddelde.
+        **ML Ensemble**: Combineert seizoenspatroon, trend, weighted moving average en bekende posten.
+
+        **Blend (oud)**: Eenvoudige combinatie van bekende posten en historisch gemiddelde.
 
         **Alleen openstaande posten**: Puur gebaseerd op facturen met vervaldatum.
         """
     )
 
-    use_ml = forecast_method == "ML Ensemble (aanbevolen)"
-    use_historical_profile = forecast_method in ["ML Ensemble (aanbevolen)", "Blend (oud)"]
-    use_seasonality = forecast_method == "ML Ensemble (aanbevolen)"
+    use_fading_weight = forecast_method == "Fading Weight + DSO (nieuw)"
+    use_ml = forecast_method == "ML Ensemble"
+    use_historical_profile = forecast_method in ["ML Ensemble", "Blend (oud)", "Fading Weight + DSO (nieuw)"]
+    use_seasonality = forecast_method in ["ML Ensemble", "Fading Weight + DSO (nieuw)"]
 
-    return debiteur_delay, crediteur_delay, forecast_weeks, history_weeks, use_historical_profile, use_seasonality, use_ml
+    return debiteur_delay, crediteur_delay, forecast_weeks, history_weeks, use_historical_profile, use_seasonality, use_ml, use_fading_weight
 
 
 def render_alerts(forecast: pd.DataFrame, metrics: LiquidityMetrics):
@@ -1459,7 +1501,7 @@ def main():
     st.sidebar.markdown("---")
 
     # Scenario controls
-    debiteur_delay, crediteur_delay, forecast_weeks, history_weeks, use_historical_profile, use_seasonality, use_ml = render_scenario_sidebar()
+    debiteur_delay, crediteur_delay, forecast_weeks, history_weeks, use_historical_profile, use_seasonality, use_ml, use_fading_weight = render_scenario_sidebar()
 
     # Apply filters to data
     has_active_filters = any([
@@ -1486,18 +1528,55 @@ def main():
         "historische_cashflow" in filtered_data
         and not filtered_data.get("historische_cashflow", pd.DataFrame()).empty
     )
+    has_dso_data = (
+        "betaalgedrag_debiteuren" in filtered_data
+        and not filtered_data.get("betaalgedrag_debiteuren", pd.DataFrame()).empty
+    )
 
     # Debug info - toon welke methode wordt gebruikt
     hist_rows = len(filtered_data.get("historische_cashflow", pd.DataFrame()))
+    dso_rows = len(filtered_data.get("betaalgedrag_debiteuren", pd.DataFrame()))
     st.sidebar.markdown("---")
     st.sidebar.markdown("**Debug info:**")
     st.sidebar.caption(f"Historische data: {hist_rows} weken")
-    st.sidebar.caption(f"use_ml={use_ml}, has_hist={has_historical_data}")
+    st.sidebar.caption(f"DSO debiteuren: {dso_rows} klanten")
+    st.sidebar.caption(f"use_fading_weight={use_fading_weight}, use_ml={use_ml}")
 
     # Model metrics placeholder
     model_metrics = None
+    forecast_metadata = None
 
-    if use_ml and has_historical_data:
+    # =========================================================================
+    # NIEUW: Fading Weight + DSO methode (aanbevolen)
+    # =========================================================================
+    if use_fading_weight and has_historical_data:
+        forecast, forecast_start_idx, forecast_metadata = create_fading_weight_forecast(
+            banksaldo=filtered_data["banksaldo"],
+            debiteuren=filtered_data["debiteuren"],
+            crediteuren=filtered_data["crediteuren"],
+            historische_cashflow=filtered_data.get("historische_cashflow", pd.DataFrame()),
+            betaalgedrag_debiteuren=filtered_data.get("betaalgedrag_debiteuren", pd.DataFrame()),
+            betaalgedrag_crediteuren=filtered_data.get("betaalgedrag_crediteuren", pd.DataFrame()),
+            weeks=forecast_weeks,
+            weeks_history=history_weeks,
+            reference_date=standdatum,
+            standaard_betaaltermijn=30,
+            ensemble_midpoint=5,  # Week 5 = 50/50 split
+        )
+
+        # Toon DSO info in sidebar
+        st.sidebar.markdown("---")
+        st.sidebar.markdown("**Fading Weight + DSO:**")
+        if forecast_metadata:
+            n_dso = forecast_metadata.get("n_debiteuren_met_dso", 0)
+            fallback = forecast_metadata.get("dso_adjustments", {}).get("_fallback", 0)
+            st.sidebar.caption(f"DSO correctie voor {n_dso} debiteuren")
+            st.sidebar.caption(f"Fallback correctie: {fallback:+.1f} dagen")
+            st.sidebar.caption(f"Midpoint ensemble: week {forecast_metadata.get('ensemble_midpoint', 5)}")
+
+        st.sidebar.caption("Methodiek: Fading Weight + DSO per debiteur")
+
+    elif use_ml and has_historical_data:
         # ML Ensemble model met automatische backtesting
         forecast, forecast_start_idx, model_metrics = create_ml_forecast(
             filtered_data["banksaldo"],
